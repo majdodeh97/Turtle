@@ -1,7 +1,8 @@
 local baseURL = "https://raw.githubusercontent.com/majdodeh97/Turtle/main/"
 
 -- Download the manifest file
-local manifestURL = baseURL .. "manifest.txt"
+local manifestFileName =  "manifest.txt"
+local manifestURL = baseURL .. manifestFileName
 local response = http.get(manifestURL)
 if not response then
     print("Failed to download manifest.")
@@ -10,6 +11,11 @@ end
 
 local manifest = response.readAll()
 response.close()
+
+local file = fs.open(manifestFileName, "w")
+file.write(manifest)
+file.close()
+print("Downloaded:", manifestFileName)
 
 -- Process each line in the manifest
 for line in manifest:gmatch("[^\r\n]+") do

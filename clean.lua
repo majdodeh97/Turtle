@@ -1,7 +1,6 @@
 -- clean.lua
 local keep = {
     ["downloader.lua"] = true,
-    ["clean.lua"] = true,
     ["rom"] = true
 }
 
