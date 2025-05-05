@@ -2,7 +2,7 @@
 
 clean.lua
 manifest.txt
-reset
+reset.lua
 setRole.lua
 startup.lua
 
