@@ -1,4 +1,12 @@
 -- Load role from settings
+
+if(settings.get("error")) then
+    print("Turtle shutdown unexpectidely. Please check error logs")
+    settings.unset("error")
+    settings.save()
+    return;
+end
+
 local role = settings.get("role")
 
 if not role then

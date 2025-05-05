@@ -20,6 +20,21 @@ function movement.back()
     return success, reason
 end
 
+function movement.turnRight()
+    turtle.turnRight()
+    local location = settings.get("location") or { dir = 1 }
+    location.dir = (location.dir % 4) + 1
+    settings.set("location", location)
+    settings.save()
+end
+
+function movement.turnLeft()
+    turtle.turnLeft()
+    local location = settings.get("location") or { dir = 1 }
+    location.dir = ((location.dir - 2) % 4) + 1
+    settings.set("location", location)
+    settings.save()
+end
 
 function updateHorizontalLocation(stepAmount)
     location = settings.get("location")
