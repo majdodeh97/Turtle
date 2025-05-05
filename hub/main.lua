@@ -10,5 +10,3 @@ if fs.exists(scriptPath) then
 else
     print("Error: Script not found at", scriptPath)
 end
-
-os.reboot()

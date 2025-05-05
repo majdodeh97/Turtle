@@ -47,3 +47,5 @@ for line in manifest:gmatch("[^\r\n]+") do
         end
     end
 end
+
+os.reboot()
