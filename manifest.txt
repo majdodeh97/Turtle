@@ -1,7 +1,9 @@
 .settings
 clean.lua
+setRole.lua
 startup.lua
-tests.lua
 programs/cobbleBot.lua
 programs/craft.lua
 programs/placeSquare.lua
+hub/main.lua
+worker/main.lua
