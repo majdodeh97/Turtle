@@ -19,6 +19,8 @@ end
 local manifest = response.readAll()
 response.close()
 
+local error = false
+
 -- Process each line in the manifest
 for line in manifest:gmatch("[^\r\n]+") do
     if skipList[line] then
@@ -43,9 +45,15 @@ for line in manifest:gmatch("[^\r\n]+") do
             file.close()
             print("Downloaded:", line)
         else
+            error = true
             print("Failed to download:", line)
         end
     end
+end
+
+if(error) then
+    print("Error detected. Cancelling reboot")
+    return
 end
 
 os.reboot()

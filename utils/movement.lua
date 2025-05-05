@@ -12,7 +12,7 @@ function movement.forward()
 end
 
 function movement.back()
-    success, reason = turtle.forward()
+    success, reason = turtle.back()
     if(success) then
         updateHorizontalLocation(-1)
     end
