@@ -47,13 +47,10 @@ for line in manifest:gmatch("[^\r\n]+") do
         else
             error = true
             print("Failed to download:", line)
+            print("Cancelling reboot")
+            return
         end
     end
-end
-
-if(error) then
-    print("Error detected. Cancelling reboot")
-    return
 end
 
 os.reboot()
