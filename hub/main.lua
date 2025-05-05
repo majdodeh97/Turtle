@@ -2,7 +2,7 @@ print("Hi, I'm a hub!")
 
 sleep(10)
 
-local scriptPath = "downloader.lua"
+local scriptPath = "downloader"
 
 if fs.exists(scriptPath) then
     print("Running:", scriptPath)
