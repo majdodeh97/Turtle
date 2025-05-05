@@ -5,6 +5,7 @@ local keep = {
     ["rom"] = true
 }
 
+
 for _, file in ipairs(fs.list("")) do
     if not keep[file] then
         fs.delete(file)
