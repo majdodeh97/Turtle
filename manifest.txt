@@ -1,10 +1,16 @@
 .settings
+
 clean.lua
 manifest.txt
 setRole.lua
 startup.lua
+
+hub/main.lua
+
 programs/cobbleBot.lua
 programs/craft.lua
 programs/placeSquare.lua
-hub/main.lua
+
+utils/movement.lua
+
 worker/main.lua
