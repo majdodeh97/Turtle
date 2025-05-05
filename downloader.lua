@@ -1,11 +1,5 @@
 local baseURL = "https://raw.githubusercontent.com/majdodeh97/Turtle/main/"
 
--- 🧹 Delete existing folder if it exists
-if fs.exists(folderName) then
-    print("Cleaning up old folder:", folderName)
-    fs.delete(folderName)
-end
-
 -- Download the manifest file
 local manifestURL = baseURL .. "manifest.txt"
 local response = http.get(manifestURL)
@@ -26,7 +20,7 @@ for line in manifest:gmatch("[^\r\n]+") do
         fileResponse.close()
 
         -- Create necessary directories
-        local path = fs.combine(folderName, line)
+        local path = fs.combine("", line)
         local dir = fs.getDir(path)
         if not fs.exists(dir) then
             fs.makeDir(dir)
