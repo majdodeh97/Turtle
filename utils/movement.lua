@@ -1,6 +1,6 @@
 local movement = {}
 
-function movement.forceMove()
+function movement.forward()
     turtle.dig()
     turtle.forward()
 end
