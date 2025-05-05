@@ -1,3 +1,5 @@
+local movement = require("/utils/movement")
+
 local tArgs = { ... }
 local startOffset = tonumber(tArgs[1])
 local size = tonumber(tArgs[2])
@@ -21,7 +23,7 @@ end
 -- Try to move forward safely with fuel check
 local function safeForward()
     ensureFuel()
-    while not turtle.forward() do
+    while not movement.forward() do
         turtle.dig()
         sleep(0.5)
     end
@@ -29,8 +31,8 @@ end
 
 -- Turn around
 local function turnAround()
-    turtle.turnLeft()
-    turtle.turnLeft()
+    movement.turnLeft()
+    movement.turnLeft()
 end
 
 -- Get a block to place
@@ -99,9 +101,9 @@ for row = 1, size do
         end
     end
 
-    turtle.turnLeft()
+    movement.turnLeft()
     safeForward()
-    turtle.turnLeft()
+    movement.turnLeft()
 end
 
 print("Finished placing", size, "x", size, "square.")
