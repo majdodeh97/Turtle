@@ -1,7 +1,7 @@
 -- Load role from settings
 
 if(settings.get("error")) then
-    print("Turtle shutdown unexpectidely. Please check error logs")
+    print("Turtle encountered an error. Please check error logs")
     settings.unset("error")
     settings.save()
     return;
@@ -10,7 +10,7 @@ end
 local role = settings.get("role")
 
 if not role then
-    print("Error: 'role' setting not found.")
+    print("This is an idle turtle. Assign it a role with setRole")
     return
 end
 
