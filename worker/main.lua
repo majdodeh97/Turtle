@@ -1,1 +1,3 @@
-print("Hi, I'm a worker!")
+local movement = require("utils/movement")
+
+movement.forceMove()
