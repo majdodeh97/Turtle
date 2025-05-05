@@ -4,5 +4,9 @@
         y = 0,
         z = 0,
         dir = 0
+    },
+    base = {
+        roomWidth = 9,
+        streetWidth = 3
     }
 }
