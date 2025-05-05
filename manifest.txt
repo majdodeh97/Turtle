@@ -11,6 +11,7 @@ programs/cobbleBot.lua
 programs/craft.lua
 programs/placeSquare.lua
 
+utils/log.lua
 utils/movement.lua
 
 worker/main.lua
