@@ -1,3 +1,5 @@
 clean.lua
 startup.lua
-test/testscript.lua
+programs/cobbleBot.lua
+programs/craft.lua
+programs/placeSquare.lua
