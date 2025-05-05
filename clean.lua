@@ -2,8 +2,7 @@
 local keep = {
     ["downloader.lua"] = true,
     ["clean.lua"] = true,
-    ["rom"] = true,
-    ["test"] = true
+    ["rom"] = true
 }
 
 
