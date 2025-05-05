@@ -1,8 +1,15 @@
-local baseURL = "https://raw.githubusercontent.com/majdodeh97/Turtle/main/"
+local tArgs = { ... }
+local skipList = {}
 
--- Download the manifest file
-local manifestFileName =  "manifest.txt"
+-- Add all arguments to a skip set
+for _, skip in ipairs(tArgs) do
+    skipList[skip] = true
+end
+
+local baseURL = "https://raw.githubusercontent.com/majdodeh97/Turtle/main/"
+local manifestFileName = "manifest.txt"
 local manifestURL = baseURL .. manifestFileName
+
 local response = http.get(manifestURL)
 if not response then
     print("Failed to download manifest.")
@@ -12,32 +19,31 @@ end
 local manifest = response.readAll()
 response.close()
 
-local file = fs.open(manifestFileName, "w")
-file.write(manifest)
-file.close()
-print("Downloaded:", manifestFileName)
-
 -- Process each line in the manifest
 for line in manifest:gmatch("[^\r\n]+") do
-    local fileURL = baseURL .. line
-    local fileResponse = http.get(fileURL)
-    if fileResponse then
-        local content = fileResponse.readAll()
-        fileResponse.close()
-
-        -- Create necessary directories
-        local path = fs.combine("", line)
-        local dir = fs.getDir(path)
-        if not fs.exists(dir) then
-            fs.makeDir(dir)
-        end
-
-        -- Write the file
-        local file = fs.open(path, "w")
-        file.write(content)
-        file.close()
-        print("Downloaded:", line)
+    if skipList[line] then
+        print("Skipped:", line)
     else
-        print("Failed to download:", line)
+        local fileURL = baseURL .. line
+        local fileResponse = http.get(fileURL)
+        if fileResponse then
+            local content = fileResponse.readAll()
+            fileResponse.close()
+
+            -- Create necessary directories
+            local path = fs.combine("", line)
+            local dir = fs.getDir(path)
+            if not fs.exists(dir) then
+                fs.makeDir(dir)
+            end
+
+            -- Write the file
+            local file = fs.open(path, "w")
+            file.write(content)
+            file.close()
+            print("Downloaded:", line)
+        else
+            print("Failed to download:", line)
+        end
     end
 end

@@ -1,5 +1,6 @@
 .settings
 clean.lua
+manifest.txt
 setRole.lua
 startup.lua
 programs/cobbleBot.lua

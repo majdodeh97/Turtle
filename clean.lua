@@ -12,4 +12,4 @@ for _, file in ipairs(fs.list("")) do
     end
 end
 
-print("Cleanup complete. Only essential scripts remain.")
+print("Cleanup complete.")

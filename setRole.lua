@@ -1,7 +1,7 @@
 local tArgs = { ... }
 
 if not tArgs[1] then
-    print("Usage: init <role>")
+    print("Usage: setRole <role>")
     return
 end
 
