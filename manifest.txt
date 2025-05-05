@@ -1,1 +1,2 @@
-Test.lua
+startup.lua
+test/testscript.lua
