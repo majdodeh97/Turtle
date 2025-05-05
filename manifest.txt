@@ -1,3 +1,4 @@
+.settings
 clean.lua
 startup.lua
 tests.lua
