@@ -181,13 +181,7 @@ function movement.backtrack()
         end
     end
 
-    local stack2 = settings.get("movementStack") or {}
-    local stack2Text = textutils.serialise(stack2)
-
-    print("stack after backtrack: " .. stack2)
-
-    settings.unset("movementStack")
-    settings.save()
+    movement.faceDirection("forward");
 end
 
 return movement
