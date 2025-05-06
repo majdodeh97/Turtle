@@ -25,7 +25,6 @@ local function safeForward()
     ensureFuel()
     while not movement.forward() do
         turtle.dig()
-        sleep(0.5)
     end
 end
 
@@ -77,33 +76,29 @@ end
 
 turnAround()
 
--- Step 3: place the square line by line
-local direction = true -- true = forward, false = backward
+-- Step 3: place the square line by line (zigzag)
+local leftTurn = false
 
 for row = 1, size do
     for col = 1, size do
         placeDown()
-        if(col ~= size) then
+        if col < size then
             safeForward()
         end
     end
 
-
-    if(row == size) then
-        break
-    end
-
-    turnAround()
-
-    for col = 1, size do
-        if(col ~= size) then
+    if row < size then
+        if leftTurn then
+            movement.turnLeft()
             safeForward()
+            movement.turnLeft()
+        else
+            movement.turnRight()
+            safeForward()
+            movement.turnRight()
         end
+        leftTurn = not leftTurn
     end
-
-    movement.turnLeft()
-    safeForward()
-    movement.turnLeft()
 end
 
 print("Finished placing", size, "x", size, "square.")
