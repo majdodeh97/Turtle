@@ -46,18 +46,22 @@ function navigation.getCurrentLocation()
         end)
     end
 
-    locationFromSettings = settings.get("location");
+    location = settings.get("location");
 
-    if(location.x ~= x or location.y ~= y or location.z ~= z) then
-        print("location mismatch")
+    if(not location or location.x ~= x or location.y ~= y or location.z ~= z) then
+        gpsLocation = {
+            x = x,
+            y = y,
+            z = z
+        }
+
+        gpsLocationString = textutils.serialise(gpsLocation)
+        locationString = textutils.serialise(location)
+
+        log.error("Location mismatch. GPS location: " .. gpsLocationString .. ". Local location: " .. locationString)
     end
 
-    print(x)
-    print(y)
-    print(z)
-    print(location.x)
-    print(location.y)
-    print(location.z)
+    return location
 end
 
 function navigation.isInRoom()
@@ -66,7 +70,7 @@ end
 
 function navigation.goHome()
     
-    navigation.getCurrentLocation()
+    return navigation.getCurrentLocation()
 
 end
 

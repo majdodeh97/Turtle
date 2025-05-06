@@ -30,7 +30,7 @@ function movement.up()
 end
 
 function movement.down()
-    success, reason = turtle.up()
+    success, reason = turtle.down()
     if(success) then
         updateVerticalLocation(-1)
     end
