@@ -4,7 +4,7 @@ local log = require("/utils/log")
 
 local navigation = {}
 
-function navigation.getCoords(row, col)
+function navigation.getRoomCoords(row, col)
 
     local rowToMove = math.abs(row) - 1
     local x = rowToMove * (config.roomSize + config.streetWidth)
@@ -22,8 +22,8 @@ function navigation.getCoords(row, col)
  
     return {
         x = x,
-        y = 0,
-        z = z + 1 --for recalibration block
+        y = y,
+        z = 0
     }
 end
 
