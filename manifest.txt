@@ -12,7 +12,9 @@ programs/cobbleBot.lua
 programs/craft.lua
 programs/placeSquare.lua
 
+utils/inventory.lua
 utils/log.lua
 utils/movement.lua
+utils/navigation.lua
 
 worker/main.lua
