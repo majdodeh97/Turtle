@@ -15,7 +15,7 @@ local function ensureFuel()
         turtle.select(16)
         if not turtle.refuel(1) then
             print("Out of fuel in slot 16. Please add more.")
-            sleep(2)
+            sleep(5)
         end
     end
 end
@@ -47,11 +47,11 @@ end
 
 -- Place a block beneath
 local function placeDown()
-    if not selectNextBlock() then
+    while not selectNextBlock() do
         print("Out of blocks to place.")
-        sleep(2)
-        return
+        sleep(5)
     end
+    turtle.digDown()
     turtle.placeDown()
 end
 
