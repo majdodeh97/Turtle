@@ -1,10 +1,5 @@
 {
-    location = {
-        x = 0,
-        y = 0,
-        z = 0,
-        dir = 0
-    },
+    direction = "forward",
     base = {
         roomWidth = 9,
         streetWidth = 3
