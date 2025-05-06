@@ -6,7 +6,7 @@ while(movement.forward()) do
     distance = distance + 1
 end
 
-print("Distance going" .. distance)
+print("Distance: " .. distance)
 
 movement.turnRight()
 movement.turnRight()
@@ -14,3 +14,5 @@ movement.turnRight()
 for i = 1, distance, 1 do
     movement.forward()
 end
+
+movement.faceDirection("forward")
