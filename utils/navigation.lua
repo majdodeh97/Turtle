@@ -53,10 +53,57 @@ function navigation.getGpsLocation()
     }
 end
 
-function navigation.getCurrentLocation()
+function navigation.getLocalLocation()
+    local x, y, z = 0, 0, 0
+    local stack = settings.get("movementStack") or {}
+
+    for _, move in ipairs(stack) do
+        if move.dir == "forward" then
+            y = y + move.amount
+        elseif move.dir == "back" then
+            y = y - move.amount
+        elseif move.dir == "right" then
+            x = x + move.amount
+        elseif move.dir == "left" then
+            x = x - move.amount
+        elseif move.dir == "up" then
+            z = z + move.amount
+        elseif move.dir == "down" then
+            z = z - move.amount
+        else
+            log.error("Invalid direction in movementStack: " .. move.dir)
+        end
+    end
+
+    return { x = x, y = y, z = z }
+end
+
+function navigation.backtrack()
+    local stack = settings.get("movementStack") or {}
+
+    for i = #stack, 1, -1 do
+        local move = stack[i]
+        local dir = move.dir
+        local amount = move.amount
+        local oppositeDir = movement.getOppositeDir(dir)
+
+        if dir == "up" or dir == "down" then
+            local moveFn = (dir == "up") and movement.down or movement.up
+            for _ = 1, amount do moveFn() end
+        else
+            movement.faceDirection(oppositeDir)
+            for _ = 1, amount do movement.forward() end
+        end
+    end
+
+    movement.faceDirection("forward");
+end
+
+
+function navigation.getLocation()
 
     gpsLocation = navigation.getGpsLocation()
-    location = movement.getLocation();
+    location = navigation.getLocalLocation();
 
     if(not location or location.x ~= gpsLocation.x or location.y ~= gpsLocation.y or location.z ~= gpsLocation.z) then
         gpsLocationString = textutils.serialise(gpsLocation)
@@ -74,7 +121,7 @@ end
 
 function navigation.goHome()
     
-    return navigation.getCurrentLocation()
+    return navigation.getLocation()
 
 end
 

@@ -1,7 +1,7 @@
 local log = require("/utils/log")
 local movement = {}
 
-local function getOppositeDir(dir)
+function movement.getOppositeDir(dir)
     local opposites = {
         forward = "back", back = "forward",
         left = "right", right = "left",
@@ -10,7 +10,7 @@ local function getOppositeDir(dir)
     return opposites[dir]
 end
 
-local function getDirection()
+function movement.getDirection()
     local dir = settings.get("direction")
     if not dir then
         log.error("Missing 'direction' in settings.")
@@ -26,7 +26,7 @@ local function logMovement(dir, delta)
     local stack = settings.get("movementStack") or {}
     local top = stack[#stack]
 
-    local opposite = getOppositeDir(dir)
+    local opposite = movement.getOppositeDir(dir)
 
     if top and top.dir == dir then
         top.amount = top.amount + delta
@@ -49,7 +49,7 @@ end
 function movement.forward()
     local success, reason = turtle.forward()
     if success then
-        local dir = getDirection()
+        local dir = movement.getDirection()
         logMovement(dir, 1)
     end
     return success, reason
@@ -58,7 +58,7 @@ end
 function movement.back()
     local success, reason = turtle.back()
     if success then
-        local dir = getOppositeDir(getDirection())
+        local dir = movement.getOppositeDir(getDirection())
         logMovement(dir, 1)
     end
     return success, reason
@@ -80,7 +80,7 @@ function movement.turnRight()
     local success, reason = turtle.turnRight()
     if not success then return success, reason end
 
-    local dir = getDirection()
+    local dir = movement.getDirection()
     local order = { "forward", "right", "back", "left" }
 
     for i, d in ipairs(order) do
@@ -98,7 +98,7 @@ function movement.turnLeft()
     local success, reason = turtle.turnLeft()
     if not success then return success, reason end
 
-    local dir = getDirection()
+    local dir = movement.getDirection()
     local order = { "forward", "right", "back", "left" }
 
     for i, d in ipairs(order) do
@@ -113,7 +113,7 @@ function movement.turnLeft()
 end
 
 function movement.faceDirection(targetDir)
-    local currentDir = getDirection()
+    local currentDir = movement.getDirection()
 
     local directions = { "forward", "right", "back", "left" }
 
@@ -136,52 +136,6 @@ function movement.faceDirection(targetDir)
     elseif diff == 3 then
         movement.turnLeft()
     end
-end
-
-function movement.getLocation()
-    local x, y, z = 0, 0, 0
-    local stack = settings.get("movementStack") or {}
-
-    for _, move in ipairs(stack) do
-        if move.dir == "forward" then
-            y = y + move.amount
-        elseif move.dir == "back" then
-            y = y - move.amount
-        elseif move.dir == "right" then
-            x = x + move.amount
-        elseif move.dir == "left" then
-            x = x - move.amount
-        elseif move.dir == "up" then
-            z = z + move.amount
-        elseif move.dir == "down" then
-            z = z - move.amount
-        else
-            log.error("Invalid direction in movementStack: " .. move.dir)
-        end
-    end
-
-    return { x = x, y = y, z = z }
-end
-
-function movement.backtrack()
-    local stack = settings.get("movementStack") or {}
-
-    for i = #stack, 1, -1 do
-        local move = stack[i]
-        local dir = move.dir
-        local amount = move.amount
-        local oppositeDir = getOppositeDir(dir)
-
-        if dir == "up" or dir == "down" then
-            local moveFn = (dir == "up") and movement.down or movement.up
-            for _ = 1, amount do moveFn() end
-        else
-            movement.faceDirection(oppositeDir)
-            for _ = 1, amount do movement.forward() end
-        end
-    end
-
-    movement.faceDirection("forward");
 end
 
 return movement
