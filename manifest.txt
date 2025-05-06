@@ -5,6 +5,7 @@ manifest.txt
 reset.lua
 setRole.lua
 startup.lua
+test.lua
 
 hub/main.lua
 

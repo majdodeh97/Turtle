@@ -1,4 +1,1 @@
-local movement = require("/utils/movement")
-
-movement.forward()
-movement.forward()
+print("Hi, I'm a worker!")

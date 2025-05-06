@@ -1,4 +1,5 @@
 local inventory = require("/utils/inventory")
+local log = require("/utils/log")
 
 local navigation = {}
 
@@ -27,6 +28,36 @@ end
 
 function navigation.getCurrentLocation()
 
+    local x,y,z
+
+    local hasModem = peripheral.find("modem") ~= nil
+
+    if(hasModem) then
+        x,y,z = gps.locate()
+    else
+        local modemMatcher = function(name)
+            return name:find("computercraft:.*modem")
+        end
+        
+        inventory.runOnItemMatch(modemMatcher, function()
+            turtle.equipLeft()
+            x,y,z = gps.locate()
+            turtle.equipLeft()
+        end)
+    end
+
+    locationFromSettings = settings.get("location");
+
+    if(location.x ~= x or location.y ~= y or location.z ~= z) then
+        print("location mismatch")
+    end
+
+    print(x)
+    print(y)
+    print(z)
+    print(location.x)
+    print(location.y)
+    print(location.z)
 end
 
 function navigation.isInRoom()
@@ -35,13 +66,7 @@ end
 
 function navigation.goHome()
     
-    local x,y,z
-
-    inventory.runOnSlot(15, function()
-        turtle.equipLeft()
-        x,y,z = gps.locate()
-        turtle.equipLeft()
-    end)
+    navigation.getCurrentLocation()
 
 end
 
