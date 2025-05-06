@@ -1,4 +1,5 @@
 local inventory = require("/utils/inventory")
+local movement = require("/utils/movement")
 local log = require("/utils/log")
 
 local navigation = {}
@@ -55,7 +56,7 @@ end
 function navigation.getCurrentLocation()
 
     gpsLocation = navigation.getGpsLocation()
-    location = settings.get("location");
+    location = movement.getLocation();
 
     if(not location or location.x ~= gpsLocation.x or location.y ~= gpsLocation.y or location.z ~= gpsLocation.z) then
         gpsLocationString = textutils.serialise(gpsLocation)

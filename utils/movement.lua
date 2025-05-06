@@ -1,114 +1,192 @@
 local log = require("/utils/log")
-
 local movement = {}
 
-function movement.forward()
-    success, reason = turtle.forward()
-    if(success) then
-        updateHorizontalLocation(1)
+local function getOppositeDir(dir)
+    local opposites = {
+        forward = "back", back = "forward",
+        left = "right", right = "left",
+        up = "down", down = "up"
+    }
+    return opposites[dir]
+end
+
+local function getDirection()
+    local dir = settings.get("direction")
+    if not dir then
+        log.error("Missing 'direction' in settings.")
+    end
+    return dir
+end
+
+local function logMovement(dir, delta)
+    if delta <= 0 then
+        log.error("Tried to log a movement of " .. delta .. " in the " .. dir .. " direction.")
     end
 
+    local stack = settings.get("movementStack") or {}
+    local top = stack[#stack]
+
+    local opposite = getOppositeDir(dir)
+
+    if top and top.dir == dir then
+        top.amount = top.amount + delta
+    elseif top and top.dir == opposite then
+        top.amount = top.amount - delta
+        if top.amount < 0 then
+            top.dir = dir
+            top.amount = -top.amount
+        elseif top.amount == 0 then
+            table.remove(stack)
+        end
+    else
+        table.insert(stack, { dir = dir, amount = delta })
+    end
+
+    settings.set("movementStack", stack)
+    settings.save()
+end
+
+function movement.forward()
+    local success, reason = turtle.forward()
+    if success then
+        local dir = getDirection()
+        logMovement(dir, 1)
+    end
     return success, reason
 end
 
 function movement.back()
-    success, reason = turtle.back()
-    if(success) then
-        updateHorizontalLocation(-1)
+    local success, reason = turtle.back()
+    if success then
+        local dir = getOppositeDir(getDirection())
+        logMovement(dir, 1)
     end
-
     return success, reason
 end
 
 function movement.up()
-    success, reason = turtle.up()
-    if(success) then
-        updateVerticalLocation(1)
-    end
-
+    local success, reason = turtle.up()
+    if success then logMovement("up", 1) end
     return success, reason
 end
 
 function movement.down()
-    success, reason = turtle.down()
-    if(success) then
-        updateVerticalLocation(-1)
-    end
-
+    local success, reason = turtle.down()
+    if success then logMovement("down", 1) end
     return success, reason
 end
 
 function movement.turnRight()
-    success, reason = turtle.turnRight()
-    local location = settings.get("location")
+    local success, reason = turtle.turnRight()
+    if not success then return success, reason end
 
-    if(not location) then
-        log.error("Location is not defined")
+    local dir = getDirection()
+    local order = { "forward", "right", "back", "left" }
+
+    for i, d in ipairs(order) do
+        if d == dir then
+            settings.set("direction", order[(i % 4) + 1])
+            settings.save()
+            break
+        end
     end
-
-    location.dir = (location.dir + 1) % 4
-    settings.set("location", location)
-    settings.save()
 
     return success, reason
 end
 
 function movement.turnLeft()
-    success, reason = turtle.turnLeft()
-    local location = settings.get("location")
+    local success, reason = turtle.turnLeft()
+    if not success then return success, reason end
 
-    if(not location) then
-        log.error("Location is not defined")
+    local dir = getDirection()
+    local order = { "forward", "right", "back", "left" }
+
+    for i, d in ipairs(order) do
+        if d == dir then
+            settings.set("direction", order[((i - 2) % 4) + 1])
+            settings.save()
+            break
+        end
     end
-
-    location.dir = (location.dir - 1) % 4
-    settings.set("location", location)
-    settings.save()
 
     return success, reason
 end
 
-function updateHorizontalLocation(stepAmount)
-    location = settings.get("location")
+function movement.faceDirection(targetDir)
+    local currentDir = getDirection()
 
-    if(not location) then
-        log.error("Location is not defined")
+    local directions = { "forward", "right", "back", "left" }
+
+    local function getIndex(dir)
+        for i, v in ipairs(directions) do
+            if v == dir then return i end
+        end
+        log.error("Invalid direction: " .. dir)
     end
 
-    local dir = location.dir
+    local currentIndex = getIndex(currentDir)
+    local targetIndex = getIndex(targetDir)
+    local diff = (targetIndex - currentIndex) % 4
 
-    -- dir meanings:
-    -- 0 = forward (positive y)
-    -- 1 = right (positive x)
-    -- 2 = back (negative y)
-    -- 3 = left (negative x)
-
-    if dir == 0 then
-        location.y = location.y + stepAmount
-    elseif dir == 1 then
-        location.x = location.x + stepAmount
-    elseif dir == 2 then
-        location.y = location.y - stepAmount
-    elseif dir == 3 then
-        location.x = location.x - stepAmount
-    else
-        log.error("Invalid location dir")
+    if diff == 1 then
+        movement.turnRight()
+    elseif diff == 2 then
+        movement.turnRight()
+        movement.turnRight()
+    elseif diff == 3 then
+        movement.turnLeft()
     end
-
-    settings.set("location", location)
-    settings.save()
 end
 
-function updateVerticalLocation(stepAmount)
-    location = settings.get("location")
+function movement.getLocation()
+    local x, y, z = 0, 0, 0
+    local stack = settings.get("movementStack") or {}
 
-    if(not location) then
-        log.error("Location is not defined")
+    for _, move in ipairs(stack) do
+        if move.dir == "forward" then
+            y = y + move.amount
+        elseif move.dir == "back" then
+            y = y - move.amount
+        elseif move.dir == "right" then
+            x = x + move.amount
+        elseif move.dir == "left" then
+            x = x - move.amount
+        elseif move.dir == "up" then
+            z = z + move.amount
+        elseif move.dir == "down" then
+            z = z - move.amount
+        else
+            log.error("Invalid direction in movementStack: " .. move.dir)
+        end
     end
 
-    location.z = location.z + stepAmount
-    
-    settings.set("location", location)
+    return { x = x, y = y, z = z }
+end
+
+function movement.backtrack()
+    local stack = settings.get("movementStack") or {}
+
+    for i = #stack, 1, -1 do
+        local move = stack[i]
+        local dir = move.dir
+        local amount = move.amount
+        local oppositeDir = getOppositeDir(dir)
+
+        if dir == "up" or dir == "down" then
+            local moveFn = (dir == "up") and movement.down or movement.up
+            for _ = 1, amount do moveFn() end
+        else
+            movement.faceDirection(oppositeDir)
+            for _ = 1, amount do movement.forward() end
+        end
+    end
+
+    local stack2 = settings.get("movementStack") or {}
+    local stack2Text = textutils.serialise(stack2)
+
+    print("stack after backtrack: " .. stack2)
+
+    settings.unset("movementStack")
     settings.save()
 end
 
