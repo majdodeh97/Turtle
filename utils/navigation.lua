@@ -26,8 +26,7 @@ function navigation.getCoords(row, col)
     }
 end
 
-function navigation.getCurrentLocation()
-
+function navigation.getGpsLocation()
     local x,y,z
 
     local hasModem = peripheral.find("modem") ~= nil
@@ -46,19 +45,23 @@ function navigation.getCurrentLocation()
         end)
     end
 
+    return {
+        x = x,
+        y = y,
+        z = z
+    }
+end
+
+function navigation.getCurrentLocation()
+
+    gpsLocation = navigation.getGpsLocation()
     location = settings.get("location");
 
-    if(not location or location.x ~= x or location.y ~= y or location.z ~= z) then
-        gpsLocation = {
-            x = x,
-            y = y,
-            z = z
-        }
-
+    if(not location or location.x ~= gpsLocation.x or location.y ~= gpsLocation.y or location.z ~= gpsLocation.z) then
         gpsLocationString = textutils.serialise(gpsLocation)
         locationString = textutils.serialise(location)
 
-        log.error("Location mismatch. GPS location: " .. gpsLocationString .. ". Local location: " .. locationString)
+        log.error("Location mismatch.\nGPS location: " .. gpsLocationString .. ".\nLocal location: " .. locationString)
     end
 
     return location

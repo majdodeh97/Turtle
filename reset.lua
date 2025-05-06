@@ -1,9 +1,13 @@
+local navigation = require("/utils/navigation")
 
 fs.delete(".settings")
 
 local fileName = ".settings"
 local fileURL = "https://raw.githubusercontent.com/majdodeh97/Turtle/main/" .. fileName
 local fileResponse = http.get(fileURL)
+
+error = false
+
 if fileResponse then
     local content = fileResponse.readAll()
     fileResponse.close()
@@ -16,6 +20,13 @@ if fileResponse then
 else
     error = true
     print("Failed to download:", line)
+    print("Cancelling reboot")
 end
 
-os.reboot()
+if(not error) then
+    location = navigation.getGpsLocation()
+    location.dir = 0
+    settings.set("location", location)
+    settings.save()
+    os.reboot()
+end
