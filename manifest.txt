@@ -14,6 +14,7 @@ programs/craft.lua
 programs/furnace.lua
 programs/furnaceEmptier.lua
 programs/furnaceFueler.lua
+programs/furnaceFuelMover.lua
 programs/furnaceLoader.lua
 programs/placeSquare.lua
 programs/straight.lua
