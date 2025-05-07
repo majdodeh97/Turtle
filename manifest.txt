@@ -12,6 +12,9 @@ hub/main.lua
 programs/cobbleBot.lua
 programs/craft.lua
 programs/furnace.lua
+programs/furnaceEmptier.lua
+programs/furnaceFueler.lua
+programs/furnaceLoader.lua
 programs/placeSquare.lua
 programs/straight.lua
 

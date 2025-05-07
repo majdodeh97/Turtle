@@ -1,4 +1,3 @@
-local movement = require("/utils/movement") -- optional
 local tArgs = { ... }
 
 local length = tonumber(tArgs[1])
@@ -37,19 +36,10 @@ local function moveBackToStart()
     end
 end
 
-local function fillFurnace()
-    for slot = 1, 15 do
-        if turtle.getItemCount(slot) > 0 then
-            turtle.select(slot)
-            turtle.dropDown()
-        end
-    end
-end
-
-local function emptyFurnace()
+local function loadFromChest()
     for slot = 1, 15 do
         turtle.select(slot)
-        turtle.suckUp()
+        turtle.suck()
     end
 end
 
@@ -62,42 +52,38 @@ local function depositToChest()
     end
 end
 
-local function loadFromChest()
+local function emptyFurnace()
     for slot = 1, 15 do
         turtle.select(slot)
-        turtle.suck()
+        turtle.suckUp()
     end
 end
 
-local function countFuelSlots()
-    local totalFuel = 0
+local function countTotalItems()
+    local total = 0
     for i = 1, 15 do
         local item = turtle.getItemDetail(i)
         if item then
-            totalFuel = totalFuel + item.count
+            total = total + item.count
         end
     end
-    return totalFuel
+    return total
 end
 
-local function distributeFuelEvenly(furnaceCount, fuelPerFurnace)
+local function distributeEvenly(furnaceCount, itemsPerFurnace, dropFn)
     for i = 1, furnaceCount do
-        local remaining = fuelPerFurnace
+        local remaining = itemsPerFurnace
         for slot = 1, 15 do
             local count = turtle.getItemCount(slot)
             if count > 0 then
                 turtle.select(slot)
                 local toDrop = math.min(count, remaining)
-                turtle.turnLeft()
-                turtle.drop(toDrop)
-                turtle.turnRight()
+                dropFn(toDrop)
                 remaining = remaining - toDrop
             end
             if remaining <= 0 then break end
         end
-        if i < furnaceCount then
-            safeForward()
-        end
+        if i < furnaceCount then safeForward() end
     end
 end
 
@@ -108,12 +94,13 @@ print("Starting furnace " .. mode .. " on " .. length .. " furnaces...")
 while true do
     if mode == "loader" then
         loadFromChest()
+        local totalItems = countTotalItems()
+        local itemsPerFurnace = math.floor(totalItems / length)
+
         turtle.turnLeft()
         turtle.turnLeft()
-        for i = 1, length do
-            fillFurnace()
-            if i < length then safeForward() end
-        end
+
+        distributeEvenly(length, itemsPerFurnace, turtle.dropDown)
         moveBackToStart()
 
     elseif mode == "emptier" then
@@ -128,17 +115,29 @@ while true do
 
     elseif mode == "fueler" then
         loadFromChest()
-
-        turtle.turnLeft()
-        turtle.turnLeft()
-
-        local totalFuel = countFuelSlots()
+        local totalFuel = countTotalItems()
         local fuelPerFurnace = math.floor(totalFuel / length)
 
-        print("Total fuel:", totalFuel)
-        print("Fuel per furnace:", fuelPerFurnace)
+        turtle.turnLeft()
+        turtle.turnLeft()
 
-        distributeFuelEvenly(length, fuelPerFurnace)
+        for i = 1, length do
+            local remaining = fuelPerFurnace
+            for slot = 1, 15 do
+                local count = turtle.getItemCount(slot)
+                if count > 0 then
+                    turtle.select(slot)
+                    local toDrop = math.min(count, remaining)
+                    turtle.turnLeft()
+                    turtle.drop(toDrop)
+                    turtle.turnRight()
+                    remaining = remaining - toDrop
+                end
+                if remaining <= 0 then break end
+            end
+            if i < length then safeForward() end
+        end
+
         moveBackToStart()
     end
 
