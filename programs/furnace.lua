@@ -3,7 +3,7 @@ local tArgs = { ... }
 local length = tonumber(tArgs[1])
 local mode = tArgs[2]
 
-local version = 2
+local version = 3
 
 if not length or not ({ loader = true, emptier = true, fueler = true })[mode] then
     print("Usage: FurnaceLine <length> <loader|emptier|fueler>")
@@ -73,23 +73,6 @@ local function countTotalItems()
     return total
 end
 
-local function distributeEvenly(furnaceCount, itemsPerFurnace, dropFn)
-    for i = 1, furnaceCount do
-        local remaining = itemsPerFurnace
-        for slot = 1, 15 do
-            local count = turtle.getItemCount(slot)
-            if count > 0 then
-                turtle.select(slot)
-                local toDrop = math.min(count, remaining)
-                dropFn(toDrop)
-                remaining = remaining - toDrop
-            end
-            if remaining <= 0 then break end
-        end
-        if i < furnaceCount then safeForward() end
-    end
-end
-
 local function dropAmount(amount, startSlot, endSlot, dropFn)
     local remaining = amount
 
@@ -101,6 +84,22 @@ local function dropAmount(amount, startSlot, endSlot, dropFn)
             dropFn(toDrop)
             remaining = remaining - toDrop
         end
+
+        if remaining <= 0 then
+            break
+        end
+    end
+
+    return amount - remaining
+end
+
+local function suckAmount(amount, startSlot, endSlot, suckFn)
+    local remaining = amount
+
+    for slot = startSlot, endSlot do
+        turtle.select(slot)
+        local sucked = suckFn(remaining) or 0
+        remaining = remaining - (sucked or 0)
 
         if remaining <= 0 then
             break
@@ -142,7 +141,9 @@ while true do
         depositToChest()
 
     elseif mode == "fueler" then
-        loadFromChest()
+        local maxFuelPerFurnace = 10
+
+        suckAmount(maxFuelPerFurnace * length, 1, 15, turtle.suck)
         local totalFuel = countTotalItems()
         local fuelPerFurnace = math.floor(totalFuel / length)
 
@@ -150,11 +151,9 @@ while true do
         turtle.turnLeft()
 
         for i = 1, length do
-            local toDrop = math.min(fuelPerFurnace, 10)
-
             turtle.turnLeft()
             turtle.suck()
-            dropAmount(toDrop, 1, 15, turtle.drop)
+            dropAmount(fuelPerFurnace, 1, 15, turtle.drop)
             turtle.turnRight()
 
             if i < length then safeForward() end
