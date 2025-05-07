@@ -11,6 +11,7 @@ hub/main.lua
 
 programs/cobbleBot.lua
 programs/craft.lua
+programs/furnace.lua
 programs/placeSquare.lua
 programs/straight.lua
 

@@ -1,0 +1,99 @@
+local movement = require("/utils/movement") -- optional: use your movement wrapper
+local tArgs = { ... }
+
+local length = tonumber(tArgs[1])
+local mode = tArgs[2]
+
+if not length or (mode ~= "loader" and mode ~= "emptier") then
+    print("Usage: FurnaceLine <length> <loader|emptier>")
+    return
+end
+
+-- === Utility ===
+
+local function ensureFuel()
+    while turtle.getFuelLevel() == 0 do
+        turtle.select(16)
+        if not turtle.refuel(1) then
+            print("Out of fuel in slot 16. Please add more.")
+            sleep(2)
+        end
+    end
+end
+
+local function safeForward()
+    ensureFuel()
+    while not turtle.forward() do
+        print("Moevement obstructed! Please make way")
+        sleep(2)
+    end
+end
+
+local function moveBackToStart()
+    turtle.turnLeft()
+    turtle.turnLeft()
+    for _ = 1, length do
+        safeForward()
+    end
+end
+
+local function fillFurnace()
+    for slot = 1, 15 do
+        if turtle.getItemCount(slot) > 0 then
+            turtle.select(slot)
+            turtle.dropDown()
+        end
+    end
+end
+
+local function emptyFurnace()
+    for slot = 1, 15 do
+        turtle.select(slot)
+        turtle.suckUp()
+    end
+end
+
+local function depositToChest()
+    for slot = 1, 15 do
+        if turtle.getItemCount(slot) > 0 then
+            turtle.select(slot)
+            turtle.drop()
+        end
+    end
+end
+
+local function loadFromChest()
+    for slot = 1, 15 do
+        turtle.select(slot)
+        turtle.suck()
+    end
+end
+
+-- === Main Loop ===
+
+print("Starting furnace " .. mode .. " on " .. length .. " furnaces...")
+
+while true do
+    if mode == "loader" then
+        loadFromChest()
+        turtle.turnLeft()
+        turtle.turnLeft()
+        for _ = 1, length do
+            fillFurnace()
+            safeForward()
+        end
+        moveBackToStart()
+
+    elseif mode == "emptier" then
+        turtle.turnLeft()
+        turtle.turnLeft()
+        for _ = 1, length do
+            emptyFurnace()
+            safeForward()
+        end
+        moveBackToStart()
+        depositToChest()
+    end
+
+    sleep(1)
+end
