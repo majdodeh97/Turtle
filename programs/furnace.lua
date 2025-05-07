@@ -3,7 +3,7 @@ local tArgs = { ... }
 local length = tonumber(tArgs[1])
 local mode = tArgs[2]
 
-local version = 3
+local version = 4
 
 if not length or not ({ loader = true, emptier = true, fueler = true })[mode] then
     print("Usage: FurnaceLine <length> <loader|emptier|fueler>")
@@ -98,15 +98,18 @@ local function suckAmount(amount, startSlot, endSlot, suckFn)
 
     for slot = startSlot, endSlot do
         turtle.select(slot)
-        local sucked = suckFn(remaining) or 0
-        remaining = remaining - (sucked or 0)
+        local before = turtle.getItemCount(slot)
+        suckFn()
+        local after = turtle.getItemCount(slot)
+        local sucked = after - before
+        remaining = remaining - sucked
 
         if remaining <= 0 then
             break
         end
     end
 
-    return amount - remaining
+    return amount - remaining  -- amount actually sucked
 end
 
 -- === Main Loop ===
