@@ -153,6 +153,7 @@ while true do
             local toDrop = math.min(fuelPerFurnace, 10)
 
             turtle.turnLeft()
+            turtle.suck()
             dropAmount(toDrop, 1, 15, turtle.drop)
             turtle.turnRight()
 
