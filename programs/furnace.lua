@@ -3,6 +3,8 @@ local tArgs = { ... }
 local length = tonumber(tArgs[1])
 local mode = tArgs[2]
 
+local version = 1
+
 if not length or not ({ loader = true, emptier = true, fueler = true })[mode] then
     print("Usage: FurnaceLine <length> <loader|emptier|fueler>")
     return
@@ -88,6 +90,26 @@ local function distributeEvenly(furnaceCount, itemsPerFurnace, dropFn)
     end
 end
 
+local function dropAmount(amount, startSlot, endSlot, dropFn)
+    local remaining = amount
+
+    for slot = startSlot, endSlot do
+        local count = turtle.getItemCount(slot)
+        if count > 0 then
+            turtle.select(slot)
+            local toDrop = math.min(count, remaining)
+            dropFn(toDrop)
+            remaining = remaining - toDrop
+        end
+
+        if remaining <= 0 then
+            break
+        end
+    end
+
+    return amount - remaining
+end
+
 -- === Main Loop ===
 
 print("Starting furnace " .. mode .. " on " .. length .. " furnaces...")
@@ -101,7 +123,12 @@ while true do
         turtle.turnLeft()
         turtle.turnLeft()
 
-        distributeEvenly(length, itemsPerFurnace, turtle.dropDown)
+        for i = 1, length do
+            dropAmount(itemsPerFurnace, 1, 15, turtle.dropDown)
+
+            if i < length then safeForward() end
+        end
+
         moveBackToStart()
 
     elseif mode == "emptier" then
@@ -123,19 +150,12 @@ while true do
         turtle.turnLeft()
 
         for i = 1, length do
-            local remaining = fuelPerFurnace
-            for slot = 1, 15 do
-                local count = turtle.getItemCount(slot)
-                if count > 0 then
-                    turtle.select(slot)
-                    local toDrop = math.min(count, remaining)
-                    turtle.turnLeft()
-                    turtle.drop(toDrop)
-                    turtle.turnRight()
-                    remaining = remaining - toDrop
-                end
-                if remaining <= 0 then break end
-            end
+            local toDrop = math.min(fuelPerFurnace, 10)
+
+            turtle.turnLeft()
+            dropAmount(toDrop, 1, 15, turtle.drop)
+            turtle.turnRight()
+
             if i < length then safeForward() end
         end
 
