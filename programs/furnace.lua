@@ -37,7 +37,8 @@ local function moveBackToStart()
 end
 
 local function loadFromChest()
-    for slot = 1, 15 do
+    local ct = math.min(15, length)
+    for slot = 1, ct do
         turtle.select(slot)
         turtle.suck()
     end
@@ -139,6 +140,8 @@ while true do
         end
 
         moveBackToStart()
+
+        depositToChest()
     end
 
     sleep(60)
