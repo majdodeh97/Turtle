@@ -24,7 +24,7 @@ end
 local function safeForward()
     ensureFuel()
     while not turtle.forward() do
-        print("Moevement obstructed! Please make way")
+        print("Movement obstructed! Please make way.")
         sleep(2)
     end
 end
@@ -32,7 +32,7 @@ end
 local function moveBackToStart()
     turtle.turnLeft()
     turtle.turnLeft()
-    for _ = 1, length do
+    for _ = 1, length - 1 do
         safeForward()
     end
 end
@@ -78,22 +78,26 @@ while true do
         loadFromChest()
         turtle.turnLeft()
         turtle.turnLeft()
-        for _ = 1, length do
+        for i = 1, length do
             fillFurnace()
-            safeForward()
+            if i < length then
+                safeForward()
+            end
         end
         moveBackToStart()
 
     elseif mode == "emptier" then
         turtle.turnLeft()
         turtle.turnLeft()
-        for _ = 1, length do
+        for i = 1, length do
             emptyFurnace()
-            safeForward()
+            if i < length then
+                safeForward()
+            end
         end
         moveBackToStart()
         depositToChest()
     end
 
-    sleep(1)
+    sleep(60)
 end
