@@ -3,7 +3,7 @@ local tArgs = { ... }
 local length = tonumber(tArgs[1])
 local mode = tArgs[2]
 
-local version = 1
+local version = 2
 
 if not length or not ({ loader = true, emptier = true, fueler = true })[mode] then
     print("Usage: FurnaceLine <length> <loader|emptier|fueler>")
