@@ -120,7 +120,7 @@ function navigation.backtrackUntil(conditionFn)
 end
 
 function navigation.backtrack()
-    return navigation.backtrackUntil(function(name)
+    navigation.backtrackUntil(function(name)
         return false
     end)
 end
