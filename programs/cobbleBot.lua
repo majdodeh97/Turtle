@@ -61,7 +61,7 @@ while true do
     if not isInventoryFull() and isCobblestoneInFront() then
         turtle.dig()
     end
- 
+    -- add the code in game that makes it turn around after each dig?
     if isInventoryFull() then
         print("Inventory full. Dumping...")
         local success = dumpInventory()

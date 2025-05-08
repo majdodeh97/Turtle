@@ -6,7 +6,7 @@ local batchSize = isSetMode and 1 or tonumber(command) or 1
 
 local recipeFile = ".recipe"
 
-local suckFn = turtle.suck;
+local suckFn = turtle.suckDown;
 local dropFn = turtle.drop;
 
 -- Save recipe to file
