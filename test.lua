@@ -49,17 +49,17 @@ elseif(test1 == 3) then -- bug detected
 elseif(test1 == 4) then
     inventory.foreach(function(i, data)
         print("i: " .. i)
-        print("data: " .. data)
+        print(data)
     end)
 elseif(test1 == 5) then
     inventory.foreach(function(i, data)
         print("i: " .. i)
-        print("data: " .. data)
+        print(data)
     end, 5)
 elseif(test1 == 6) then
     inventory.foreach(function(i, data)
         print("i: " .. i)
-        print("data: " .. data)
+        print(data)
     end, 5, 10)
 elseif(test1 == 7) then
     local ti, td = inventory.first(function(i, data)
@@ -67,21 +67,21 @@ elseif(test1 == 7) then
     end)
 
     print("ti: " .. ti)
-    print("td: " .. td)
+    print(td)
 elseif(test1 == 8) then
     local ti, td = inventory.first(function(i, data)
         return data.count == 5
     end, 5)
 
     print("ti: " .. ti)
-    print("td: " .. td)
+    print(td)
 elseif(test1 == 9) then
     local ti, td = inventory.first(function(i, data)
         return data.count == 5
     end, 5, 10)
 
     print("ti: " .. ti)
-    print("td: " .. td)
+    print(td)
 elseif(test1 == 10) then
     local success = inventory.all(function(i, data)
         return data.count == 1
