@@ -79,13 +79,28 @@ function navigation.getLocalLocation()
 end
 
 function navigation.backtrackUntil(conditionFn)
+    
     local stack = settings.get("movementStack") or {}
 
-    for i = #stack, 1, -1 do
-        if(conditionFn()) then
-            break
+    local function conditionalMove(fn, condFn)
+        while true do
+            if condFn() then return false end
+            if fn() then return true end
+            print("Movement obstructed.")
+            sleep(5)
         end
+    end
 
+    local function conditionalTurn(dir, condFn)
+        while true do
+            if condFn() then return false end
+            if movement.faceDirection(dir) then return true end
+            print("Turning obstructed.")
+            sleep(5)
+        end
+    end
+
+    for i = #stack, 1, -1 do
         local move = stack[i]
         local dir = move.dir
         local amount = move.amount
@@ -94,29 +109,19 @@ function navigation.backtrackUntil(conditionFn)
         if dir == "up" or dir == "down" then
             local moveFn = (dir == "up") and movement.down or movement.up
             for _ = 1, amount do 
-                while(not moveFn()) do
-                    print("Movement obstructed. Terminating backtrack")
-                    sleep(5)
-                end
+                if not conditionalMove(moveFn, conditionFn) then break end
             end
         else
-            while(not movement.faceDirection(oppositeDir)) do
-                print("Turning obstructed. Terminating backtrack")
-                sleep(5)
-            end
-            for _ = 1, amount do 
-                while(not movement.forward()) do
-                    print("Movement obstructed. Terminating backtrack")
-                    sleep(5)
-                end
+            if not conditionalTurn(oppositeDir, conditionFn) then break end 
+            for _ = 1, amount do
+                if not conditionalMove(movement.forward, conditionFn) then break end
             end
         end
     end
 
-    while(not movement.faceDirection("forward")) do
-        print("Turning obstructed. Terminating backtrack")
-        sleep(5)
-    end
+    conditionalTurn("forward", function()
+        return false
+    end)
 end
 
 function navigation.backtrack()

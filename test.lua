@@ -20,6 +20,7 @@ function isCobblestoneInFront()
     return success and data.name == "minecraft:cobblestone"
 end
 
+local tArgs = { ... }
 local test1 = tonumber(tArgs[1])
 
 if(test1 == 1) then
@@ -41,7 +42,7 @@ if(test1 == 1) then
     movement.back()
 elseif(test1 == 2) then
     navigation.backtrack()
-elseif(test1 == 3) then
+elseif(test1 == 3) then -- bug detected
     navigation.backtrackUntil(function()
         return isCobblestoneInFront()
     end)
