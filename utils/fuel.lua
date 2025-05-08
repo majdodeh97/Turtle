@@ -3,7 +3,7 @@ local log = require("/utils/log")
 
 local fuel = {}
 
-function ensure()
+function fuel.ensure()
     while turtle.getFuelLevel() == 0 do
         local fuelSlot = settings.get("fuelSlot")
 

@@ -34,6 +34,6 @@ if(test1 == 1) then
     movement.back()
     movement.back()
     movement.back()
-elseif(test1 == 2)
+elseif(test1 == 2) then
     navigation.backtrack()
 end
