@@ -94,29 +94,29 @@ function navigation.backtrackUntil(conditionFn)
         if dir == "up" or dir == "down" then
             local moveFn = (dir == "up") and movement.down or movement.up
             for _ = 1, amount do 
-                local success, reason = moveFn()
-                if(not success) then 
+                while(not moveFn()) do
                     print("Movement obstructed. Terminating backtrack")
-                    return false, reason
+                    sleep(5)
                 end
             end
         else
-            local turnSuccess, reason = movement.faceDirection(oppositeDir)
-            if(not turnSuccess) then 
+            while(not movement.faceDirection(oppositeDir)) do
                 print("Turning obstructed. Terminating backtrack")
-                return false, reason
+                sleep(5)
             end
             for _ = 1, amount do 
-                local success, reason = movement.forward()
-                if(not success) then 
+                while(not movement.forward()) do
                     print("Movement obstructed. Terminating backtrack")
-                    return false, reason
+                    sleep(5)
                 end
             end
         end
     end
 
-    return movement.faceDirection("forward");
+    while(not movement.faceDirection("forward")) do
+        print("Turning obstructed. Terminating backtrack")
+        sleep(5)
+    end
 end
 
 function navigation.backtrack()
