@@ -126,7 +126,14 @@ elseif(test1 == 17) then
     movement.turnRight()
     movement.forward()
 elseif(test1 == 18) then
-
+    print(inventory.runOnSlot(function()
+        
+    end, 7))
+elseif(test1 == 19) then
+    print(inventory.runOnItem(function()
+        movement.forward()
+    end, "minecraft:cobblestone"))
+elseif(test1 == 20) then
     settings.set("direction", "haha")
     settings.save()
 
