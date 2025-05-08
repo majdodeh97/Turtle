@@ -93,10 +93,22 @@ function navigation.backtrackUntil(conditionFn)
 
         if dir == "up" or dir == "down" then
             local moveFn = (dir == "up") and movement.down or movement.up
-            for _ = 1, amount do moveFn() end
+            for _ = 1, amount do 
+                local success = moveFn()
+                if(not success) then 
+                    print("Movement obstructed. Terminating backtrack")
+                    return 
+                end
+            end
         else
             movement.faceDirection(oppositeDir)
-            for _ = 1, amount do movement.forward() end
+            for _ = 1, amount do 
+                local success = movement.forward()
+                if(not success) then 
+                    print("Movement obstructed. Terminating backtrack")
+                    return 
+                end
+            end
         end
     end
 

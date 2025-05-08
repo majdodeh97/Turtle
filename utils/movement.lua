@@ -66,7 +66,7 @@ function movement.back()
     
     local success, reason = turtle.back()
     if success then
-        local dir = movement.getOppositeDir(getDirection())
+        local dir = movement.getOppositeDir(movement.getDirection())
         logMovement(dir, 1)
     end
     return success, reason
