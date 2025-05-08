@@ -4,8 +4,8 @@ local tArgs = { ... }
 local zOffset = tonumber(tArgs[1])
 local size = tonumber(tArgs[2])
 
-if not startOffset or not size or size % 2 == 0 then
-    print("Usage: PlaceRectangle <startOffset> <odd size>")
+if not zOffset or not size then
+    print("Usage: PlaceRectangle2 <startOffset> <size>")
     return
 end
 
