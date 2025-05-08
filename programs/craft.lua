@@ -6,6 +6,9 @@ local batchSize = isSetMode and 1 or tonumber(command) or 1
 
 local recipeFile = ".recipe"
 
+local suckFn = turtle.suck;
+local dropFn = turtle.drop;
+
 -- Save recipe to file
 local function saveRecipe(recipe)
     local file = fs.open(recipeFile, "w")
@@ -44,7 +47,7 @@ end
 local function clearInventory()
     for i = 1, 16 do
         turtle.select(i)
-        turtle.dropDown()
+        dropFn()
     end
 end
 
@@ -57,13 +60,13 @@ local function refillInventory(recipe)
             local count = ((current and current.name == recipe[i]) and current.count) or 0
 
             while count < batchSize do
-                if not turtle.suckDown(batchSize - count) then
+                if not suckFn(batchSize - count) then
                     return false
                 end
                 current = turtle.getItemDetail(i)
                 if not current then return false end
                 if current.name ~= recipe[i] then
-                    turtle.dropUp()
+                    dropFn()
                     print("Wrong item pulled.")
                     return false
                 end
@@ -110,7 +113,7 @@ while true do
     if isInventoryReady(recipe) or refillInventory(recipe) then
         turtle.select(1)
         if turtle.craft() then
-            turtle.dropUp()
+            clearInventory()
         else
             print("Crafting failed.")
             return

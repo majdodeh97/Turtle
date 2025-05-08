@@ -1,6 +1,6 @@
 while(true) do
     turtle.suckDown()
-    turtle.dop()
+    turtle.drop()
 
     sleep(30)
 end
