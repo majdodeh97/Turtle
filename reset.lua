@@ -24,9 +24,5 @@ else
 end
 
 if(not error) then
-    location = navigation.getGpsLocation()
-    location.dir = 0
-    settings.set("location", location)
-    settings.save()
     os.reboot()
 end

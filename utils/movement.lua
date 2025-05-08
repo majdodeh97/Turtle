@@ -1,4 +1,5 @@
 local log = require("/utils/log")
+local fuel = require("/utils/fuel")
 local movement = {}
 
 function movement.getOppositeDir(dir)
@@ -13,7 +14,7 @@ end
 function movement.getDirection()
     local dir = settings.get("direction")
     if not dir then
-        log.error("Missing 'direction' in settings.")
+        log.error("No 'direction' defined in settings.")
     end
     return dir
 end
@@ -47,6 +48,8 @@ local function logMovement(dir, delta)
 end
 
 function movement.forward()
+    fuel.ensure()
+
     local success, reason = turtle.forward()
     if success then
         local dir = movement.getDirection()
@@ -56,6 +59,8 @@ function movement.forward()
 end
 
 function movement.back()
+    fuel.ensure()
+    
     local success, reason = turtle.back()
     if success then
         local dir = movement.getOppositeDir(getDirection())
@@ -65,12 +70,16 @@ function movement.back()
 end
 
 function movement.up()
+    fuel.ensure()
+    
     local success, reason = turtle.up()
     if success then logMovement("up", 1) end
     return success, reason
 end
 
 function movement.down()
+    fuel.ensure()
+    
     local success, reason = turtle.down()
     if success then logMovement("down", 1) end
     return success, reason

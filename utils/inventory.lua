@@ -30,4 +30,49 @@ function inventory.runOnItemMatch(matcherFn, action)
     return false
 end
 
+function inventory.foreach(fn)
+    inventory.foreachInSlots(1, 16, fn)
+end
+
+function inventory.foreachInSlots(startSlot, endSlot, fn)
+    for i = startSlot, endSlot do
+        local itemDetail = turtle.getItemDetail(i)
+        fn(i, itemDetail)
+    end
+end
+
+function inventory.first(fn)
+    inventory.firstInSlots(1, 16, fn)
+end
+
+function inventory.firstInSlots(startSlot, endSlot, fn)
+    for i = startSlot, endSlot do
+        local itemDetail = turtle.getItemDetail(i)
+        if fn(i, itemDetail) then
+            return i, itemDetail
+        end
+    end
+    return nil, nil
+end
+
+function inventory.all(fn)
+    inventory.allInSlots(1, 16, fn)
+end
+
+function inventory.allInSlots(startSlot, endSlot, fn)
+    for i = startSlot, endSlot do
+        local itemDetail = turtle.getItemDetail(i)
+        if not fn(i, itemDetail) then
+            return false
+        end
+    end
+    return true
+end
+
+function inventory.isFull()
+    return inventory.all(function(i, itemDetail)
+        return itemDetail
+    end)
+end
+
 return inventory

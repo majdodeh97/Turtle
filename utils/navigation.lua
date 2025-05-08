@@ -78,10 +78,14 @@ function navigation.getLocalLocation()
     return { x = x, y = y, z = z }
 end
 
-function navigation.backtrack()
+function navigation.backtrackUntil(conditionFn)
     local stack = settings.get("movementStack") or {}
 
     for i = #stack, 1, -1 do
+        if(conditionFn()) then
+            break
+        end
+
         local move = stack[i]
         local dir = move.dir
         local amount = move.amount
@@ -99,6 +103,11 @@ function navigation.backtrack()
     movement.faceDirection("forward");
 end
 
+function navigation.backtrack()
+    navigation.backtrackUntil(function(name)
+        return false
+    end)
+end
 
 function navigation.getLocation()
 

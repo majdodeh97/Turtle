@@ -1,5 +1,6 @@
 {
     direction = "forward",
+    fuelSlot = 16,
     base = {
         roomWidth = 9,
         streetWidth = 3

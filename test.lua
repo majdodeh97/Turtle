@@ -1,9 +1,19 @@
 local movement = require("/utils/movement")
 local navigation = require("/utils/navigation")
+local inventory = require("/utils/inventory")
 
-test1 = true
+-- To test:
+-- navigation: backtrackUntil
+-- navigation: backtrack
+-- inventory: foreach, foreachInSlots
+-- inventory: first, firstInSlots
+-- inventory: all, allInSlots
+-- inventory: isFull
+-- fuel: ensure
 
-if(test1) then
+test1 = 0
+
+if(test1 == 1) then
     movement.forward()
     movement.forward()
     movement.forward()
@@ -20,6 +30,6 @@ if(test1) then
     movement.back()
     movement.back()
     movement.back()
-else
+elseif(test1 == 2)
     navigation.backtrack()
 end
