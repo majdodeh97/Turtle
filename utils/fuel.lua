@@ -10,7 +10,6 @@ function fuel.ensure()
         if(not fuelSlot) then log.error("No 'fuelSlot' defined in settings.") end
 
         inventory.runOnSlot(function()
-            turtle.select(fuelSlot)
             if not turtle.refuel(1) then
                 print("Out of fuel in slot " .. fuelSlot .. ". Please add more.")
                 sleep(5)
