@@ -1,20 +1,12 @@
+local inventory = require("/utils/inventory")
+local log = require("/utils/log")
+
 print("CobbleBot Online")
  
 local totalMined = 0
 local isFlashing = false
 local flashCooldown = 0  
  
--- Check if inventory is full
-function isInventoryFull()
-    for i = 1, 16 do
-        if turtle.getItemCount(i) == 0 then
-            return false
-        end
-    end
-    return true
-end
- 
-
 -- Check if cobblestone is in front
 function isCobblestoneInFront()
     local success, data = turtle.inspect()
@@ -58,11 +50,11 @@ end
  
 -- Main mining loop
 while true do
-    if not isInventoryFull() and isCobblestoneInFront() then
+    if not inventory.isFull() and isCobblestoneInFront() then
         turtle.dig()
     end
     -- add the code in game that makes it turn around after each dig?
-    if isInventoryFull() then
+    if inventory.isFull() then
         print("Inventory full. Dumping...")
         local success = dumpInventory()
         if not success then

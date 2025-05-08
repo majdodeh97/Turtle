@@ -2,6 +2,8 @@
 
 if(settings.get("error")) then
     print("Turtle encountered an error. Please check error logs")
+    print("Press any key to continue...")
+    os.pullEvent("key")
     settings.unset("error")
     settings.save()
     return;

@@ -1,14 +1,14 @@
 local log = {}
 
-function log.error(error)
+function log.error(errorMessage)
     local file = fs.open("/errorLog.txt", "w")
-    file.write(error)
+    file.write(errorMessage)
     file.close()
 
     settings.set("error", true)
     settings.save()
 
-    os.shutdown()
+    error(errorMessage)
 end
 
 return log

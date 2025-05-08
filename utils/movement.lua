@@ -16,6 +16,9 @@ function movement.getDirection()
     if not dir then
         log.error("No 'direction' defined in settings.")
     end
+    if(dir ~= "forward" and dir ~= "back" and dir ~= "right" and dir ~= "left") then
+        log.error("Invalid direction in settings: " .. dir)
+    end
     return dir
 end
 

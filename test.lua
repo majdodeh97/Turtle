@@ -5,11 +5,15 @@ local inventory = require("/utils/inventory")
 -- To test:
 -- navigation: backtrackUntil
 -- navigation: backtrack
--- inventory: foreach, foreachInSlots
--- inventory: first, firstInSlots
--- inventory: all, allInSlots
+-- inventory: foreach
+-- inventory: first
+-- inventory: all
 -- inventory: isFull
+-- inventory: dropAll
 -- fuel: ensure
+-- log: logging an error, terminating, and clearing the setting on startup
+-- log: Invalid direction in settings (to test, do turn -> move -> turn -> move etc for all 4 directions)
+-- todo: continue refactoring cobbleBot and others
 
 test1 = 0
 

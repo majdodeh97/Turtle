@@ -39,11 +39,11 @@ function navigation.getGpsLocation()
             return name:find("computercraft:.*modem")
         end
         
-        inventory.runOnItemMatch(modemMatcher, function()
+        inventory.runOnItemMatch(function()
             turtle.equipLeft()
             x,y,z = gps.locate()
             turtle.equipLeft()
-        end)
+        end, modemMatcher)
     end
 
     return {
