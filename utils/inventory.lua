@@ -5,8 +5,9 @@ local inventory = {}
 function inventory.runOnSlot(action, slot)
     selectedSlot = turtle.getSelectedSlot()
     turtle.select(slot)
-    action()
+    local r1, r2 = action()
     turtle.select(selectedSlot)
+    return r1, r2
 end
 
 function inventory.runOnItem(action, itemName)
@@ -19,17 +20,13 @@ function inventory.runOnItemMatch(action, matcherFn)
     local selectedSlot = turtle.getSelectedSlot()
 
     for slot = 1, 16 do
-        local item = turtle.getItemDetail(slot)
         if item and matcherFn(item.name) then
-            turtle.select(slot)
-            action()
-            turtle.select(selectedSlot)
-            return true
+            return true, inventory.runOnSlot(action, slot)
         end
     end
 
     turtle.select(selectedSlot)
-    return false
+    return false, nil, nil
 end
 
 function inventory.foreach(fn, startSlot, endSlot)
@@ -84,9 +81,14 @@ function inventory.dropAll(dropFn, startSlot, endSlot)
     startSlot = startSlot or 1
     endSlot = endSlot or 16
 
+    local anySuccess = false
     inventory.foreach(function(i, itemDetail)
-        inventory.runOnSlot(dropFn, i)
+        if(inventory.runOnSlot(dropFn, i)) then
+            anySuccess = true
+        end
     end, startSlot, endSlot)
+
+    return anySuccess
 end
 
 function inventory.isFull()
