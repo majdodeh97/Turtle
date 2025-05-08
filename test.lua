@@ -63,40 +63,40 @@ elseif(test1 == 6) then
     end, 5, 10)
 elseif(test1 == 7) then
     local ti, td = inventory.first(function(i, data)
-        return data.count == 5
+        return data and data.count == 5
     end)
 
     print("ti: " .. ti)
     print(td)
 elseif(test1 == 8) then
     local ti, td = inventory.first(function(i, data)
-        return data.count == 5
+        return data and data.count == 5
     end, 5)
 
     print("ti: " .. ti)
     print(td)
 elseif(test1 == 9) then
     local ti, td = inventory.first(function(i, data)
-        return data.count == 5
+        return data and data.count == 5
     end, 5, 10)
 
     print("ti: " .. ti)
     print(td)
 elseif(test1 == 10) then
     local success = inventory.all(function(i, data)
-        return data.count == 1
+        return data and data.count == 1
     end)
 
     print("success: " .. success)
 elseif(test1 == 11) then
     local success = inventory.all(function(i, data)
-        return data.count == 1
+        return data and data.count == 1
     end, 5)
 
     print("success: " .. success)
 elseif(test1 == 12) then
     local success = inventory.all(function(i, data)
-        return data.count == 1
+        return data and data.count == 1
     end, 5, 10)
 
     print("success: " .. success)
@@ -110,10 +110,12 @@ elseif(test1 == 14) then
     print("success: " .. success)
 elseif(test1 == 15) then
     local success = inventory.dropAll(turtle.drop, 5, 10)
+
+    print("success: " .. success)
 elseif(test1 == 16) then
     local isFull = inventory.isFull()
 
-    print("success: " .. success)
+    print("isFull: " .. success)
 elseif(test1 == 17) then
     movement.turnRight()
     movement.forward()
