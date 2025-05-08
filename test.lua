@@ -66,21 +66,21 @@ elseif(test1 == 7) then
         return data and data.count == 5
     end)
 
-    print("ti: " .. ti)
+    print(ti)
     print(td)
 elseif(test1 == 8) then
     local ti, td = inventory.first(function(i, data)
         return data and data.count == 5
     end, 5)
 
-    print("ti: " .. ti)
+    print(ti)
     print(td)
 elseif(test1 == 9) then
     local ti, td = inventory.first(function(i, data)
         return data and data.count == 5
     end, 5, 10)
 
-    print("ti: " .. ti)
+    print(ti)
     print(td)
 elseif(test1 == 10) then
     local success = inventory.all(function(i, data)
