@@ -140,13 +140,20 @@ function movement.faceDirection(targetDir)
     local targetIndex = getIndex(targetDir)
     local diff = (targetIndex - currentIndex) % 4
 
-    if diff == 1 then
-        movement.turnRight()
+    if diff == 0 then
+        return true -- Already facing correct direction
+    elseif diff == 1 then
+        return movement.turnRight()
     elseif diff == 2 then
-        movement.turnRight()
-        movement.turnRight()
+        local s1, r1 = movement.turnRight()
+        if not s1 then return false, r1 end
+
+        local s2, r2 = movement.turnRight()
+        if not s2 then return false, r2 end
+        
+        return true
     elseif diff == 3 then
-        movement.turnLeft()
+        return movement.turnLeft()
     end
 end
 
