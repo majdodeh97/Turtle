@@ -9,6 +9,27 @@ local withCeiling = arg[3] ~= "false"
 local blockItemName = arg[4] or "minecraft:stone_bricks"
 local slabItemName = arg[5] or "minecraft:stone_brick_slab"
 
+local wallLayerBlocks = 4 * (size - 1)
+local wallBlocks = wallLayerBlocks * height
+local totalBlocks = wallBlocks
+if(withCeiling) then
+    totalBlocks = totalBlocks + (size * size)
+end
+
+local totalSlabs = 0
+if(withCeiling) then
+    totalSlabs = size * size
+else
+    totalSlabs = wallLayerBlocks
+end
+
+print("Blocks needed: " .. totalBlocks)
+print("Slabs needed: " .. totalSlabs)
+
+print("Press any key to start")
+
+os.pullEvent("key")
+
 local function buildWallLayer(item)
     for side = 1, 4 do
         for i = 1, size - 1 do
