@@ -138,7 +138,7 @@ elseif(test1 == 18) then
     end, 7))
 elseif(test1 == 19) then
     print(inventory.runOnItem(function()
-        move.forward()
+        return move.forward()
     end, "minecraft:cobblestone"))
 elseif(test1 == 20) then
     settings.set("direction", "haha")

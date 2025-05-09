@@ -4,23 +4,46 @@ local place = require("/utils/place")
 local height = 5
 local size = 22
 local withCeiling = true
+local itemName = "minecraft:cobblestone"
 
 local function buildWallLayer()
     for side = 1, 4 do
         for i = 1, size - 1 do
-            place.item()
-            turtle.forward()
+            place.itemDown(itemName)
+            move.forward()
         end
-        turtle.placeDown()
-        turtle.turnRight()
+        place.itemDown(itemName)
+        move.turnRight()
     end
 end
 
 -- Build wall layer by layer, moving up after each ring
 for level = 1, height do
     buildWallLayer()
-    if level < height then
-        turtle.up()
+    turtle.up()
+end
+
+local leftTurn = false
+
+for row = 1, size do
+    for col = 1, size do
+        placeDown()
+        if col < size then
+            safeForward()
+        end
+    end
+
+    if row < size then
+        if leftTurn then
+            move.turnLeft()
+            safeForward()
+            move.turnLeft()
+        else
+            move.turnRight()
+            safeForward()
+            move.turnRight()
+        end
+        leftTurn = not leftTurn
     end
 end
 

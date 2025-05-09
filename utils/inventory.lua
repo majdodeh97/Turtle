@@ -3,7 +3,7 @@ local log = require("/utils/log")
 local inventory = {}
 
 function inventory.runOnSlot(action, slot)
-    selectedSlot = turtle.getSelectedSlot()
+    local selectedSlot = turtle.getSelectedSlot()
     turtle.select(slot)
     local r1, r2 = action()
     turtle.select(selectedSlot)
@@ -12,7 +12,7 @@ end
 
 function inventory.runOnItem(action, itemName)
     return inventory.runOnItemMatch(action, function(itemDetail)
-        return name == itemDetail.name
+        return itemName == itemDetail.name
     end)
 end
 
@@ -20,11 +20,11 @@ function inventory.runOnItemMatch(action, matcherFn)
     for i = 1, 16 do
         local itemDetail = turtle.getItemDetail(i)
         if itemDetail and matcherFn(itemDetail) then
-            return true, inventory.runOnSlot(action, i)
+            return inventory.runOnSlot(action, i)
         end
     end
 
-    return false, nil, nil
+    return false, "No matching item found"
 end
 
 function inventory.foreach(fn, startSlot, endSlot)
@@ -72,6 +72,8 @@ function inventory.all(fn, startSlot, endSlot)
     return true
 end
 
+
+
 local function dropAllInternal(dropFn, startSlot, endSlot)
     dropFn = dropFn or turtle.drop
     if startSlot and not endSlot then
@@ -89,6 +91,9 @@ local function dropAllInternal(dropFn, startSlot, endSlot)
 
     return anySuccess
 end
+
+-- todo, add an optional parameter to keep trying or not to dropping, placing, and movement
+-- parameter or completely different function called safeX (safeDrop, safeForward, etc?
 
 function inventory.dropAll(startSlot, endSlot)
     return dropAllInternal(turtle.drop, startSlot, endSlot)
