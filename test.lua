@@ -21,27 +21,45 @@ local inventory = require("/utils/inventory")
 -- navigation.getGpsLocation
 -- roomMaker
 
-print(navigation.getGpsLocation())
-place.slotUp(1)
-sleep(2)
+print(textutils.serialise(navigation.getGpsLocation()))
+
+os.pullEvent("key")
+
+print(place.slotUp(1))
+
+os.pullEvent("key")
+
 print(inventory.dropAllUp(7,8))
-sleep(2)
+
+os.pullEvent("key")
+
 print(inventory.dropAll(10))
-sleep(2)
+
+os.pullEvent("key")
+
 turtle.select(2)
 print(inventory.dropAll())
-sleep(2)
+
+os.pullEvent("key")
+
 turtle.select(3)
 print(inventory.drop())
-sleep(2)
+
+os.pullEvent("key")
+
 turtle.select(4)
 print(inventory.drop(1))
-sleep(2)
+
+os.pullEvent("key")
+
 turtle.select(5)
 print(inventory.drop(1, 6))
-sleep(2)
-return
 
+os.pullEvent("key")
+os.pullEvent("key")
+os.pullEvent("key")
+os.pullEvent("key")
+os.pullEvent("key")
 
 function isCobblestoneInFront()
     local success, data = turtle.inspect()
