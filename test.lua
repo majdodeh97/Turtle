@@ -15,11 +15,14 @@ local inventory = require("/utils/inventory")
 -- fuel: ensure
 -- log: logging an error, terminating, and clearing the setting on startup
 -- log: Invalid direction in settings (to test, do turn -> move -> turn -> move etc for all 4 directions)
--- todo: continue refactoring cobbleBot and others
-
 -- inventory.drop and dropAll with and without any params
 -- navigation.getGpsLocation
 -- roomMaker
+
+-- todo: continue refactoring cobbleBot and others to use our utils
+-- todo: work on tree.lua
+-- todo: decide on how files are copied/updated. Old way via disk drive or new way with red net
+--
 
 print(textutils.serialise(navigation.getGpsLocation()))
 

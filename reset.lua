@@ -1,5 +1,3 @@
-local navigation = require("/utils/navigation")
-
 fs.delete(".settings")
 
 local fileName = ".settings"

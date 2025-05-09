@@ -1,9 +1,8 @@
 -- clean.lua
 local keep = {
-    ["downloader"] = true,
+    ["disk"] = true,
     ["rom"] = true
 }
-
 
 for _, file in ipairs(fs.list("")) do
     if not keep[file] then
@@ -11,5 +10,3 @@ for _, file in ipairs(fs.list("")) do
         print("Deleted:", file)
     end
 end
-
-os.reboot()
