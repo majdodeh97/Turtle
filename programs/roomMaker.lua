@@ -16,9 +16,6 @@ local function buildWallLayer()
             end))
             print(safe.execute(move.forward))
         end
-        safe.execute(function()
-            return place.itemDown(itemName)
-        end)
         safe.execute(move.turnRight)
     end
 end
