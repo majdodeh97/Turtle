@@ -36,10 +36,10 @@ local function buildWallLayer(item, withBreak)
             if(withBreak) then
                 turtle.digDown()
             end
-            print(safe.execute(function()
+            safe.execute(function()
                 return place.itemDown(item)
-            end))
-            print(safe.execute(move.forward))
+            end)
+            safe.execute(move.forward)
         end
         safe.execute(move.turnRight)
     end
@@ -91,8 +91,6 @@ local function buildCeiling(item)
 
     safe.execute(move.turnRight)
 end
-
-safe.execute(move.up)
 
 for level = 1, height do
     buildWallLayer(blockItemName, level == 1)

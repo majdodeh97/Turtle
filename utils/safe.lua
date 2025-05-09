@@ -14,7 +14,6 @@ function safe.execute(fn, errorMessage)
         if errorMessage then
             print(errorMessage)
         elseif reason then
-            print("printing reason..")
             print(reason)
         end
 
