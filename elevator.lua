@@ -10,12 +10,15 @@ local toMove = destinationZ - locationZ
 local moveFn
 
 if(toMove > 0) then
-    moveFn = move.down
-elseif (toMove < 0) then
     moveFn = move.up
+elseif (toMove < 0) then
+    moveFn = move.down
 else
     print("You are already there")
+    return
 end
+
+toMove = math.abs(toMove)
 
 for i = 1, toMove do
     moveFn()
