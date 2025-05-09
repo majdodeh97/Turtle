@@ -72,7 +72,8 @@ function inventory.all(fn, startSlot, endSlot)
     return true
 end
 
-function inventory.dropAll(dropFn, startSlot, endSlot)
+local function dropAllInternal(dropFn, startSlot, endSlot)
+    dropFn = dropFn or turtle.drop
     if startSlot and not endSlot then
         endSlot = startSlot -- Treat single slot as a range of one
     end
@@ -89,12 +90,38 @@ function inventory.dropAll(dropFn, startSlot, endSlot)
     return anySuccess
 end
 
-function inventory.drop(dropFn, amount, slot)
+function inventory.dropAll(startSlot, endSlot)
+    return dropAllInternal(turtle.drop, startSlot, endSlot)
+end
+
+function inventory.dropAllUp(startSlot, endSlot)
+    return dropAllInternal(turtle.dropUp, startSlot, endSlot)
+end
+
+function inventory.dropAllDown(startSlot, endSlot)
+    return dropAllInternal(turtle.dropDown, startSlot, endSlot)
+end
+
+local function dropInternal(dropFn, amount, slot)
+    dropFn = dropFn or turtle.drop
+    amount = amount or 64
     slot = slot or turtle.getSelectedSlot()
 
     return inventory.runOnSlot(function()
         return dropFn(amount)
     end, slot)
+end
+
+function inventory.drop(amount, slot)
+    return dropInternal(turtle.drop, amount, slot)
+end
+
+function inventory.dropUp(amount, slot)
+    return dropInternal(turtle.dropUp, amount, slot)
+end
+
+function inventory.dropDown(amount, slot)
+    return dropInternal(turtle.dropDown, amount, slot)
 end
 
 function inventory.isFull()

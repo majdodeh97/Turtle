@@ -15,7 +15,7 @@ local inventory = require("/utils/inventory")
 -- log: Invalid direction in settings (to test, do turn -> move -> turn -> move etc for all 4 directions)
 -- todo: continue refactoring cobbleBot and others
 
--- inventory.drop
+-- inventory.drop and dropAll with and without any params
 
 function isCobblestoneInFront()
     local success, data = turtle.inspect()
@@ -103,15 +103,15 @@ elseif(test1 == 12) then
 
     print("success: " .. success)
 elseif(test1 == 13) then
-    local success = inventory.dropAll(turtle.drop)
+    local success = inventory.dropAll()
 
     print("success: " .. success)
 elseif(test1 == 14) then
-    local success = inventory.dropAll(turtle.drop, 5)
+    local success = inventory.dropAll(5)
 
     print("success: " .. success)
 elseif(test1 == 15) then
-    local success = inventory.dropAll(turtle.drop, 5, 10)
+    local success = inventory.dropAll(5, 10)
 
     print("success: " .. success)
 elseif(test1 == 16) then

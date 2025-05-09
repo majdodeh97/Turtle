@@ -1,3 +1,6 @@
+local move = require("/utils/move")
+local place = require("/utils/place")
+
 local height = 5
 local size = 22
 local withCeiling = true
@@ -5,7 +8,7 @@ local withCeiling = true
 local function buildWallLayer()
     for side = 1, 4 do
         for i = 1, size - 1 do
-            turtle.placeDown()
+            place.item()
             turtle.forward()
         end
         turtle.placeDown()
