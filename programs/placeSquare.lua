@@ -1,4 +1,4 @@
-local movement = require("/utils/movement")
+local move = require("/utils/move")
 
 local tArgs = { ... }
 local startOffset = tonumber(tArgs[1])
@@ -23,15 +23,15 @@ end
 -- Try to move forward safely with fuel check
 local function safeForward()
     ensureFuel()
-    while not movement.forward() do
+    while not move.forward() do
         turtle.dig()
     end
 end
 
 -- Turn around
 local function turnAround()
-    movement.turnLeft()
-    movement.turnLeft()
+    move.turnLeft()
+    move.turnLeft()
 end
 
 -- Get a block to place
@@ -89,13 +89,13 @@ for row = 1, size do
 
     if row < size then
         if leftTurn then
-            movement.turnLeft()
+            move.turnLeft()
             safeForward()
-            movement.turnLeft()
+            move.turnLeft()
         else
-            movement.turnRight()
+            move.turnRight()
             safeForward()
-            movement.turnRight()
+            move.turnRight()
         end
         leftTurn = not leftTurn
     end

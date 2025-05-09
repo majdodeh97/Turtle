@@ -89,6 +89,14 @@ function inventory.dropAll(dropFn, startSlot, endSlot)
     return anySuccess
 end
 
+function inventory.drop(dropFn, amount, slot)
+    slot = slot or turtle.getSelectedSlot()
+
+    return inventory.runOnSlot(function()
+        return dropFn(amount)
+    end, slot)
+end
+
 function inventory.isFull()
     return inventory.all(function(i, itemDetail)
         return itemDetail ~= nil

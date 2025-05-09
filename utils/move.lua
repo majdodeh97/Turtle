@@ -1,8 +1,8 @@
 local log = require("/utils/log")
 local fuel = require("/utils/fuel")
-local movement = {}
+local move = {}
 
-function movement.getOppositeDir(dir)
+function move.getOppositeDir(dir)
     local opposites = {
         forward = "back", back = "forward",
         left = "right", right = "left",
@@ -11,7 +11,7 @@ function movement.getOppositeDir(dir)
     return opposites[dir]
 end
 
-function movement.getDirection()
+function move.getDirection()
     local dir = settings.get("direction")
     if not dir then
         log.error("No 'direction' defined in settings.")
@@ -24,13 +24,13 @@ end
 
 local function logMovement(dir, delta)
     if delta <= 0 then
-        log.error("Tried to log a movement of " .. delta .. " in the " .. dir .. " direction.")
+        log.error("Tried to log a move of " .. delta .. " in the " .. dir .. " direction.")
     end
 
-    local stack = settings.get("movementStack") or {}
+    local stack = settings.get("moveStack") or {}
     local top = stack[#stack]
 
-    local opposite = movement.getOppositeDir(dir)
+    local opposite = move.getOppositeDir(dir)
 
     if top and top.dir == dir then
         top.amount = top.amount + delta
@@ -46,33 +46,33 @@ local function logMovement(dir, delta)
         table.insert(stack, { dir = dir, amount = delta })
     end
 
-    settings.set("movementStack", stack)
+    settings.set("moveStack", stack)
     settings.save()
 end
 
-function movement.forward()
+function move.forward()
     fuel.ensure()
 
     local success, reason = turtle.forward()
     if success then
-        local dir = movement.getDirection()
+        local dir = move.getDirection()
         logMovement(dir, 1)
     end
     return success, reason
 end
 
-function movement.back()
+function move.back()
     fuel.ensure()
     
     local success, reason = turtle.back()
     if success then
-        local dir = movement.getOppositeDir(movement.getDirection())
+        local dir = move.getOppositeDir(move.getDirection())
         logMovement(dir, 1)
     end
     return success, reason
 end
 
-function movement.up()
+function move.up()
     fuel.ensure()
     
     local success, reason = turtle.up()
@@ -80,7 +80,7 @@ function movement.up()
     return success, reason
 end
 
-function movement.down()
+function move.down()
     fuel.ensure()
     
     local success, reason = turtle.down()
@@ -88,11 +88,11 @@ function movement.down()
     return success, reason
 end
 
-function movement.turnRight()
+function move.turnRight()
     local success, reason = turtle.turnRight()
     if not success then return success, reason end
 
-    local dir = movement.getDirection()
+    local dir = move.getDirection()
     local order = { "forward", "right", "back", "left" }
 
     for i, d in ipairs(order) do
@@ -106,11 +106,11 @@ function movement.turnRight()
     return success, reason
 end
 
-function movement.turnLeft()
+function move.turnLeft()
     local success, reason = turtle.turnLeft()
     if not success then return success, reason end
 
-    local dir = movement.getDirection()
+    local dir = move.getDirection()
     local order = { "forward", "right", "back", "left" }
 
     for i, d in ipairs(order) do
@@ -124,8 +124,8 @@ function movement.turnLeft()
     return success, reason
 end
 
-function movement.faceDirection(targetDir)
-    local currentDir = movement.getDirection()
+function move.faceDirection(targetDir)
+    local currentDir = move.getDirection()
 
     local directions = { "forward", "right", "back", "left" }
 
@@ -143,18 +143,18 @@ function movement.faceDirection(targetDir)
     if diff == 0 then
         return true -- Already facing correct direction
     elseif diff == 1 then
-        return movement.turnRight()
+        return move.turnRight()
     elseif diff == 2 then
-        local s1, r1 = movement.turnRight()
+        local s1, r1 = move.turnRight()
         if not s1 then return false, r1 end
 
-        local s2, r2 = movement.turnRight()
+        local s2, r2 = move.turnRight()
         if not s2 then return false, r2 end
         
         return true
     elseif diff == 3 then
-        return movement.turnLeft()
+        return move.turnLeft()
     end
 end
 
-return movement
+return move

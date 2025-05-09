@@ -20,10 +20,12 @@ programs/placeSquare.lua
 programs/placeSquare2.lua
 programs/straight.lua
 
+room/tree.lua
+
 utils/fuel.lua
 utils/inventory.lua
 utils/log.lua
-utils/movement.lua
+utils/move.lua
 utils/navigation.lua
 
 worker/main.lua

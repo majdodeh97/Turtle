@@ -1,18 +1,18 @@
-local movement = require("/utils/movement")
+local move = require("/utils/move")
 local navigation = require("/utils/navigation")
 
 local distance = 0
-while(movement.forward()) do
+while(move.forward()) do
     distance = distance + 1
 end
 
 print("Distance: " .. distance)
 
-movement.turnRight()
-movement.turnRight()
+move.turnRight()
+move.turnRight()
 
 for i = 1, distance, 1 do
-    movement.forward()
+    move.forward()
 end
 
-movement.faceDirection("forward")
+move.faceDirection("forward")

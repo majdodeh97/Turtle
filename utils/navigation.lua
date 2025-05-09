@@ -1,5 +1,5 @@
 local inventory = require("/utils/inventory")
-local movement = require("/utils/movement")
+local move = require("/utils/move")
 local log = require("/utils/log")
 
 local navigation = {}
@@ -55,7 +55,7 @@ end
 
 function navigation.getLocalLocation()
     local x, y, z = 0, 0, 0
-    local stack = settings.get("movementStack") or {}
+    local stack = settings.get("moveStack") or {}
 
     for _, move in ipairs(stack) do
         if move.dir == "forward" then
@@ -71,7 +71,7 @@ function navigation.getLocalLocation()
         elseif move.dir == "down" then
             z = z - move.amount
         else
-            log.error("Invalid direction in movementStack: " .. move.dir)
+            log.error("Invalid direction in moveStack: " .. move.dir)
         end
     end
 
@@ -80,7 +80,7 @@ end
 
 function navigation.backtrackUntil(conditionFn)
     
-    local stack = settings.get("movementStack") or {}
+    local stack = settings.get("moveStack") or {}
 
     local function conditionalMove(fn, condFn)
         while true do
@@ -94,7 +94,7 @@ function navigation.backtrackUntil(conditionFn)
     local function conditionalTurn(dir, condFn)
         while true do
             if condFn() then return false end
-            if movement.faceDirection(dir) then return true end
+            if move.faceDirection(dir) then return true end
             print("Turning obstructed.")
             sleep(5)
         end
@@ -104,17 +104,17 @@ function navigation.backtrackUntil(conditionFn)
         local move = stack[i]
         local dir = move.dir
         local amount = move.amount
-        local oppositeDir = movement.getOppositeDir(dir)
+        local oppositeDir = move.getOppositeDir(dir)
 
         if dir == "up" or dir == "down" then
-            local moveFn = (dir == "up") and movement.down or movement.up
+            local moveFn = (dir == "up") and move.down or move.up
             for _ = 1, amount do 
                 if not conditionalMove(moveFn, conditionFn) then break end
             end
         else
             if not conditionalTurn(oppositeDir, conditionFn) then break end 
             for _ = 1, amount do
-                if not conditionalMove(movement.forward, conditionFn) then break end
+                if not conditionalMove(move.forward, conditionFn) then break end
             end
         end
     end

@@ -1,4 +1,4 @@
-local movement = require("/utils/movement")
+local move = require("/utils/move")
 local navigation = require("/utils/navigation")
 local inventory = require("/utils/inventory")
 
@@ -15,6 +15,8 @@ local inventory = require("/utils/inventory")
 -- log: Invalid direction in settings (to test, do turn -> move -> turn -> move etc for all 4 directions)
 -- todo: continue refactoring cobbleBot and others
 
+-- inventory.drop
+
 function isCobblestoneInFront()
     local success, data = turtle.inspect()
     return success and data.name == "minecraft:cobblestone"
@@ -24,22 +26,22 @@ local tArgs = { ... }
 local test1 = tonumber(tArgs[1])
 
 if(test1 == 1) then
-    movement.forward()
-    movement.forward()
-    movement.forward()
-    movement.forward()
-    movement.turnRight()
-    movement.forward()
-    movement.up()
-    movement.turnLeft()
-    movement.forward()
-    movement.forward()
-    movement.forward()
-    movement.faceDirection("left")
-    movement.back()
-    movement.back()
-    movement.back()
-    movement.back()
+    move.forward()
+    move.forward()
+    move.forward()
+    move.forward()
+    move.turnRight()
+    move.forward()
+    move.up()
+    move.turnLeft()
+    move.forward()
+    move.forward()
+    move.forward()
+    move.faceDirection("left")
+    move.back()
+    move.back()
+    move.back()
+    move.back()
 elseif(test1 == 2) then
     navigation.backtrack()
 elseif(test1 == 3) then -- bug detected
@@ -117,38 +119,38 @@ elseif(test1 == 16) then
 
     print("isFull: " .. success)
 elseif(test1 == 17) then
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 elseif(test1 == 18) then
     print(inventory.runOnSlot(function()
         
     end, 7))
 elseif(test1 == 19) then
     print(inventory.runOnItem(function()
-        movement.forward()
+        move.forward()
     end, "minecraft:cobblestone"))
 elseif(test1 == 20) then
     settings.set("direction", "haha")
     settings.save()
 
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 
-    movement.turnRight()
-    movement.forward()
+    move.turnRight()
+    move.forward()
 end
