@@ -1,6 +1,7 @@
 .settings
 
 clean.lua
+elevator.lua
 manifest.txt
 reset.lua
 setRole.lua
