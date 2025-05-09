@@ -27,5 +27,6 @@ utils/inventory.lua
 utils/log.lua
 utils/move.lua
 utils/navigation.lua
+utils/place.lua
 
 worker/main.lua
