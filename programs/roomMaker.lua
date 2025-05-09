@@ -4,7 +4,7 @@ local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
 
 local size = tonumber(arg[1]) or 3
-local height = tonumber(arg[2]) or 2
+local height = tonumber(arg[2]) or 1
 local withCeiling = arg[3] ~= "false"
 local blockItemName = arg[4] or "minecraft:stone_bricks"
 local slabItemName = arg[5] or "minecraft:stone_brick_slab"
@@ -30,9 +30,12 @@ print("Press any key to start")
 
 os.pullEvent("key")
 
-local function buildWallLayer(item)
+local function buildWallLayer(item, withBreak)
     for side = 1, 4 do
         for i = 1, size - 1 do
+            if(withBreak) then
+                turtle.digDown()
+            end
             print(safe.execute(function()
                 return place.itemDown(item)
             end))
@@ -92,7 +95,7 @@ end
 safe.execute(move.up)
 
 for level = 1, height do
-    buildWallLayer(blockItemName)
+    buildWallLayer(blockItemName, level == 1)
     safe.execute(move.up)
 end
 
