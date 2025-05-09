@@ -11,15 +11,15 @@ function inventory.runOnSlot(action, slot)
 end
 
 function inventory.runOnItem(action, itemName)
-    return inventory.runOnItemMatch(action, function(name)
-        return name == itemName
+    return inventory.runOnItemMatch(action, function(itemDetail)
+        return name == itemDetail.name
     end)
 end
 
 function inventory.runOnItemMatch(action, matcherFn)
     for i = 1, 16 do
         local itemDetail = turtle.getItemDetail(i)
-        if itemDetail and matcherFn(itemDetail.name) then
+        if itemDetail and matcherFn(itemDetail) then
             return true, inventory.runOnSlot(action, i)
         end
     end

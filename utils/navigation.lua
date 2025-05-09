@@ -35,8 +35,8 @@ function navigation.getGpsLocation()
     if(hasModem) then
         x,y,z = gps.locate()
     else
-        local modemMatcher = function(name)
-            return name:find("computercraft:.*modem")
+        local modemMatcher = function(itemDetail)
+            return itemDetail.name:find("computercraft:.*modem")
         end
         
         inventory.runOnItemMatch(function()

@@ -16,6 +16,8 @@ local inventory = require("/utils/inventory")
 -- todo: continue refactoring cobbleBot and others
 
 -- inventory.drop and dropAll with and without any params
+-- navigation.getGpsLocation
+-- placing items with slot, item name, and item matcher
 
 function isCobblestoneInFront()
     local success, data = turtle.inspect()
