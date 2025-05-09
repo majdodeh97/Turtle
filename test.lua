@@ -1,5 +1,7 @@
-local move = require("/utils/move")
 local navigation = require("/utils/navigation")
+local move = require("/utils/move")
+local place = require("/utils/place")
+local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
 
 -- To test:
@@ -17,7 +19,29 @@ local inventory = require("/utils/inventory")
 
 -- inventory.drop and dropAll with and without any params
 -- navigation.getGpsLocation
--- placing items with slot, item name, and item matcher
+-- roomMaker
+
+print(navigation.getGpsLocation())
+place.slotUp(1)
+sleep(2)
+print(inventory.dropAllUp(7,8))
+sleep(2)
+print(inventory.dropAll(10))
+sleep(2)
+turtle.select(2)
+print(inventory.dropAll())
+sleep(2)
+turtle.select(3)
+print(inventory.drop())
+sleep(2)
+turtle.select(4)
+print(inventory.drop(1))
+sleep(2)
+turtle.select(5)
+print(inventory.drop(1, 6))
+sleep(2)
+return
+
 
 function isCobblestoneInFront()
     local success, data = turtle.inspect()

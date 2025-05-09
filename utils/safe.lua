@@ -7,11 +7,17 @@ function safe.execute(fn, errorMessage)
 
     if(not sleepInterval) then log.error("No 'sleepInterval' defined in settings.") end
 
-    while not fn() do
-        sleep(sleepInterval)
-        if(errorMessage) then
+    while true do
+        local success, reason = fn()
+        if success then return success, reason end
+
+        if errorMessage then
             print(errorMessage)
+        elseif reason then
+            print(reason)
         end
+
+        sleep(sleepInterval)
     end
 end
 

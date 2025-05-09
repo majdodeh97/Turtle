@@ -92,9 +92,6 @@ local function dropAllInternal(dropFn, startSlot, endSlot)
     return anySuccess
 end
 
--- todo, add an optional parameter to keep trying or not to dropping, placing, and movement
--- parameter or completely different function called safeX (safeDrop, safeForward, etc?
-
 function inventory.dropAll(startSlot, endSlot)
     return dropAllInternal(turtle.drop, startSlot, endSlot)
 end
@@ -109,8 +106,8 @@ end
 
 local function dropInternal(dropFn, amount, slot)
     dropFn = dropFn or turtle.drop
-    amount = amount or 64
     slot = slot or turtle.getSelectedSlot()
+    amount = amount or turtle.getItemCount(slot)
 
     return inventory.runOnSlot(function()
         return dropFn(amount)

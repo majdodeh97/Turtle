@@ -1,53 +1,57 @@
 local move = require("/utils/move")
 local place = require("/utils/place")
+local safe = require("/utils/safe")
+local inventory = require("/utils/inventory")
 
-local height = 5
-local size = 22
-local withCeiling = true
-local itemName = "minecraft:cobblestone"
+local size = tonumber(arg[1]) or 3
+local height = tonumber(arg[2]) or 2
+local withCeiling = arg[3] ~= "false"
+local itemName = arg[4] or "minecraft:stone_bricks"
 
 local function buildWallLayer()
     for side = 1, 4 do
         for i = 1, size - 1 do
-            place.itemDown(itemName)
-            move.forward()
+            print(safe.execute(function()
+                return place.itemDown(itemName)
+            end))
+            print(safe.execute(move.forward))
         end
-        place.itemDown(itemName)
-        move.turnRight()
+        safe.execute(function()
+            return place.itemDown(itemName)
+        end)
+        safe.execute(move.turnRight)
     end
 end
 
--- Build wall layer by layer, moving up after each ring
 for level = 1, height do
     buildWallLayer()
-    turtle.up()
+    safe.execute(move.up)
 end
+
+if(not withCeiling) then return end
 
 local leftTurn = false
 
 for row = 1, size do
     for col = 1, size do
-        placeDown()
+        safe.execute(function()
+            return place.itemDown(itemName)
+        end)
         if col < size then
-            safeForward()
+            safe.execute(move.forward)
         end
     end
 
     if row < size then
         if leftTurn then
             move.turnLeft()
-            safeForward()
+            safe.execute(move.forward)
             move.turnLeft()
         else
             move.turnRight()
-            safeForward()
+            safe.execute(move.forward)
             move.turnRight()
         end
         leftTurn = not leftTurn
     end
-end
-
--- Return to floor
-for i = 1, height - 1 do
-    turtle.down()
 end
