@@ -68,6 +68,8 @@ local function buildCeiling(item)
     safe.execute(move.turnRight)
 end
 
+safe.execute(move.up)
+
 for level = 1, height do
     buildWallLayer(blockItemName)
     safe.execute(move.up)
