@@ -28,5 +28,6 @@ utils/log.lua
 utils/move.lua
 utils/navigation.lua
 utils/place.lua
+utils/safe.lua
 
 worker/main.lua
