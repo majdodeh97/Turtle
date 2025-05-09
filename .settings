@@ -1,6 +1,7 @@
 {
     direction = "forward",
     fuelSlot = 16,
+    safeSleepInterval = 3,
     base = {
         roomWidth = 9,
         streetWidth = 3

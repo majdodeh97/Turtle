@@ -5,7 +5,7 @@ local safe = {}
 function safe.execute(fn, errorMessage)
     local sleepInterval = settings.get("safeSleepInterval")
 
-    if(not sleepInterval) then log.error("No 'sleepInterval' defined in settings.") end
+    if(not sleepInterval) then log.error("No 'safeSleepInterval' defined in settings.") end
 
     while true do
         local success, reason = fn()
