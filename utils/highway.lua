@@ -3,17 +3,9 @@ local move = require("/utils/move")
 local place = require("/utils/place")
 local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
+local log = require("/utils/log")
 
 local highway = {}
-
-local function isOnRoad(x, y, roadSize)
-    local half = roadSize / 2
-    local min = -half + 1
-    local max = half
-
-    return (x >= min and x <= max) or
-           (y >= min and y <= max)
-end
 
 local SWAP_Z = 0
 local OUTGOING_Z = 2
@@ -93,7 +85,7 @@ function highway.getFloor(z)
             end
         end
 
-        error("Z too high, no floor defined at z=" .. z)
+        log.error("Z too high, no floor defined at z=" .. z)
     else
         local currentZ = 0
         local floor = -1
@@ -109,7 +101,7 @@ function highway.getFloor(z)
             end
         end
 
-        error("Z too low, no floor defined at z=" .. z)
+        log.error("Z too low, no floor defined at z=" .. z)
     end
 end
 
@@ -142,7 +134,16 @@ function highway.getFloorBaseZ(floor)
         end
     end
 
-    error("Floor number out of bounds: " .. floor)
+    log.error("Floor number out of bounds: " .. floor)
+end
+
+function highway.isOnRoad(x, y, roadSize)
+    local half = math.floor(roadSize / 2)
+    local min = roadSize % 2 == 0 and (-half + 1) or -half
+    local max = half
+
+    return (x >= min and x <= max) or
+           (y >= min and y <= max)
 end
 
 local function getIncomingZ()
@@ -163,7 +164,7 @@ local function getSwapZ()
     return floorBaseZ + SWAP_Z;
 end
 
-local function moveToIncomingZ()
+local function moveToIncomingZForFloor(floor)
 
 end
 

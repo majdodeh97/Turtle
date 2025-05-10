@@ -115,4 +115,63 @@ test.addTest("getFloorBaseZ floor -6 -> z = -80", function()
     test.assertEquals(highway.getFloorBaseZ(-6), -80)
 end)
 
+-- roadSize = 5 (odd): valid range is [-2, 2]
+local roadSizeOdd = 5
+
+test.addTest("roadSize 5: x = 0, y = 3 -> false", function()
+    test.assertEquals(highway.isOnRoad(0, 3, roadSizeOdd), false)
+end)
+
+test.addTest("roadSize 5: x = -2, y = 99 -> true", function()
+    test.assertEquals(highway.isOnRoad(-2, 99, roadSizeOdd), true)
+end)
+
+test.addTest("roadSize 5: x = 2, y = 0 -> true", function()
+    test.assertEquals(highway.isOnRoad(2, 0, roadSizeOdd), true)
+end)
+
+test.addTest("roadSize 5: x = -3, y = 0 -> false", function()
+    test.assertEquals(highway.isOnRoad(-3, 0, roadSizeOdd), false)
+end)
+
+test.addTest("roadSize 5: x = 0, y = -3 -> false", function()
+    test.assertEquals(highway.isOnRoad(0, -3, roadSizeOdd), false)
+end)
+
+-- roadSize = 4 (even): valid range is [-1, 2]
+local roadSizeEven = 4
+
+test.addTest("roadSize 4: x = -1, y = 0 -> true", function()
+    test.assertEquals(highway.isOnRoad(-1, 0, roadSizeEven), true)
+end)
+
+test.addTest("roadSize 4: x = 2, y = 0 -> true", function()
+    test.assertEquals(highway.isOnRoad(2, 0, roadSizeEven), true)
+end)
+
+test.addTest("roadSize 4: x = 3, y = 0 -> false", function()
+    test.assertEquals(highway.isOnRoad(3, 0, roadSizeEven), false)
+end)
+
+test.addTest("roadSize 4: x = 0, y = 2 -> true", function()
+    test.assertEquals(highway.isOnRoad(0, 2, roadSizeEven), true)
+end)
+
+test.addTest("roadSize 4: x = 0, y = -2 -> false", function()
+    test.assertEquals(highway.isOnRoad(0, -2, roadSizeEven), false)
+end)
+
+-- Cross check inside both axes
+test.addTest("roadSize 4: x = 1, y = 1 -> true", function()
+    test.assertEquals(highway.isOnRoad(1, 1, roadSizeEven), true)
+end)
+
+test.addTest("roadSize 5: x = 0, y = 0 -> true", function()
+    test.assertEquals(highway.isOnRoad(0, 0, roadSizeOdd), true)
+end)
+
+test.addTest("roadSize 4: x = -2, y = -2 -> false", function()
+    test.assertEquals(highway.isOnRoad(-2, -2, roadSizeEven), false)
+end)
+
 test.run()
