@@ -24,6 +24,7 @@ programs/straight.lua
 room/tree.lua
 
 utils/fuel.lua
+utils/highway.lua
 utils/inventory.lua
 utils/log.lua
 utils/move.lua
