@@ -1,8 +1,5 @@
-local navigation = require("/utils/navigation")
 local move = require("/utils/move")
-local place = require("/utils/place")
 local safe = require("/utils/safe")
-local inventory = require("/utils/inventory")
 local log = require("/utils/log")
 
 local highway = {}
@@ -164,7 +161,9 @@ function highway.getSwapZ(floor)
     return floorBaseZ + SWAP_Z;
 end
 
-local function moveToIncomingZForFloor(floor)
+function highway.moveToFloorIncomingZ(floor)
+    local floorIncomingZ = highway.getFloorIncomingZ(floor)
+    local location = move.getLocation()
 
 end
 

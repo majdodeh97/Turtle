@@ -23,14 +23,8 @@ local highway = require("/utils/highway")
 -- todo: continue refactoring cobbleBot and others to use our utils
 -- todo: work on tree.lua
 -- todo: decide on how files are copied/updated. Old way via disk drive or new way with red net
---
-
-settings.set("location", {
-    x = 3,
-    y = 5,
-    z = 1
-})
-settings.save()
+-- todo: work on highway movement
+-- todo: add unit tests for utils
 
 highway.moveTo(5,1)
 
