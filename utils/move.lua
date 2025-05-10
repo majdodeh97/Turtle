@@ -22,31 +22,30 @@ function move.getDirection()
     return dir
 end
 
-local function logMovement(dir, delta)
+function move.getLocation()
+    local location = settings.get("location")
+    if not location then
+        log.error("No 'location' defined in settings.")
+    end
+
+    return location
+end
+
+local function updateLocation(dir, delta)
     if delta <= 0 then
         log.error("Tried to log a move of " .. delta .. " in the " .. dir .. " direction.")
     end
 
-    local stack = settings.get("moveStack") or {}
-    local top = stack[#stack]
+    local location = move.getLocation()
 
-    local opposite = move.getOppositeDir(dir)
+    if(dir == "forward") then location.y = location.y + 1 end
+    if(dir == "back") then location.y = location.y - 1 end
+    if(dir == "right") then location.x = location.x + 1 end
+    if(dir == "left") then location.x = location.x - 1 end
+    if(dir == "up") then location.z = location.z + 1 end
+    if(dir == "down") then location.z = location.z - 1 end
 
-    if top and top.dir == dir then
-        top.amount = top.amount + delta
-    elseif top and top.dir == opposite then
-        top.amount = top.amount - delta
-        if top.amount < 0 then
-            top.dir = dir
-            top.amount = -top.amount
-        elseif top.amount == 0 then
-            table.remove(stack)
-        end
-    else
-        table.insert(stack, { dir = dir, amount = delta })
-    end
-
-    settings.set("moveStack", stack)
+    settings.set("location", location)
     settings.save()
 end
 
@@ -56,7 +55,7 @@ function move.forward()
     local success, reason = turtle.forward()
     if success then
         local dir = move.getDirection()
-        logMovement(dir, 1)
+        updateLocation(dir, 1)
     end
     return success, reason
 end
@@ -67,7 +66,7 @@ function move.back()
     local success, reason = turtle.back()
     if success then
         local dir = move.getOppositeDir(move.getDirection())
-        logMovement(dir, 1)
+        updateLocation(dir, 1)
     end
     return success, reason
 end
@@ -76,7 +75,7 @@ function move.up()
     fuel.ensure()
     
     local success, reason = turtle.up()
-    if success then logMovement("up", 1) end
+    if success then updateLocation("up", 1) end
     return success, reason
 end
 
@@ -84,7 +83,7 @@ function move.down()
     fuel.ensure()
     
     local success, reason = turtle.down()
-    if success then logMovement("down", 1) end
+    if success then updateLocation("down", 1) end
     return success, reason
 end
 

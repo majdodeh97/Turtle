@@ -3,7 +3,7 @@ local move = require("/utils/move")
 
 local floor = tonumber(arg[1])
 
-local locationZ = navigation.getLocalLocation().z
+local locationZ = move.getLocation()
 local destinationZ = floor * 10
 
 local toMove = destinationZ - locationZ

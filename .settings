@@ -2,8 +2,13 @@
     direction = "forward",
     fuelSlot = 16,
     safeSleepInterval = 3,
+    location = {
+        x = 0,
+        y = 0,
+        z = 0
+    },
     base = {
         roomWidth = 9,
         streetWidth = 3
-    }
+    },
 }

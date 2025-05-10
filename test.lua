@@ -72,7 +72,7 @@ end
 local tArgs = { ... }
 local test1 = tonumber(tArgs[1])
 
-if(test1 == 1) then
+if(test1 == 0) then
     move.forward()
     move.forward()
     move.forward()
@@ -89,6 +89,23 @@ if(test1 == 1) then
     move.back()
     move.back()
     move.back()
+elseif(test1 == 1) then
+    navigation.forward()
+    navigation.forward()
+    navigation.forward()
+    navigation.forward()
+    navigation.turnRight()
+    navigation.forward()
+    navigation.up()
+    navigation.turnLeft()
+    navigation.forward()
+    navigation.forward()
+    navigation.forward()
+    navigation.faceDirection("left")
+    navigation.back()
+    navigation.back()
+    navigation.back()
+    navigation.back()
 elseif(test1 == 2) then
     navigation.backtrack()
 elseif(test1 == 3) then -- bug detected
