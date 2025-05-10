@@ -2,9 +2,9 @@ local test = {}
 
 test.tests = {}
 
-function test.assertEquals(actual, expected, message)
+function test.assertEquals(actual, expected)
     if actual ~= expected then
-        error("[FAIL] " .. (message or "") .. "\nExpected: " .. tostring(expected) .. "\nActual:   " .. tostring(actual), 2)
+        error("\nExpected: " .. tostring(expected) .. "\nActual:   " .. tostring(actual), 2)
     end
 end
 
@@ -17,7 +17,7 @@ function test.run(showPassed)
     for i, t in ipairs(test.tests) do
         local success, err = pcall(t.fn)
         if not success then
-            print("[FAIL] " .. t.name .. "\n   > " .. err)
+            print("[FAIL] " .. t.name .. "\n" .. err)
             os.pullEvent("key")
         elseif showPassed then
             print("[PASS] " .. t.name)
