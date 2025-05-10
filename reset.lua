@@ -1,3 +1,5 @@
+local navigation = require("/utils/navigation")
+
 fs.delete(".settings")
 
 local fileName = ".settings"
@@ -22,5 +24,8 @@ else
 end
 
 if(not error) then
+    local gpsLocation = navigation.getGpsLocation()
+    settings.set("location", gpsLocation)
+    settings.save()
     os.reboot()
 end
