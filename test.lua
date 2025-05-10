@@ -3,6 +3,7 @@ local move = require("/utils/move")
 local place = require("/utils/place")
 local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
+local highway = require("/utils/highway")
 
 -- To test:
 -- navigation: backtrackUntil
@@ -23,6 +24,17 @@ local inventory = require("/utils/inventory")
 -- todo: work on tree.lua
 -- todo: decide on how files are copied/updated. Old way via disk drive or new way with red net
 --
+
+settings.set("location", {
+    x = 3,
+    y = 5,
+    z = 1
+})
+settings.save()
+
+highway.moveTo(5,1)
+
+os.pullEvent("key")
 
 print(textutils.serialise(navigation.getGpsLocation()))
 

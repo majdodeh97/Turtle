@@ -7,7 +7,7 @@ local inventory = require("/utils/inventory")
 local highway = {}
 
 local function isOnRoad(x, y, roadSize)
-    local half = roadSize // 2
+    local half = roadSize / 2
     local min = -half + 1
     local max = half
 
@@ -38,7 +38,9 @@ local function moveXY(targetX, targetY)
     -- Move in X axis first
     while currX ~= targetX do
         local dir = (targetX > currX) and "right" or "left"
+        print("facing " .. dir)
         move.faceDirection(dir)
+        os.pullEvent("key")
         local success = move.forward()
         if not success then
             print("Failed to move in X direction.")
@@ -51,7 +53,9 @@ local function moveXY(targetX, targetY)
     -- Move in Y axis
     while currY ~= targetY do
         local dir = (targetY > currY) and "forward" or "back"
+        print("facing " .. dir)
         move.faceDirection(dir)
+        os.pullEvent("key")
         local success = move.forward()
         if not success then
             print("Failed to move in Y direction.")
@@ -75,7 +79,7 @@ function highway.moveTo(targetX, targetY)
         error("Cannot use moveTo from an illegal column: " .. locationKey)
     end
 
-    if(loc.x ~= 0 and loc.y ~= 1 and loc.z ~= 1) then
+    if(loc.x ~= 0 or loc.y ~= 1 or loc.z ~= 1) then
         while loc.z < INCOMING_Z do
             safe.execute(move.up)
             loc.z = loc.z + 1
