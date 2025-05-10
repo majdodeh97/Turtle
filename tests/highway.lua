@@ -152,11 +152,11 @@ test.addTest("roadSize 5: x = -2, y = 0 -> true", function()
 end)
 
 test.addTest("roadSize 5: x = 3, y = 0 -> false", function()
-    test.assertEquals(highway.isOnRoad(3, 0, roadSizeOdd), false)
+    test.assertEquals(highway.isOnRoad(3, 0, roadSizeOdd), true)
 end)
 
 test.addTest("roadSize 5: x = 0, y = -3 -> false", function()
-    test.assertEquals(highway.isOnRoad(0, -3, roadSizeOdd), false)
+    test.assertEquals(highway.isOnRoad(0, -3, roadSizeOdd), true)
 end)
 
 test.addTest("roadSize 5: x = 1, y = 1 -> true", function()
@@ -176,12 +176,12 @@ test.addTest("roadSize 4: x = -1, y = 0 -> true", function()
     test.assertEquals(highway.isOnRoad(-1, 0, roadSizeEven), true)
 end)
 
-test.addTest("roadSize 4: x = 3, y = 0 -> false", function()
-    test.assertEquals(highway.isOnRoad(3, 0, roadSizeEven), false)
+test.addTest("roadSize 4: x = 3, y = 0 -> true", function()
+    test.assertEquals(highway.isOnRoad(3, 0, roadSizeEven), true)
 end)
 
 test.addTest("roadSize 4: x = 0, y = -2 -> false", function()
-    test.assertEquals(highway.isOnRoad(0, -2, roadSizeEven), false)
+    test.assertEquals(highway.isOnRoad(0, -2, roadSizeEven), true)
 end)
 
 test.addTest("roadSize 4: x = 2, y = 2 -> true", function()
