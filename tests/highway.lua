@@ -191,4 +191,36 @@ test.addTest("roadSize 4: x = -2, y = -2 -> false", function()
     test.assertEquals(highway.isOnRoad(-2, -2, roadSizeEven), false)
 end)
 
+
+local INCOMING_Z = 3
+local OUTGOING_Z = 2
+local SWAP_Z = 0
+
+-- getFloorIncomingZ(floor) tests
+test.addTest("getFloorIncomingZ floor 0", function()
+    test.assertEquals(highway.getFloorIncomingZ(0), highway.getFloorBaseZ(0) + INCOMING_Z)
+end)
+
+test.addTest("getFloorIncomingZ floor -2", function()
+    test.assertEquals(highway.getFloorIncomingZ(-2), highway.getFloorBaseZ(-2) + INCOMING_Z)
+end)
+
+-- getOutgoingZ(floor) tests
+test.addTest("getOutgoingZ floor 0", function()
+    test.assertEquals(highway.getOutgoingZ(0), highway.getFloorBaseZ(0) + OUTGOING_Z)
+end)
+
+test.addTest("getOutgoingZ floor -2", function()
+    test.assertEquals(highway.getOutgoingZ(-2), highway.getFloorBaseZ(-2) + OUTGOING_Z)
+end)
+
+-- getSwapZ(floor) tests
+test.addTest("getSwapZ floor 0", function()
+    test.assertEquals(highway.getSwapZ(0), highway.getFloorBaseZ(0) + SWAP_Z)
+end)
+
+test.addTest("getSwapZ floor -2", function()
+    test.assertEquals(highway.getSwapZ(-2), highway.getFloorBaseZ(-2) + SWAP_Z)
+end)
+
 test.run()

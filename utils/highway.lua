@@ -146,20 +146,20 @@ function highway.isOnRoad(x, y, roadSize)
            (y >= min and y <= max)
 end
 
-local function getIncomingZ()
-    local floorBaseZ = getFloorBaseZ()
+function highway.getFloorIncomingZ(floor)
+    local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + INCOMING_Z;
 end
 
-local function getOutgoingZ()
-    local floorBaseZ = getFloorBaseZ()
+function highway.getOutgoingZ(floor)
+    local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + OUTGOING_Z;
 end
 
-local function getSwapZ()
-    local floorBaseZ = getFloorBaseZ()
+function highway.getSwapZ(floor)
+    local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + SWAP_Z;
 end
