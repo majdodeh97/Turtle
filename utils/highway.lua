@@ -31,40 +31,7 @@ local BELOW_FLOOR_GROUPS = {
     { count = 4, height = 20 }
 }
 
-local function moveXY(targetX, targetY)
-    local location = move.getLocation()
-    local currX, currY = location.x, location.y
 
-    -- Move in X axis first
-    while currX ~= targetX do
-        local dir = (targetX > currX) and "right" or "left"
-        print("facing " .. dir)
-        move.faceDirection(dir)
-        os.pullEvent("key")
-        local success = move.forward()
-        if not success then
-            print("Failed to move in X direction.")
-            sleep(1)
-        else
-            currX = (dir == "right") and (currX + 1) or (currX - 1)
-        end
-    end
-
-    -- Move in Y axis
-    while currY ~= targetY do
-        local dir = (targetY > currY) and "forward" or "back"
-        print("facing " .. dir)
-        move.faceDirection(dir)
-        os.pullEvent("key")
-        local success = move.forward()
-        if not success then
-            print("Failed to move in Y direction.")
-            sleep(1)
-        else
-            currY = (dir == "forward") and (currY + 1) or (currY - 1)
-        end
-    end
-end
 
 function highway.getFloor(z)
     if z >= 0 then
@@ -173,6 +140,34 @@ function highway.moveToIncomingZ()
         safe.execute(move.up)
     end
 end
+
+function highway.moveToXY(targetX, targetY)
+    local location = move.getLocation()
+    local dx = targetX - location.x
+    local dy = targetY - location.y
+
+    local function moveInDirection(dir, amount)
+        if(amount == 0) then return end
+
+        safe.execute(function() return move.faceDirection(dir) end)
+        for _ = 1, math.abs(amount) do
+            safe.execute(move.forward)
+        end
+    end
+
+    local xDir = dx >= 0 and "right" or "left"
+    local yDir = dy >= 0 and "forward" or "back"
+
+    if math.abs(dx) <= math.abs(dy) then
+        moveInDirection(xDir, dx)
+        moveInDirection(yDir, dy)
+    else
+        moveInDirection(yDir, dy)
+        moveInDirection(xDir, dx)
+    end
+end
+
+
 
 local function moveToIncomingHighway()
 

@@ -271,4 +271,53 @@ test.addTest("moveToIncomingZ: above incomingZ", function()
     test.assertEquals(after, before)
 end)
 
+-- moveToXY
+test.addTest("moveToXY: (0,0) to (2,1)", function()
+    settings.set("location", { x = 0, y = 0, z = 0 })
+    settings.set("direction", "forward")
+    settings.save()
+
+    highway.moveToXY(2, 1)
+
+    local loc = move.getLocation()
+    test.assertEquals(loc.x, 2)
+    test.assertEquals(loc.y, 1)
+end)
+
+test.addTest("moveToXY: (3,3) to (0,0)", function()
+    settings.set("location", { x = 3, y = 3, z = 0 })
+    settings.set("direction", "forward")
+    settings.save()
+
+    highway.moveToXY(0, 0)
+
+    local loc = move.getLocation()
+    test.assertEquals(loc.x, 0)
+    test.assertEquals(loc.y, 0)
+end)
+
+test.addTest("moveToXY: (1,1) to (1,1) (no movement)", function()
+    settings.set("location", { x = 1, y = 1, z = 0 })
+    settings.set("direction", "forward")
+    settings.save()
+
+    highway.moveToXY(1, 1)
+
+    local loc = move.getLocation()
+    test.assertEquals(loc.x, 1)
+    test.assertEquals(loc.y, 1)
+end)
+
+test.addTest("moveToXY: (2,0) to (-1,4)", function()
+    settings.set("location", { x = 2, y = 0, z = 0 })
+    settings.set("direction", "forward")
+    settings.save()
+
+    highway.moveToXY(-1, 4)
+
+    local loc = move.getLocation()
+    test.assertEquals(loc.x, -1)
+    test.assertEquals(loc.y, 4)
+end)
+
 test.run()
