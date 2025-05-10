@@ -4,6 +4,64 @@ local log = require("/utils/log")
 
 local navigation = {}
 
+local function logMovement(dir, delta)
+    if delta <= 0 then
+        log.error("Tried to log a move of " .. delta .. " in the " .. dir .. " direction.")
+    end
+
+    local stack = settings.get("moveStack") or {}
+    local top = stack[#stack]
+
+    local opposite = move.getOppositeDir(dir)
+
+    if top and top.dir == dir then
+        top.amount = top.amount + delta
+    elseif top and top.dir == opposite then
+        top.amount = top.amount - delta
+        if top.amount < 0 then
+            top.dir = dir
+            top.amount = -top.amount
+        elseif top.amount == 0 then
+            table.remove(stack)
+        end
+    else
+        table.insert(stack, { dir = dir, amount = delta })
+    end
+
+    settings.set("moveStack", stack)
+    settings.save()
+end
+
+function navigation.forward()
+    local success, reason = move.forward()
+    if success then
+        local dir = move.getDirection()
+        logMovement(dir, 1)
+    end
+    return success, reason
+end
+
+function navigation.back()
+    local success, reason = move.back()
+    if success then
+        local dir = move.getOppositeDir(move.getDirection())
+        logMovement(dir, 1)
+    end
+    return success, reason
+end
+
+function navigation.up()
+    local success, reason = move.up()
+    if success then logMovement("up", 1) end
+    return success, reason
+end
+
+function navigation.down()
+    local success, reason = move.down()
+    if success then logMovement("down", 1) end
+    return success, reason
+end
+
 function navigation.getRoomCoords(row, col)
 
     local rowToMove = math.abs(row) - 1
@@ -142,75 +200,6 @@ function navigation.backtrack()
     navigation.backtrackUntil(function(name)
         return false
     end)
-end
-
-
-local function logMovement(dir, delta)
-    if delta <= 0 then
-        log.error("Tried to log a move of " .. delta .. " in the " .. dir .. " direction.")
-    end
-
-    local stack = settings.get("moveStack") or {}
-    local top = stack[#stack]
-
-    local opposite = move.getOppositeDir(dir)
-
-    if top and top.dir == dir then
-        top.amount = top.amount + delta
-    elseif top and top.dir == opposite then
-        top.amount = top.amount - delta
-        if top.amount < 0 then
-            top.dir = dir
-            top.amount = -top.amount
-        elseif top.amount == 0 then
-            table.remove(stack)
-        end
-    else
-        table.insert(stack, { dir = dir, amount = delta })
-    end
-
-    settings.set("moveStack", stack)
-    settings.save()
-end
-
-function navigation.forward()
-    local success, reason = move.forward()
-    if success then
-        local dir = move.getDirection()
-        logMovement(dir, 1)
-    end
-    return success, reason
-end
-
-function navigation.back()
-    local success, reason = move.back()
-    if success then
-        local dir = move.getOppositeDir(move.getDirection())
-        logMovement(dir, 1)
-    end
-    return success, reason
-end
-
-function navigation.up()
-    local success, reason = move.up()
-    if success then logMovement("up", 1) end
-    return success, reason
-end
-
-function navigation.down()
-    local success, reason = move.down()
-    if success then logMovement("down", 1) end
-    return success, reason
-end
-
-function navigation.isInRoom()
-
-end
-
-function navigation.goHome()
-    
-    
-
 end
 
 return navigation
