@@ -161,6 +161,7 @@ function highway.getSwapZ(floor)
     return floorBaseZ + SWAP_Z;
 end
 
+-- Cannot be called when turtle is in 1,1 already (this will cause deadlock)
 function highway.moveToIncomingZ()
     local location = move.getLocation()
     local currentFloor = highway.getFloor(location.z)
