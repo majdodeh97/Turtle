@@ -167,13 +167,21 @@ function highway.moveToXY(targetX, targetY)
     end
 end
 
-
-
-local function moveToIncomingHighway()
-
+function highway.moveToNegativeZHighway()
+    highway.moveToXY(1,1)
 end
 
+function highway.moveToSwapZ()
+    local location = move.getLocation()
+    local currentFloor = highway.getFloor(location.z)
+    local currentSwapZ = highway.getFloorSwapZ(currentFloor)
 
+    local stepsToMove = location.z - currentSwapZ 
+
+    for i = 1, stepsToMove do
+        safe.execute(move.down)
+    end
+end
 
 function highway.moveTo(targetX, targetY, floor)
 

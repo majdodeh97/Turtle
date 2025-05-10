@@ -301,4 +301,49 @@ test.addTest("moveToXY: (2,0) to (-1,4)", function()
     test.assertEquals(loc.y, 4)
 end)
 
+-- moveToSwapZ
+test.addTest("moveToSwapZ: from incomingZ to swapZ", function()
+    local floor = 0
+    local incomingZ = highway.getFloorIncomingZ(floor)
+    local swapZ = highway.getFloorSwapZ(floor)
+
+    settings.set("location", { x = 1, y = 1, z = incomingZ })
+    settings.save()
+
+
+    local before = settings.get("location").z
+    highway.moveToSwapZ()
+    local after = settings.get("location").z
+
+    test.assertEquals(after, before - (incomingZ - swapZ))
+end)
+
+test.addTest("moveToSwapZ: already at swapZ", function()
+    local floor = 0
+    local swapZ = highway.getFloorSwapZ(floor)
+
+    settings.set("location", { x = 1, y = 1, z = swapZ })
+    settings.save()
+
+    local before = settings.get("location").z
+    highway.moveToSwapZ()
+    local after = settings.get("location").z
+
+    test.assertEquals(after, before)
+end)
+
+test.addTest("moveToSwapZ: below swapZ (should not move)", function()
+    local floor = 0
+    local swapZ = highway.getFloorSwapZ(floor)
+
+    settings.set("location", { x = 1, y = 1, z = swapZ - 1 })
+    settings.save()
+
+    local before = settings.get("location").z
+    highway.moveToSwapZ()
+    local after = settings.get("location").z
+
+    test.assertEquals(after, before)
+end)
+
 test.run()
