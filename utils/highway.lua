@@ -161,10 +161,16 @@ function highway.getSwapZ(floor)
     return floorBaseZ + SWAP_Z;
 end
 
-function highway.moveToFloorIncomingZ(floor)
-    local floorIncomingZ = highway.getFloorIncomingZ(floor)
+function highway.moveToIncomingZ()
     local location = move.getLocation()
+    local currentFloor = highway.getFloor(location.z)
+    local currentIncomingZ = highway.getFloorIncomingZ(currentFloor)
 
+    local stepsToMove = currentIncomingZ - location.z
+
+    for i = 1, stepsToMove do
+        safe.execute(move.up)
+    end
 end
 
 local function moveToIncomingHighway()
@@ -190,10 +196,7 @@ function highway.moveTo(targetX, targetY, floor)
     end
 
     if(loc.x ~= 0 or loc.y ~= 1 or loc.z ~= 1) then
-        while loc.z < INCOMING_Z do
-            safe.execute(move.up)
-            loc.z = loc.z + 1
-        end
+        
     
         moveXY(1, 1)
         loc.x = 1

@@ -1,5 +1,6 @@
 local test = require("/utils/test")
 local highway = require("/utils/highway")
+local move = require("/utils/move")
 
 -- getFloor(z) tests
 test.addTest("getFloor z = 0 -> floor 0", function()
@@ -221,6 +222,53 @@ end)
 
 test.addTest("getSwapZ floor -2", function()
     test.assertEquals(highway.getSwapZ(-2), highway.getFloorBaseZ(-2) + SWAP_Z)
+end)
+
+-- moveToIncomingZ
+test.addTest("moveToIncomingZ: already at incomingZ", function()
+    -- Set location.z to incomingZ manually
+    local floor = 0
+    local incomingZ = highway.getFloorIncomingZ(floor)
+
+    settings.set("location", { x = 2, y = 2, z = incomingZ })
+    settings.save()
+
+    -- Should not move at all
+    local before = settings.get("location").z
+    highway.moveToIncomingZ()
+    local after = settings.get("location").z
+
+    test.assertEquals(after, before)
+end)
+
+test.addTest("moveToIncomingZ: 2 steps up", function()
+    local floor = 0
+    local incomingZ = highway.getFloorIncomingZ(floor)
+
+    -- Simulate being 2 steps below
+    settings.set("location", { x = 0, y = 0, z = incomingZ - 2 })
+    settings.save()
+
+    local before = settings.get("location").z
+    highway.moveToIncomingZ()
+    local after = settings.get("location").z
+
+    test.assertEquals(after, before + 2)
+end)
+
+test.addTest("moveToIncomingZ: above incomingZ", function()
+    local floor = 0
+    local incomingZ = highway.getFloorIncomingZ(floor)
+
+    -- Simulate being 2 steps above
+    settings.set("location", { x = 0, y = 0, z = incomingZ + 2 })
+    settings.save()
+
+    local before = settings.get("location").z
+    highway.moveToIncomingZ()
+    local after = settings.get("location").z
+
+    test.assertEquals(after, before)
 end)
 
 test.run()
