@@ -116,13 +116,13 @@ function highway.getFloorIncomingZ(floor)
     return floorBaseZ + INCOMING_Z;
 end
 
-function highway.getOutgoingZ(floor)
+function highway.getFloorOutgoingZ(floor)
     local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + OUTGOING_Z;
 end
 
-function highway.getSwapZ(floor)
+function highway.getFloorSwapZ(floor)
     local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + SWAP_Z;

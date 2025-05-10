@@ -116,29 +116,6 @@ test.addTest("getFloorBaseZ floor -6 -> z = -80", function()
     test.assertEquals(highway.getFloorBaseZ(-6), -80)
 end)
 
--- roadSize = 5 (odd): valid range is [-2, 2]
-local roadSizeOdd = 5
-
-test.addTest("roadSize 5: x = 0, y = 3 -> false", function()
-    test.assertEquals(highway.isOnRoad(0, 3, roadSizeOdd), false)
-end)
-
-test.addTest("roadSize 5: x = -2, y = 99 -> true", function()
-    test.assertEquals(highway.isOnRoad(-2, 99, roadSizeOdd), true)
-end)
-
-test.addTest("roadSize 5: x = 2, y = 0 -> true", function()
-    test.assertEquals(highway.isOnRoad(2, 0, roadSizeOdd), true)
-end)
-
-test.addTest("roadSize 5: x = -3, y = 0 -> false", function()
-    test.assertEquals(highway.isOnRoad(-3, 0, roadSizeOdd), false)
-end)
-
-test.addTest("roadSize 5: x = 0, y = -3 -> false", function()
-    test.assertEquals(highway.isOnRoad(0, -3, roadSizeOdd), false)
-end)
-
 local roadSizeOdd = 5 -- range: [-2, 2]
 local roadSizeEven = 4 -- range: [-1, 2]
 
@@ -192,6 +169,10 @@ test.addTest("roadSize 4: x = -2, y = -2 -> false", function()
     test.assertEquals(highway.isOnRoad(-2, -2, roadSizeEven), false)
 end)
 
+test.addTest("roadSize 4: x = 5, y = 4 -> false", function()
+    test.assertEquals(highway.isOnRoad(5, 4, roadSizeEven), false)
+end)
+
 
 local INCOMING_Z = 3
 local OUTGOING_Z = 2
@@ -206,22 +187,22 @@ test.addTest("getFloorIncomingZ floor -2", function()
     test.assertEquals(highway.getFloorIncomingZ(-2), highway.getFloorBaseZ(-2) + INCOMING_Z)
 end)
 
--- getOutgoingZ(floor) tests
+-- getFloorOutgoingZ(floor) tests
 test.addTest("getOutgoingZ floor 0", function()
-    test.assertEquals(highway.getOutgoingZ(0), highway.getFloorBaseZ(0) + OUTGOING_Z)
+    test.assertEquals(highway.getFloorOutgoingZ(0), highway.getFloorBaseZ(0) + OUTGOING_Z)
 end)
 
 test.addTest("getOutgoingZ floor -2", function()
-    test.assertEquals(highway.getOutgoingZ(-2), highway.getFloorBaseZ(-2) + OUTGOING_Z)
+    test.assertEquals(highway.getFloorOutgoingZ(-2), highway.getFloorBaseZ(-2) + OUTGOING_Z)
 end)
 
--- getSwapZ(floor) tests
+-- getFloorSwapZ(floor) tests
 test.addTest("getSwapZ floor 0", function()
-    test.assertEquals(highway.getSwapZ(0), highway.getFloorBaseZ(0) + SWAP_Z)
+    test.assertEquals(highway.getFloorSwapZ(0), highway.getFloorBaseZ(0) + SWAP_Z)
 end)
 
 test.addTest("getSwapZ floor -2", function()
-    test.assertEquals(highway.getSwapZ(-2), highway.getFloorBaseZ(-2) + SWAP_Z)
+    test.assertEquals(highway.getFloorSwapZ(-2), highway.getFloorBaseZ(-2) + SWAP_Z)
 end)
 
 -- moveToIncomingZ
