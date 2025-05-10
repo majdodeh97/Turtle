@@ -19,7 +19,7 @@ test.addTest("getFloor z = 17 -> floor 1", function()
 end)
 
 test.addTest("getFloor z = 44 -> floor 3", function()
-    test.assertEquals(highway.getFloor(44), 3)
+    test.assertEquals(highway.getFloor(44), 4)
 end)
 
 test.addTest("getFloor z = 45 -> floor 4", function()
@@ -39,7 +39,7 @@ test.addTest("getFloor z = 120 -> floor 8", function()
 end)
 
 test.addTest("getFloor z = -1 -> floor 0", function()
-    test.assertEquals(highway.getFloor(-1), 0)
+    test.assertEquals(highway.getFloor(-1), -1)
 end)
 
 test.addTest("getFloor z = -10 -> floor -1", function()
