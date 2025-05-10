@@ -13,7 +13,7 @@ function test.addTest(name, fn)
 end
 
 function test.run()
-    print("🧪 Running " .. #test.tests .. " test(s)...\n")
+    print("Running " .. #test.tests .. " test(s)...\n")
     for i, t in ipairs(test.tests) do
         local success, err = pcall(t.fn)
         if success then
