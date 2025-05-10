@@ -78,22 +78,31 @@ function highway.moveTo(targetX, targetY)
     if(loc.x ~= 0 and loc.y ~= 1 and loc.z ~= 1) then
         while loc.z < INCOMING_Z do
             safe.execute(move.up)
+            loc.z = loc.z + 1
         end
     
         moveXY(1, 1)
+        loc.x = 1
+        loc.y = 1
     
         while loc.z > SWAP_Z do
             safe.execute(move.down)
+            loc.z = loc.z - 1
         end
     
         moveXY(0, 1)
+        loc.x = 0
+        loc.y = 1
     end
 
     while loc.z < OUTGOING_Z do
         safe.execute(move.up)
+        loc.z = loc.z + 1
     end
 
     moveXY(targetX, targetY)
+    loc.x = targetX
+    loc.y = targetY
 end
 
 return highway
