@@ -31,6 +31,17 @@ local ILLEGAL_STARTING_COLUMNS = {
     ["1,0"] = true,
 }
 
+local ABOVE_FLOOR_GROUPS = {
+    { count = 4, height = 10 },
+    { count = 4, height = 20 },
+    { count = 4, height = 30 }
+}
+
+local BELOW_FLOOR_GROUPS = {
+    { count = 4, height = 10 },
+    { count = 4, height = 20 }
+}
+
 local function moveXY(targetX, targetY)
     local location = move.getLocation()
     local currX, currY = location.x, location.y
@@ -66,29 +77,101 @@ local function moveXY(targetX, targetY)
     end
 end
 
-local function getFloorZ()
-    return 0
+function highway.getFloor(z)
+    if z >= 0 then
+        local currentZ = 0
+        local floor = 0
+
+        for _, group in ipairs(ABOVE_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                local nextZ = currentZ + group.height
+                if z < nextZ then
+                    return floor
+                end
+                currentZ = nextZ
+                floor = floor + 1
+            end
+        end
+
+        error("Z too high, no floor defined at z=" .. z)
+    else
+        local currentZ = 0
+        local floor = -1
+
+        for _, group in ipairs(BELOW_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                local nextZ = currentZ - group.height
+                if z >= nextZ then
+                    return floor
+                end
+                currentZ = nextZ
+                floor = floor - 1
+            end
+        end
+
+        error("Z too low, no floor defined at z=" .. z)
+    end
 end
 
-local function getFloor()
-    return 1
+function highway.getFloorBaseZ(floor)
+    if floor >= 0 then
+        local currentZ = 0
+        local currentFloor = 0
+
+        for _, group in ipairs(ABOVE_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                if currentFloor == floor then
+                    return currentZ
+                end
+                currentZ = currentZ + group.height
+                currentFloor = currentFloor + 1
+            end
+        end
+    else
+        local currentZ = 0
+        local currentFloor = -1
+
+        for _, group in ipairs(BELOW_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                if currentFloor == floor then
+                    return currentZ - group.height
+                end
+                currentZ = currentZ - group.height
+                currentFloor = currentFloor - 1
+            end
+        end
+    end
+
+    error("Floor number out of bounds: " .. floor)
 end
 
 local function getIncomingZ()
+    local floorBaseZ = getFloorBaseZ()
 
+    return floorBaseZ + INCOMING_Z;
 end
 
 local function getOutgoingZ()
+    local floorBaseZ = getFloorBaseZ()
 
+    return floorBaseZ + OUTGOING_Z;
 end
 
 local function getSwapZ()
+    local floorBaseZ = getFloorBaseZ()
+
+    return floorBaseZ + SWAP_Z;
+end
+
+local function moveToIncomingZ()
 
 end
 
 local function moveToIncomingHighway()
 
 end
+
+
 
 function highway.moveTo(targetX, targetY, floor)
 

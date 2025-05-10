@@ -23,6 +23,8 @@ programs/straight.lua
 
 room/tree.lua
 
+tests/highway.lua
+
 utils/fuel.lua
 utils/highway.lua
 utils/inventory.lua
@@ -31,5 +33,6 @@ utils/move.lua
 utils/navigation.lua
 utils/place.lua
 utils/safe.lua
+utils/test.lua
 
 worker/main.lua
