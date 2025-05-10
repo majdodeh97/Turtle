@@ -66,7 +66,34 @@ local function moveXY(targetX, targetY)
     end
 end
 
-function highway.moveTo(targetX, targetY)
+local function getFloorZ()
+    return 0
+end
+
+local function getFloor()
+    return 1
+end
+
+local function getIncomingZ()
+
+end
+
+local function getOutgoingZ()
+
+end
+
+local function getSwapZ()
+
+end
+
+local function moveToIncomingHighway()
+
+end
+
+function highway.moveTo(targetX, targetY, floor)
+
+    -- bug if turtle is already on the incoming highway, it will still attempt to go to outgoing highway 
+
     local targetKey = targetX .. "," .. targetY
     if RESERVED_COLUMNS[targetKey] then
         error("Cannot use moveTo on a reserved column: " .. targetKey)

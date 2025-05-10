@@ -19,13 +19,20 @@ if fileResponse then
     print("Downloaded:", fileName)
 else
     error = true
-    print("Failed to download:", line)
-    print("Cancelling reboot")
+    print("Failed to download: ", line)
+end
+
+local gpsLocation = navigation.getGpsLocation()
+if(gpsLocation.x and gpsLocation.y and gpsLocation.z) then
+    settings.set("location", gpsLocation)
+    settings.save()
+else
+    error = true
+    print("Failed to get gps location")
 end
 
 if(not error) then
-    local gpsLocation = navigation.getGpsLocation()
-    settings.set("location", gpsLocation)
-    settings.save()
     os.reboot()
+else
+    print("Cancelling reboot")
 end
