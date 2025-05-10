@@ -12,16 +12,17 @@ function test.addTest(name, fn)
     table.insert(test.tests, { name = name, fn = fn })
 end
 
-function test.run()
+function test.run(interrupt)
     print("Running " .. #test.tests .. " test(s)...\n")
     for i, t in ipairs(test.tests) do
         local success, err = pcall(t.fn)
-        if success then
-            print("[PASS] " .. t.name)
-        else
+        if not success then
             print("[FAIL] " .. t.name .. "\n   > " .. err)
+        elseif interrupt then
+            print("[PASS] " .. t.name)
         end
-        os.pullEvent("key")
+
+        if(interrupt) then os.pullEvent("key") end
     end
 
     test.tests = {}
