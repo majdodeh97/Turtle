@@ -6,7 +6,7 @@ local inventory = require("/utils/inventory")
 
 local highway = {}
 
-function isOnRoad(x, y, roadSize)
+local function isOnRoad(x, y, roadSize)
     local half = roadSize // 2
     local min = -half + 1
     local max = half
@@ -31,7 +31,38 @@ local ILLEGAL_STARTING_COLUMNS = {
     ["1,0"] = true,
 }
 
-function moveTo(targetX, targetY)
+local function moveXY(targetX, targetY)
+    local location = move.getLocation()
+    local currX, currY = location.x, location.y
+
+    -- Move in X axis first
+    while currX ~= targetX do
+        local dir = (targetX > currX) and "right" or "left"
+        move.faceDirection(dir)
+        local success = move.forward()
+        if not success then
+            print("Failed to move in X direction.")
+            sleep(1)
+        else
+            currX = (dir == "right") and (currX + 1) or (currX - 1)
+        end
+    end
+
+    -- Move in Y axis
+    while currY ~= targetY do
+        local dir = (targetY > currY) and "forward" or "back"
+        move.faceDirection(dir)
+        local success = move.forward()
+        if not success then
+            print("Failed to move in Y direction.")
+            sleep(1)
+        else
+            currY = (dir == "forward") and (currY + 1) or (currY - 1)
+        end
+    end
+end
+
+function highway.moveTo(targetX, targetY)
     local targetKey = targetX .. "," .. targetY
     if RESERVED_COLUMNS[targetKey] then
         error("Cannot use moveTo on a reserved column: " .. targetKey)
