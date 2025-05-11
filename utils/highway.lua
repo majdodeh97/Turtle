@@ -137,7 +137,7 @@ end
 function highway.moveToIncomingZ()
     local location = move.getLocation()
 
-    if location.x == 1 or location.y == 1 then
+    if location.x == 1 and location.y == 1 then
         log.error("moveToIncomingZ cannot be called from (1,1)")
     end
 
@@ -267,7 +267,7 @@ function highway.joinStack()
         if(turtle.inspect()) then
             safe.execute(move.up)
         end
-        
+
         -- dont use safe in case race condition (i.e. inspect noticed slot is free, but a turtle moved in that spot a split second later)
         if(move.forward()) then 
             break
@@ -318,11 +318,20 @@ local function recalibrateAndGoToTarget(targetX, targetY, targetFloor)
 end
 
 function highway.moveTo(targetX, targetY, targetFloor)
+    local location = move.getLocation()
+
     if (not highway.isLegalMove(targetX, targetY, targetFloor)) then 
-        log.error("Illegal moveTo to (x=)" .. targetX .. ", y=" .. targetY .. ", floor=" .. targetFloor .. ")") 
+        log.error("Illegal moveTo to a reserved column: (x=)" .. targetX .. ", y=" .. targetY .. ", floor=" .. targetFloor .. ")") 
     end
 
-    local location = move.getLocation()
+    if (not highway.isOnRoad(location.x, location.y, 4)) then 
+        log.error("Turtle must be on the road: (x=)" .. location.x .. ", y=" .. location.y .. ")") 
+    end
+
+    if (not highway.isOnRoad(targetX, targetY, 4)) then 
+        log.error("Target must be on the road: (x=)" .. targetX .. ", y=" .. targetY .. ")") 
+    end
+
 
     -- Special case: turtle at (0,0)
     if(location.x == 0 and location.y == 0) then
@@ -331,7 +340,7 @@ function highway.moveTo(targetX, targetY, targetFloor)
         if (location.z > 0) then 
             if(highway.isHome(targetX, targetY, targetFloor)) then
                 while (move.getLocation().z > 1) do
-                    safe.execute(move.down())
+                    safe.execute(move.down)
                 end
                 os.shutdown()
             else
