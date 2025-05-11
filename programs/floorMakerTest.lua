@@ -93,6 +93,8 @@ local function buildFloor(floor, startX, startY)
 
     moveToCorrectZ()
 
+    safe.execute(function() return move.faceDirection("forward") end)
+
     local direction = move.getDirection()
 
     local leftTurn = false
