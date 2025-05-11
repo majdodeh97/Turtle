@@ -57,9 +57,7 @@ local function goToBaseAndComeBack()
 end
 
 local function safeForward()
-    local slot = getBlockSlot()
-    
-    if not hasEnoughFuel() or not slot then
+    if not hasEnoughFuel() then
         goToBaseAndComeBack()
         safeForward()
         return
@@ -68,14 +66,28 @@ local function safeForward()
     safe.execute(move.forward)
 end
 
+local RESERVED_COLUMNS = {
+    ["0,0"] = true,
+    ["0,1"] = true,
+    ["1,0"] = true,
+    ["1,1"] = true,
+    ["0,-1"] = true,
+}
+
 local placed = 0
 
 local function safePlace()
     local slot = getBlockSlot()
     
-    if not hasEnoughFuel() or not slot then
+    if not slot then
         goToBaseAndComeBack()
         safePlace()
+        return
+    end
+
+    local location = move.getLocation()
+    local targetKey = location.x .. "," .. location.y
+    if RESERVED_COLUMNS[targetKey] then
         return
     end
 

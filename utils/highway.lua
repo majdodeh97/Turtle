@@ -111,7 +111,7 @@ function highway.isOnRoad(x, y, roadSize)
            (y >= min and y <= max)
 end
 
-function highway.getFloorIncomingZ(floor)
+local function getFloorIncomingZ(floor)
     local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + INCOMING_Z;
@@ -142,7 +142,7 @@ function highway.moveToIncomingZ()
     end
 
     local currentFloor = highway.getFloor(location.z)
-    local currentIncomingZ = highway.getFloorIncomingZ(currentFloor)
+    local currentIncomingZ = getFloorIncomingZ(currentFloor)
 
     local stepsToMove = currentIncomingZ - location.z
 
