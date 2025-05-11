@@ -250,8 +250,8 @@ function highway.isLegalMove(targetX, targetY, targetFloor)
     return true
 end
 
-function highway.goHome()
-    highway.moveTo(0,0,0)
+function highway.goHome(ignoreRoadCheck)
+    highway.moveTo(0,0,0,ignoreRoadCheck)
 end
 
 function highway.isHome(targetX, targetY, targetFloor)

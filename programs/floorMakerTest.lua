@@ -48,9 +48,9 @@ local function goToBaseAndComeBack()
     print("Returning to hub.")
     local resumeX, resumeY = location.x, location.y
     local resumeDir = move.getDirection()
-    highway.goHome()
+    highway.goHome(true)
     os.pullEvent("key")
-    highway.moveTo(resumeX, resumeY, floor)
+    highway.moveTo(resumeX, resumeY, floor, true)
     moveToCorrectZ()
 
     safe.execute(function() return move.faceDirection(resumeDir) end)
