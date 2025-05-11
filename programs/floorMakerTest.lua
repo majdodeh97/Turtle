@@ -68,6 +68,8 @@ local function safeForward()
     safe.execute(move.forward)
 end
 
+local placed = 0
+
 local function safePlace()
     local slot = getBlockSlot()
     
@@ -79,6 +81,9 @@ local function safePlace()
 
     turtle.select(slot)
     turtle.placeDown()
+
+    placed = placed + 1
+    print("Placed: " .. placed)
 end
 
 -- Main build logic
