@@ -117,13 +117,13 @@ local function getFloorIncomingZ(floor)
     return floorBaseZ + INCOMING_Z;
 end
 
-function highway.getFloorOutgoingZ(floor)
+local function getFloorOutgoingZ(floor)
     local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + OUTGOING_Z;
 end
 
-function highway.getFloorSwapZ(floor)
+local function getFloorSwapZ(floor)
 
     -- when recalibrating at the lowest floor in the base
     if(floor < highway.getMinFloor()) then return highway.getFloorBaseZ(highway.getMinFloor()) end 
@@ -134,7 +134,7 @@ function highway.getFloorSwapZ(floor)
 end
 
 -- Cannot be called when turtle is in 1,1 already (this will cause deadlock)
-function highway.moveToIncomingZ()
+local function moveToIncomingZ()
     local location = move.getLocation()
 
     if location.x == 1 and location.y == 1 then
@@ -151,14 +151,14 @@ function highway.moveToIncomingZ()
     end
 end
 
-function highway.moveToOutgoingZ(fallbackTargetX, fallbackTargetY, targetFloor)
+local function moveToOutgoingZ(fallbackTargetX, fallbackTargetY, targetFloor)
     local location = move.getLocation()
 
     if location.x ~= 0 or location.y ~= 1 then
         log.error("moveToOutgoingZ must be called from (0,1)")
     end
 
-    local targetOutgoingZ = highway.getFloorOutgoingZ(targetFloor)
+    local targetOutgoingZ = getFloorOutgoingZ(targetFloor)
     local currentZ = location.z
 
     if currentZ > targetOutgoingZ then
@@ -177,7 +177,7 @@ function highway.moveToOutgoingZ(fallbackTargetX, fallbackTargetY, targetFloor)
     end
 end
 
-function highway.moveToSwapZ(targetFloor)
+local function moveToSwapZ(targetFloor)
     local location = move.getLocation()
 
     if location.x ~= 1 or location.y ~= 1 then
@@ -187,15 +187,15 @@ function highway.moveToSwapZ(targetFloor)
     local currentZ = location.z
 
     local function getClosestSwapZ(currentZ)
-        local targetSwapZ = highway.getFloorSwapZ(targetFloor)
+        local targetSwapZ = getFloorSwapZ(targetFloor)
 
         if currentZ > targetSwapZ then return targetSwapZ end
 
         local currentFloor = highway.getFloor(currentZ)
-        local currentFloorSwapZ = highway.getFloorSwapZ(currentFloor)
+        local currentFloorSwapZ = getFloorSwapZ(currentFloor)
 
         if currentFloorSwapZ > currentZ then
-            return highway.getFloorSwapZ(currentFloor - 1)
+            return getFloorSwapZ(currentFloor - 1)
         else
             return currentFloorSwapZ
         end
@@ -239,7 +239,7 @@ function highway.moveToXY(targetX, targetY)
     end
 end
 
-function highway.isLegalMove(targetX, targetY, targetFloor)
+local function isLegalMove(targetX, targetY, targetFloor)
     if(targetX == 0 and targetY == 0 and targetFloor == 0) then return true end
 
     local targetKey = targetX .. "," .. targetY
@@ -260,7 +260,7 @@ function highway.isHome(targetX, targetY, targetFloor)
     return false
 end
 
-function highway.joinStack()
+local function joinStack()
     safe.execute(function() return move.faceDirection("back") end)
 
     while(true) do
@@ -280,19 +280,19 @@ end
 local function recalibrate(targetFloor)
     local location = move.getLocation()
     if(location.x ~= 1 or location.y ~= 1) then
-        highway.moveToIncomingZ()
+        moveToIncomingZ()
         highway.moveToXY(1,1)
     end
     
-    highway.moveToSwapZ(targetFloor)
+    moveToSwapZ(targetFloor)
     highway.moveToXY(0,1)
 end
 
 local function goToTarget(targetX, targetY, targetFloor)
-    highway.moveToOutgoingZ(targetX, targetY, targetFloor)
+    moveToOutgoingZ(targetX, targetY, targetFloor)
 
     if(highway.isHome(targetX, targetY, targetFloor)) then
-        highway.joinStack()
+        joinStack()
     else
         highway.moveToXY(targetX, targetY)
     end
@@ -300,7 +300,7 @@ end
 
 local function canGoToTarget(targetX, targetY, targetFloor)
     local location = move.getLocation()
-    local targetOutgoingZ = highway.getFloorOutgoingZ(targetFloor)
+    local targetOutgoingZ = getFloorOutgoingZ(targetFloor)
 
     if(location.x == 0 and location.y == 1 and location.z <= targetOutgoingZ) then return true end
 
@@ -320,7 +320,7 @@ end
 function highway.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     local location = move.getLocation()
 
-    if (not highway.isLegalMove(targetX, targetY, targetFloor)) then 
+    if (not isLegalMove(targetX, targetY, targetFloor)) then 
         log.error("Illegal moveTo to a reserved column: (x=)" .. targetX .. ", y=" .. targetY .. ", floor=" .. targetFloor .. ")") 
     end
 
