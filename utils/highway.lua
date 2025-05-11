@@ -317,21 +317,22 @@ local function recalibrateAndGoToTarget(targetX, targetY, targetFloor)
     goToTarget(targetX, targetY, targetFloor)
 end
 
-function highway.moveTo(targetX, targetY, targetFloor)
+function highway.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     local location = move.getLocation()
 
     if (not highway.isLegalMove(targetX, targetY, targetFloor)) then 
         log.error("Illegal moveTo to a reserved column: (x=)" .. targetX .. ", y=" .. targetY .. ", floor=" .. targetFloor .. ")") 
     end
 
-    if (not highway.isOnRoad(location.x, location.y, 4)) then 
-        log.error("Turtle must be on the road: (x=)" .. location.x .. ", y=" .. location.y .. ")") 
+    if(not ignoreRoadCheck) then
+        if (not highway.isOnRoad(location.x, location.y, 4)) then 
+            log.error("Turtle must be on the road: (x=)" .. location.x .. ", y=" .. location.y .. ")") 
+        end
+    
+        if (not highway.isOnRoad(targetX, targetY, 4)) then 
+            log.error("Target must be on the road: (x=)" .. targetX .. ", y=" .. targetY .. ")") 
+        end
     end
-
-    if (not highway.isOnRoad(targetX, targetY, 4)) then 
-        log.error("Target must be on the road: (x=)" .. targetX .. ", y=" .. targetY .. ")") 
-    end
-
 
     -- Special case: turtle at (0,0)
     if(location.x == 0 and location.y == 0) then
@@ -342,7 +343,8 @@ function highway.moveTo(targetX, targetY, targetFloor)
                 while (move.getLocation().z > 1) do
                     safe.execute(move.down)
                 end
-                os.shutdown()
+                return
+                --os.shutdown()
             else
                 highway.moveToXY(0,1) -- recalibrating without this is dangerous as we might be in the idle stack, and can't go up to incomingZ
             end

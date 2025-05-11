@@ -8,7 +8,7 @@
         z = 0
     },
     base = {
-        roomWidth = 9,
-        streetWidth = 3
+        roomWidth = 22,
+        streetWidth = 4
     },
 }

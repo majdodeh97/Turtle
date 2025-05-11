@@ -11,6 +11,7 @@ hub/main.lua
 
 programs/cobbleBot.lua
 programs/craft.lua
+programs/floorMakerTest.lua
 programs/furnace.lua
 programs/furnaceEmptier.lua
 programs/furnaceFueler.lua
