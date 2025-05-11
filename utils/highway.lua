@@ -15,11 +15,6 @@ local RESERVED_COLUMNS = {
     ["1,1"] = true,
 }
 
-local ILLEGAL_STARTING_COLUMNS = {
-    ["0,0"] = true,
-    ["1,0"] = true,
-}
-
 local ABOVE_FLOOR_GROUPS = {
     { count = 4, height = 10 },
     { count = 4, height = 20 },
@@ -31,7 +26,13 @@ local BELOW_FLOOR_GROUPS = {
     { count = 4, height = 20 }
 }
 
-
+function highway.getMinFloor()
+    local total = 0
+    for _, group in ipairs(BELOW_FLOOR_GROUPS) do
+        total = total + group.count
+    end
+    return -total
+end
 
 function highway.getFloor(z)
     if z >= 0 then
@@ -123,6 +124,10 @@ function highway.getFloorOutgoingZ(floor)
 end
 
 function highway.getFloorSwapZ(floor)
+
+    -- when recalibrating at the lowest floor in the base
+    if(floor < highway.getMinFloor()) then return highway.getFloorBaseZ(highway.getMinFloor()) end 
+
     local floorBaseZ = highway.getFloorBaseZ(floor)
 
     return floorBaseZ + SWAP_Z;
@@ -131,6 +136,11 @@ end
 -- Cannot be called when turtle is in 1,1 already (this will cause deadlock)
 function highway.moveToIncomingZ()
     local location = move.getLocation()
+
+    if location.x == 1 or location.y == 1 then
+        log.error("moveToIncomingZ cannot be called from (1,1)")
+    end
+
     local currentFloor = highway.getFloor(location.z)
     local currentIncomingZ = highway.getFloorIncomingZ(currentFloor)
 
@@ -138,6 +148,68 @@ function highway.moveToIncomingZ()
 
     for i = 1, stepsToMove do
         safe.execute(move.up)
+    end
+end
+
+function highway.moveToOutgoingZ(fallbackTargetX, fallbackTargetY, targetFloor)
+    local location = move.getLocation()
+
+    if location.x ~= 0 or location.y ~= 1 then
+        log.error("moveToOutgoingZ must be called from (0,1)")
+    end
+
+    local targetOutgoingZ = highway.getFloorOutgoingZ(targetFloor)
+    local currentZ = location.z
+
+    if currentZ > targetOutgoingZ then
+        -- Illegal move down
+        -- Should theoretically never happen
+        log.error("Illegal move down from moveToOutgoingZ (currentZ=" .. currentZ .. ", targetOutgoingZ=" .. targetOutgoingZ .. ")")
+    end
+
+    if currentZ == targetOutgoingZ then
+        return
+    end
+
+    local stepsToMove = targetOutgoingZ - currentZ
+    for _ = 1, stepsToMove do
+        safe.execute(move.up)
+    end
+end
+
+function highway.moveToSwapZ(targetFloor)
+    local location = move.getLocation()
+
+    if location.x ~= 1 or location.y ~= 1 then
+        log.error("moveToSwapZ must be called from (1,1)")
+    end
+
+    local currentZ = location.z
+
+    local function getClosestSwapZ(currentZ)
+        local targetSwapZ = highway.getFloorSwapZ(targetFloor)
+
+        if currentZ > targetSwapZ then return targetSwapZ end
+
+        local currentFloor = highway.getFloor(currentZ)
+        local currentFloorSwapZ = highway.getFloorSwapZ(currentFloor)
+
+        if currentFloorSwapZ > currentZ then
+            return highway.getFloorSwapZ(currentFloor - 1)
+        else
+            return currentFloorSwapZ
+        end
+    end
+
+    local targetSwapZ = getClosestSwapZ(currentZ)
+
+    if currentZ == targetSwapZ then
+        return
+    end
+
+    local stepsToMove = currentZ - targetSwapZ
+    for _ = 1, stepsToMove do
+        safe.execute(move.down)
     end
 end
 
@@ -167,63 +239,108 @@ function highway.moveToXY(targetX, targetY)
     end
 end
 
-function highway.moveToNegativeZHighway()
-    highway.moveToXY(1,1)
-end
-
-function highway.moveToSwapZ()
-    local location = move.getLocation()
-    local currentFloor = highway.getFloor(location.z)
-    local currentSwapZ = highway.getFloorSwapZ(currentFloor)
-
-    local stepsToMove = location.z - currentSwapZ 
-
-    for i = 1, stepsToMove do
-        safe.execute(move.down)
-    end
-end
-
-function highway.moveTo(targetX, targetY, floor)
-
-    -- bug if turtle is already on the incoming highway, it will still attempt to go to outgoing highway 
+function highway.isLegalMove(targetX, targetY, targetFloor)
+    if(targetX == 0 and targetY == 0 and targetFloor == 0) then return true end
 
     local targetKey = targetX .. "," .. targetY
     if RESERVED_COLUMNS[targetKey] then
-        error("Cannot use moveTo on a reserved column: " .. targetKey)
+        return false
     end
 
-    local loc = move.getLocation()
+    return true
+end
 
-    local locationKey = loc.x .. "," .. loc.y
-    if ILLEGAL_STARTING_COLUMNS[locationKey] then
-        error("Cannot use moveTo from an illegal column: " .. locationKey)
-    end
+function highway.goHome()
+    highway.moveTo(0,0,0)
+end
 
-    if(loc.x ~= 0 or loc.y ~= 1 or loc.z ~= 1) then
-        
-    
-        moveXY(1, 1)
-        loc.x = 1
-        loc.y = 1
-    
-        while loc.z > SWAP_Z do
-            safe.execute(move.down)
-            loc.z = loc.z - 1
+function highway.isHome(targetX, targetY, targetFloor)
+    if(targetX == 0 and targetY == 0 and targetFloor == 0) then return true end
+
+    return false
+end
+
+function highway.joinStack()
+    safe.execute(function() return move.faceDirection("back") end)
+
+    while(true) do
+        if(turtle.inspect()) then
+            safe.execute(move.up)
         end
+        
+        -- dont use safe in case race condition (i.e. inspect noticed slot is free, but a turtle moved in that spot a split second later)
+        if(move.forward()) then 
+            break
+        end
+    end
+
+    highway.moveTo(0, 0, 0)
+end
     
-        moveXY(0, 1)
-        loc.x = 0
-        loc.y = 1
+local function recalibrate(targetFloor)
+    local location = move.getLocation()
+    if(location.x ~= 1 or location.y ~= 1) then
+        highway.moveToIncomingZ()
+        highway.moveToXY(1,1)
+    end
+    
+    highway.moveToSwapZ(targetFloor)
+    highway.moveToXY(0,1)
+end
+
+local function goToTarget(targetX, targetY, targetFloor)
+    highway.moveToOutgoingZ(targetX, targetY, targetFloor)
+
+    if(highway.isHome(targetX, targetY, targetFloor)) then
+        highway.joinStack()
+    else
+        highway.moveToXY(targetX, targetY)
+    end
+end
+
+local function canGoToTarget(targetX, targetY, targetFloor)
+    local location = move.getLocation()
+    local targetOutgoingZ = highway.getFloorOutgoingZ(targetFloor)
+
+    if(location.x == 0 and location.y == 1 and location.z <= targetOutgoingZ) then return true end
+
+    return false
+end
+
+local function recalibrateAndGoToTarget(targetX, targetY, targetFloor)
+    if(not canGoToTarget(targetX, targetY, targetFloor)) then
+        recalibrate(targetFloor)
     end
 
-    while loc.z < OUTGOING_Z do
-        safe.execute(move.up)
-        loc.z = loc.z + 1
+    if(not canGoToTarget(targetX, targetY, targetFloor)) then log.error("Recalibration failed") end
+
+    goToTarget(targetX, targetY, targetFloor)
+end
+
+function highway.moveTo(targetX, targetY, targetFloor)
+    if (not highway.isLegalMove(targetX, targetY, targetFloor)) then 
+        log.error("Illegal moveTo to (x=)" .. targetX .. ", y=" .. targetY .. ", floor=" .. targetFloor .. ")") 
     end
 
-    moveXY(targetX, targetY)
-    loc.x = targetX
-    loc.y = targetY
+    local location = move.getLocation()
+
+    -- Special case: turtle at (0,0)
+    if(location.x == 0 and location.y == 0) then
+        if(location.z == 0) then log.error("Hub turtle trying to move") end
+
+        if (location.z > 0) then 
+            if(highway.isHome(targetX, targetY, targetFloor)) then
+                while (move.getLocation().z > 1) do
+                    safe.execute(move.down())
+                end
+                os.shutdown()
+            else
+                highway.moveToXY(0,1) -- recalibrating without this is dangerous as we might be in the idle stack, and can't go up to incomingZ
+            end
+        end
+    end
+
+    recalibrateAndGoToTarget(targetX, targetY, targetFloor)
 end
 
 return highway
