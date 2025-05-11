@@ -133,7 +133,8 @@ local function buildFloor(floor, startX, startY)
         end
     end
 
-    log.info("Floor completed!")
+    print("Floor completed!")
+    highway.goHome(true)
 end
 
 
