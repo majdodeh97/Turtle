@@ -14,7 +14,7 @@ function location.getDirection()
 end
 
 function location.getOppositeDir(dir)
-    dir = dir or move.getDirection()
+    dir = dir or location.getDirection()
 
     local opposites = {
         forward = "back", back = "forward",

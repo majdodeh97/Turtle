@@ -8,13 +8,13 @@ local isFlashing = false
 local flashCooldown = 0  
  
 -- Check if cobblestone is in front
-function isCobblestoneInFront()
+local function isCobblestoneInFront()
     local success, data = turtle.inspect()
     return success and data.name == "minecraft:cobblestone"
 end
  
 -- Dump inventory into chest behind the turtle
-function dumpInventory()
+local function dumpInventory()
     local canDrop = false
     for i = 1, 16 do
         turtle.select(i)
