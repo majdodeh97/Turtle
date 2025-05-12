@@ -34,7 +34,7 @@ local function hasEnoughFuel()
 end
 
 local function moveToCorrectZ()
-    local baseZ = highwayNav.getFloorBaseZ(floor)
+    local baseZ = location.getFloorBaseZ(floor)
     local targetZ = baseZ + 1
 
      -- Adjust to correct Z level
