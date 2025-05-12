@@ -9,6 +9,6 @@
     },
     base = {
         roomWidth = 22,
-        streetWidth = 4
+        roadWidth = 4
     },
 }
