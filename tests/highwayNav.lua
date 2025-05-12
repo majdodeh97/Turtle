@@ -1,6 +1,7 @@
 local test = require("/utils/test")
 local highwayNav = require("/utils/highwayNav")
 local move = require("/utils/move")
+local location = require("/utils/location")
 
 -- getFloor(z) tests
 test.addTest("getFloor z = 0 -> floor 0", function()
@@ -260,7 +261,7 @@ test.addTest("moveToXY: (0,0) to (2,1)", function()
 
     highwayNav.moveToXY(2, 1)
 
-    local loc = move.getLocation()
+    local loc = location.getLocation()
     test.assertEquals(loc.x, 2)
     test.assertEquals(loc.y, 1)
 end)
@@ -272,7 +273,7 @@ test.addTest("moveToXY: (3,3) to (0,0)", function()
 
     highwayNav.moveToXY(0, 0)
 
-    local loc = move.getLocation()
+    local loc = location.getLocation()
     test.assertEquals(loc.x, 0)
     test.assertEquals(loc.y, 0)
 end)
@@ -284,7 +285,7 @@ test.addTest("moveToXY: (1,1) to (1,1) (no movement)", function()
 
     highwayNav.moveToXY(1, 1)
 
-    local loc = move.getLocation()
+    local loc = location.getLocation()
     test.assertEquals(loc.x, 1)
     test.assertEquals(loc.y, 1)
 end)
@@ -296,7 +297,7 @@ test.addTest("moveToXY: (2,0) to (-1,4)", function()
 
     highwayNav.moveToXY(-1, 4)
 
-    local loc = move.getLocation()
+    local loc = location.getLocation()
     test.assertEquals(loc.x, -1)
     test.assertEquals(loc.y, 4)
 end)

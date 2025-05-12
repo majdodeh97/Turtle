@@ -1,4 +1,5 @@
 local move = require("/utils/move")
+local location = require("/utils/location")
 
 fs.delete(".settings")
 
@@ -19,7 +20,7 @@ if fileResponse then
 
     settings.load()
 
-    local gpsLocation = move.getGpsLocation()
+    local gpsLocation = location.getGpsLocation()
     if gpsLocation then
         settings.set("location", gpsLocation)
         settings.save()

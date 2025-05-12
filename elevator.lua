@@ -1,12 +1,13 @@
 local move = require("/utils/move")
+local location = require("/utils/location")
 
 local floor = tonumber(arg[1])
 
 local function moveToFloor(floor)
-    local locationZ = move.getLocation().z
+    local locZ = location.getLocation().z
     local destinationZ = floor * 10
     
-    local toMove = destinationZ - locationZ
+    local toMove = destinationZ - locZ
     local moveFn
 
     if(toMove > 0) then
@@ -26,7 +27,7 @@ local function moveToFloor(floor)
 end
 
 moveToFloor(floor)
-if(move.getLocation().z ~= 0) then
+if(location.getLocation().z ~= 0) then
     sleep(10)
     moveToFloor(0)
 end

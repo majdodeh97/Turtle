@@ -1,5 +1,6 @@
 local move = require("/utils/move")
 local log = require("/utils/log")
+local location = require("/utils/location")
 
 local moveTracker = {}
 
@@ -11,7 +12,7 @@ local function logMovement(dir, delta)
     local stack = settings.get("moveStack") or {}
     local top = stack[#stack]
 
-    local opposite = move.getOppositeDir(dir)
+    local opposite = location.getOppositeDir(dir)
 
     if top and top.dir == dir then
         top.amount = top.amount + delta
@@ -34,7 +35,7 @@ end
 function moveTracker.forward()
     local success, reason = move.forward()
     if success then
-        local dir = move.getDirection()
+        local dir = location.getDirection()
         logMovement(dir, 1)
     end
     return success, reason
@@ -43,7 +44,7 @@ end
 function moveTracker.back()
     local success, reason = move.back()
     if success then
-        local dir = move.getOppositeDir(move.getDirection())
+        local dir = location.getOppositeDir()
         logMovement(dir, 1)
     end
     return success, reason
@@ -112,7 +113,7 @@ function moveTracker.backtrackUntil(conditionFn)
         local moveItem = stack[i]
         local dir = moveItem.dir
         local amount = moveItem.amount
-        local oppositeDir = move.getOppositeDir(dir)
+        local oppositeDir = location.getOppositeDir(dir)
 
         if dir == "up" or dir == "down" then
             local moveFn = (dir == "up") and moveTracker.down or moveTracker.up

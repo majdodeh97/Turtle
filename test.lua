@@ -1,5 +1,6 @@
 local moveTracker = require("/utils/moveTracker")
 local move = require("/utils/move")
+local location = require("/utils/location")
 local place = require("/utils/place")
 local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
@@ -16,7 +17,7 @@ local inventory = require("/utils/inventory")
 -- log: logging an error, terminating, and clearing the setting on startup
 -- log: Invalid direction in settings (to test, do turn -> move -> turn -> move etc for all 4 directions)
 -- inventory.drop and dropAll with and without any params
--- move.getGpsLocation
+-- location.getGpsLocation
 -- roomMaker
 
 -- todo: continue refactoring cobbleBot and others to use our utils
@@ -27,7 +28,7 @@ local inventory = require("/utils/inventory")
 
 os.pullEvent("key")
 
-print(textutils.serialise(move.getGpsLocation()))
+print(textutils.serialise(location.getGpsLocation()))
 
 os.pullEvent("key")
 

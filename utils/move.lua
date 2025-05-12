@@ -1,69 +1,23 @@
 local log = require("/utils/log")
 local fuel = require("/utils/fuel")
+local location = require("/utils/location")
 local move = {}
-
-function move.getDirection()
-    local dir = settings.get("direction")
-    if not dir then
-        log.error("No 'direction' defined in settings.")
-    end
-    if(dir ~= "forward" and dir ~= "back" and dir ~= "right" and dir ~= "left") then
-        log.error("Invalid direction in settings: " .. dir)
-    end
-    return dir
-end
-
-function move.getOppositeDir(dir)
-    dir = dir or move.getDirection()
-
-    local opposites = {
-        forward = "back", back = "forward",
-        left = "right", right = "left",
-        up = "down", down = "up"
-    }
-    return opposites[dir]
-end
-
-function move.getLocation()
-    local location = settings.get("location")
-    if not location then
-        log.error("No 'location' defined in settings.")
-    end
-
-    return location
-end
-
-function move.getGpsLocation()
-    local x,y,z
-
-    local hasModem = peripheral.find("modem") ~= nil
-
-    if(hasModem) then
-        x,y,z = gps.locate()
-
-        return {
-            x = x,
-            y = y,
-            z = z
-        }
-    end
-end
 
 local function updateLocation(dir, delta)
     if delta <= 0 then
         log.error("Tried to log a move of " .. delta .. " in the " .. dir .. " direction.")
     end
 
-    local location = move.getLocation()
+    local loc = location.getLocation()
 
-    if(dir == "forward") then location.y = location.y + 1 end
-    if(dir == "back") then location.y = location.y - 1 end
-    if(dir == "right") then location.x = location.x + 1 end
-    if(dir == "left") then location.x = location.x - 1 end
-    if(dir == "up") then location.z = location.z + 1 end
-    if(dir == "down") then location.z = location.z - 1 end
+    if(dir == "forward") then loc.y = loc.y + 1 end
+    if(dir == "back") then loc.y = loc.y - 1 end
+    if(dir == "right") then loc.x = loc.x + 1 end
+    if(dir == "left") then loc.x = loc.x - 1 end
+    if(dir == "up") then loc.z = loc.z + 1 end
+    if(dir == "down") then loc.z = loc.z - 1 end
 
-    settings.set("location", location)
+    settings.set("location", loc)
     settings.save()
 end
 
@@ -72,7 +26,7 @@ function move.forward()
 
     local success, reason = turtle.forward()
     if success then
-        local dir = move.getDirection()
+        local dir = location.getDirection()
         updateLocation(dir, 1)
     end
     return success, reason
@@ -83,7 +37,7 @@ function move.back()
     
     local success, reason = turtle.back()
     if success then
-        local dir = move.getOppositeDir(move.getDirection())
+        local dir = location.getOppositeDir()
         updateLocation(dir, 1)
     end
     return success, reason
@@ -109,7 +63,7 @@ function move.turnRight()
     local success, reason = turtle.turnRight()
     if not success then return success, reason end
 
-    local dir = move.getDirection()
+    local dir = location.getDirection()
     local order = { "forward", "right", "back", "left" }
 
     for i, d in ipairs(order) do
@@ -127,7 +81,7 @@ function move.turnLeft()
     local success, reason = turtle.turnLeft()
     if not success then return success, reason end
 
-    local dir = move.getDirection()
+    local dir = location.getDirection()
     local order = { "forward", "right", "back", "left" }
 
     for i, d in ipairs(order) do
@@ -142,7 +96,7 @@ function move.turnLeft()
 end
 
 function move.faceDirection(targetDir)
-    local currentDir = move.getDirection()
+    local currentDir = location.getDirection()
 
     local directions = { "forward", "right", "back", "left" }
 

@@ -1,6 +1,7 @@
 local move = require("/utils/move")
 local safe = require("/utils/safe")
 local log = require("/utils/log")
+local location = require("/utils/location")
 
 local highwayNav = {}
 
@@ -135,16 +136,16 @@ end
 
 -- Cannot be called when turtle is in 1,1 already (this will cause deadlock)
 local function moveToIncomingZ()
-    local location = move.getLocation()
+    local loc = location.getLocation()
 
-    if location.x == 1 and location.y == 1 then
+    if loc.x == 1 and loc.y == 1 then
         log.error("moveToIncomingZ cannot be called from (1,1)")
     end
 
-    local currentFloor = highwayNav.getFloor(location.z)
+    local currentFloor = highwayNav.getFloor(loc.z)
     local currentIncomingZ = getFloorIncomingZ(currentFloor)
 
-    local stepsToMove = currentIncomingZ - location.z
+    local stepsToMove = currentIncomingZ - loc.z
 
     for i = 1, stepsToMove do
         safe.execute(move.up)
@@ -152,14 +153,14 @@ local function moveToIncomingZ()
 end
 
 local function moveToOutgoingZ(fallbackTargetX, fallbackTargetY, targetFloor)
-    local location = move.getLocation()
+    local loc = location.getLocation()
 
-    if location.x ~= 0 or location.y ~= 1 then
+    if loc.x ~= 0 or loc.y ~= 1 then
         log.error("moveToOutgoingZ must be called from (0,1)")
     end
 
     local targetOutgoingZ = getFloorOutgoingZ(targetFloor)
-    local currentZ = location.z
+    local currentZ = loc.z
 
     if currentZ > targetOutgoingZ then
         -- Illegal move down
@@ -178,13 +179,13 @@ local function moveToOutgoingZ(fallbackTargetX, fallbackTargetY, targetFloor)
 end
 
 local function moveToSwapZ(targetFloor)
-    local location = move.getLocation()
+    local loc = location.getLocation()
 
-    if location.x ~= 1 or location.y ~= 1 then
+    if loc.x ~= 1 or loc.y ~= 1 then
         log.error("moveToSwapZ must be called from (1,1)")
     end
 
-    local currentZ = location.z
+    local currentZ = loc.z
 
     local function getClosestSwapZ(currentZ)
         local targetSwapZ = getFloorSwapZ(targetFloor)
@@ -214,9 +215,9 @@ local function moveToSwapZ(targetFloor)
 end
 
 function highwayNav.moveToXY(targetX, targetY)
-    local location = move.getLocation()
-    local dx = targetX - location.x
-    local dy = targetY - location.y
+    local loc = location.getLocation()
+    local dx = targetX - loc.x
+    local dy = targetY - loc.y
 
     local function moveInDirection(dir, amount)
         if(amount == 0) then return end
@@ -278,8 +279,8 @@ local function joinStack()
 end
     
 local function recalibrate(targetFloor)
-    local location = move.getLocation()
-    if(location.x ~= 1 or location.y ~= 1) then
+    local loc = location.getLocation()
+    if(loc.x ~= 1 or loc.y ~= 1) then
         moveToIncomingZ()
         highwayNav.moveToXY(1,1)
     end
@@ -299,10 +300,10 @@ local function goToTarget(targetX, targetY, targetFloor)
 end
 
 local function canGoToTarget(targetX, targetY, targetFloor)
-    local location = move.getLocation()
+    local loc = location.getLocation()
     local targetOutgoingZ = getFloorOutgoingZ(targetFloor)
 
-    if(location.x == 0 and location.y == 1 and location.z <= targetOutgoingZ) then return true end
+    if(loc.x == 0 and loc.y == 1 and loc.z <= targetOutgoingZ) then return true end
 
     return false
 end
@@ -323,7 +324,7 @@ end
 -- If the idle stack is tall enough, this will cause deadlock
 
 function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
-    local location = move.getLocation()
+    local loc = location.getLocation()
 
     if (not isLegalMove(targetX, targetY, targetFloor)) then 
         log.error("Illegal moveTo to a reserved column: (x=)" .. targetX .. ", y=" .. targetY .. ", floor=" .. targetFloor .. ")") 
@@ -331,8 +332,8 @@ function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
 
     if(not ignoreRoadCheck) then
         local roadSize = settings.get("base").roadSize
-        if (not highwayNav.isOnRoad(location.x, location.y, roadSize)) then 
-            log.error("Turtle must be on the road: (x=)" .. location.x .. ", y=" .. location.y .. ")") 
+        if (not highwayNav.isOnRoad(loc.x, loc.y, roadSize)) then 
+            log.error("Turtle must be on the road: (x=)" .. loc.x .. ", y=" .. loc.y .. ")") 
         end
     
         if (not highwayNav.isOnRoad(targetX, targetY, roadSize)) then 
@@ -341,12 +342,12 @@ function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     end
 
     -- Special case: turtle at (0,0)
-    if(location.x == 0 and location.y == 0) then
-        if(location.z == 0) then log.error("Hub turtle trying to move") end
+    if(loc.x == 0 and loc.y == 0) then
+        if(loc.z == 0) then log.error("Hub turtle trying to move") end
 
-        if (location.z > 0) then 
+        if (loc.z > 0) then 
             if(highwayNav.isHome(targetX, targetY, targetFloor)) then
-                while (move.getLocation().z > 1) do
+                while (location.getLocation().z > 1) do
                     safe.execute(move.down)
                 end
                 return
