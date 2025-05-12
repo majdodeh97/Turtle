@@ -33,6 +33,7 @@ utils/log.lua
 utils/move.lua
 utils/moveTracker.lua
 utils/navigation.lua
+utils/location.lua
 utils/place.lua
 utils/safe.lua
 utils/test.lua
