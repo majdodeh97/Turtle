@@ -1,6 +1,5 @@
 .settings
 
-apiKey.lua
 elevator.lua
 manifest.txt
 reset.lua
