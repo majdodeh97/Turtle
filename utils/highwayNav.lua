@@ -317,6 +317,11 @@ local function recalibrateAndGoToTarget(targetX, targetY, targetFloor)
     goToTarget(targetX, targetY, targetFloor)
 end
 
+-- Warning: Cannot reliably be used to move to a location directly behind the idle stack
+-- Current implementation moves along the shortest axis first (in this case, the x axis)
+-- Then it will turn and move from (0,1) to the negative y direction
+-- If the idle stack is tall enough, this will cause deadlock
+
 function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     local location = move.getLocation()
 
