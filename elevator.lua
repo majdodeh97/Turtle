@@ -3,23 +3,29 @@ local move = require("/utils/move")
 
 local floor = tonumber(arg[1])
 
-local locationZ = move.getLocation()
-local destinationZ = floor * 10
+local function moveToFloor(floor)
+    local locationZ = move.getLocation().z
+    local destinationZ = floor * 10
+    
+    local toMove = destinationZ - locationZ
+    local moveFn
 
-local toMove = destinationZ - locationZ
-local moveFn
-
-if(toMove > 0) then
-    moveFn = move.up
-elseif (toMove < 0) then
-    moveFn = move.down
-else
-    print("You are already there")
-    return
+    if(toMove > 0) then
+        moveFn = move.up
+    elseif (toMove < 0) then
+        moveFn = move.down
+    else
+        print("You are already there")
+        return
+    end
+    
+    toMove = math.abs(toMove)
+    
+    for i = 1, toMove do
+        moveFn()
+    end
 end
 
-toMove = math.abs(toMove)
-
-for i = 1, toMove do
-    moveFn()
-end
+moveToFloor(floor)
+sleep(10)
+moveToFloor(0)
