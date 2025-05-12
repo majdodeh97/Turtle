@@ -75,6 +75,18 @@ function location.isOnRoad(x, y)
            (y >= min and y <= max)
 end
 
+function location.getRoom(x, y)
+    x = x or location.getLocation().x
+    y = y or location.getLocation().y
+
+    if(location.isOnRoad(x, y)) then return end
+     
+    local col = x > 0 and "north" or "south"
+    local row = x > 0 and "east" or "west"
+
+    return col, row
+end
+
 function location.getMinFloor()
     local total = 0
     for _, group in ipairs(BELOW_FLOOR_GROUPS) do
