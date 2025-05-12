@@ -1,13 +1,12 @@
-local navigation = require("/utils/navigation")
+local roomNav = require("/utils/roomNav")
 local move = require("/utils/move")
 local place = require("/utils/place")
 local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
-local highway = require("/utils/highway")
 
 -- To test:
--- navigation: backtrackUntil
--- navigation: backtrack
+-- roomNav: backtrackUntil
+-- roomNav: backtrack
 -- inventory: foreach
 -- inventory: first
 -- inventory: all
@@ -17,20 +16,18 @@ local highway = require("/utils/highway")
 -- log: logging an error, terminating, and clearing the setting on startup
 -- log: Invalid direction in settings (to test, do turn -> move -> turn -> move etc for all 4 directions)
 -- inventory.drop and dropAll with and without any params
--- navigation.getGpsLocation
+-- move.getGpsLocation
 -- roomMaker
 
 -- todo: continue refactoring cobbleBot and others to use our utils
 -- todo: work on tree.lua
 -- todo: decide on how files are copied/updated. Old way via disk drive or new way with red net
--- todo: work on highway movement
 -- todo: add unit tests for utils
 
-highway.moveTo(5,1)
 
 os.pullEvent("key")
 
-print(textutils.serialise(navigation.getGpsLocation()))
+print(textutils.serialise(move.getGpsLocation()))
 
 os.pullEvent("key")
 
@@ -96,26 +93,26 @@ if(test1 == 0) then
     move.back()
     move.back()
 elseif(test1 == 1) then
-    navigation.forward()
-    navigation.forward()
-    navigation.forward()
-    navigation.forward()
-    navigation.turnRight()
-    navigation.forward()
-    navigation.up()
-    navigation.turnLeft()
-    navigation.forward()
-    navigation.forward()
-    navigation.forward()
-    navigation.faceDirection("left")
-    navigation.back()
-    navigation.back()
-    navigation.back()
-    navigation.back()
+    roomNav.forward()
+    roomNav.forward()
+    roomNav.forward()
+    roomNav.forward()
+    roomNav.turnRight()
+    roomNav.forward()
+    roomNav.up()
+    roomNav.turnLeft()
+    roomNav.forward()
+    roomNav.forward()
+    roomNav.forward()
+    roomNav.faceDirection("left")
+    roomNav.back()
+    roomNav.back()
+    roomNav.back()
+    roomNav.back()
 elseif(test1 == 2) then
-    navigation.backtrack()
+    roomNav.backtrack()
 elseif(test1 == 3) then -- bug detected
-    navigation.backtrackUntil(function()
+    roomNav.backtrackUntil(function()
         return isCobblestoneInFront()
     end)
 elseif(test1 == 4) then

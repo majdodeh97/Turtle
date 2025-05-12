@@ -1,4 +1,3 @@
-local navigation = require("/utils/navigation")
 local move = require("/utils/move")
 
 local floor = tonumber(arg[1])

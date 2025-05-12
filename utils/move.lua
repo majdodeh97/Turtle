@@ -31,6 +31,22 @@ function move.getLocation()
     return location
 end
 
+function move.getGpsLocation()
+    local x,y,z
+
+    local hasModem = peripheral.find("modem") ~= nil
+
+    if(hasModem) then
+        x,y,z = gps.locate()
+
+        return {
+            x = x,
+            y = y,
+            z = z
+        }
+    end
+end
+
 local function updateLocation(dir, delta)
     if delta <= 0 then
         log.error("Tried to log a move of " .. delta .. " in the " .. dir .. " direction.")

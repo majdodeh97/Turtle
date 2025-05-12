@@ -1,4 +1,4 @@
-local navigation = require("/utils/navigation")
+local move = require("/utils/move")
 
 fs.delete(".settings")
 
@@ -19,8 +19,8 @@ if fileResponse then
 
     settings.load()
 
-    local gpsLocation = navigation.getGpsLocation()
-    if gpsLocation.x and gpsLocation.y and gpsLocation.z then
+    local gpsLocation = move.getGpsLocation()
+    if gpsLocation then
         settings.set("location", gpsLocation)
         settings.save()
     else

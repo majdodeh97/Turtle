@@ -1,5 +1,5 @@
 -- floorBuilder.lua
-local highway = require("/utils/highway")
+local highwayNav = require("/utils/highwayNav")
 local move = require("/utils/move")
 local safe = require("/utils/safe")
 local log = require("/utils/log")
@@ -33,7 +33,7 @@ local function hasEnoughFuel()
 end
 
 local function moveToCorrectZ()
-    local baseZ = highway.getFloorBaseZ(floor)
+    local baseZ = highwayNav.getFloorBaseZ(floor)
     local targetZ = baseZ + 1
 
      -- Adjust to correct Z level
@@ -48,9 +48,9 @@ local function goToBaseAndComeBack()
     print("Returning to hub.")
     local resumeX, resumeY = location.x, location.y
     local resumeDir = move.getDirection()
-    highway.goHome(true)
+    highwayNav.goHome(true)
     os.pullEvent("key")
-    highway.moveTo(resumeX, resumeY, floor, true)
+    highwayNav.moveTo(resumeX, resumeY, floor, true)
     moveToCorrectZ()
 
     safe.execute(function() return move.faceDirection(resumeDir) end)
@@ -101,7 +101,7 @@ end
 -- Main build logic
 local function buildFloor(floor, startX, startY)
     -- Move to start location
-    highway.moveTo(startX, startY, floor, true)
+    highwayNav.moveTo(startX, startY, floor, true)
 
     moveToCorrectZ()
 
@@ -134,7 +134,7 @@ local function buildFloor(floor, startX, startY)
     end
 
     print("Floor completed!")
-    highway.goHome(true)
+    highwayNav.goHome(true)
 end
 
 

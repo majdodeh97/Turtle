@@ -2,7 +2,7 @@ local move = require("/utils/move")
 local safe = require("/utils/safe")
 local log = require("/utils/log")
 
-local highway = {}
+local highwayNav = {}
 
 local SWAP_Z = 0
 local OUTGOING_Z = 2
@@ -26,7 +26,7 @@ local BELOW_FLOOR_GROUPS = {
     { count = 4, height = 20 }
 }
 
-function highway.getMinFloor()
+function highwayNav.getMinFloor()
     local total = 0
     for _, group in ipairs(BELOW_FLOOR_GROUPS) do
         total = total + group.count
@@ -34,7 +34,7 @@ function highway.getMinFloor()
     return -total
 end
 
-function highway.getFloor(z)
+function highwayNav.getFloor(z)
     if z >= 0 then
         local currentZ = 0
         local floor = 0
@@ -70,7 +70,7 @@ function highway.getFloor(z)
     end
 end
 
-function highway.getFloorBaseZ(floor)
+function highwayNav.getFloorBaseZ(floor)
     if floor >= 0 then
         local currentZ = 0
         local currentFloor = 0
@@ -102,7 +102,7 @@ function highway.getFloorBaseZ(floor)
     log.error("Floor number out of bounds: " .. floor)
 end
 
-function highway.isOnRoad(x, y, roadSize)
+function highwayNav.isOnRoad(x, y, roadSize)
     local half = math.floor(roadSize / 2)
     local min = roadSize % 2 == 0 and (-half + 1) or -half
     local max = half
@@ -112,13 +112,13 @@ function highway.isOnRoad(x, y, roadSize)
 end
 
 local function getFloorIncomingZ(floor)
-    local floorBaseZ = highway.getFloorBaseZ(floor)
+    local floorBaseZ = highwayNav.getFloorBaseZ(floor)
 
     return floorBaseZ + INCOMING_Z;
 end
 
 local function getFloorOutgoingZ(floor)
-    local floorBaseZ = highway.getFloorBaseZ(floor)
+    local floorBaseZ = highwayNav.getFloorBaseZ(floor)
 
     return floorBaseZ + OUTGOING_Z;
 end
@@ -126,9 +126,9 @@ end
 local function getFloorSwapZ(floor)
 
     -- when recalibrating at the lowest floor in the base
-    if(floor < highway.getMinFloor()) then return highway.getFloorBaseZ(highway.getMinFloor()) end 
+    if(floor < highwayNav.getMinFloor()) then return highwayNav.getFloorBaseZ(highwayNav.getMinFloor()) end 
 
-    local floorBaseZ = highway.getFloorBaseZ(floor)
+    local floorBaseZ = highwayNav.getFloorBaseZ(floor)
 
     return floorBaseZ + SWAP_Z;
 end
@@ -141,7 +141,7 @@ local function moveToIncomingZ()
         log.error("moveToIncomingZ cannot be called from (1,1)")
     end
 
-    local currentFloor = highway.getFloor(location.z)
+    local currentFloor = highwayNav.getFloor(location.z)
     local currentIncomingZ = getFloorIncomingZ(currentFloor)
 
     local stepsToMove = currentIncomingZ - location.z
@@ -191,7 +191,7 @@ local function moveToSwapZ(targetFloor)
 
         if currentZ > targetSwapZ then return targetSwapZ end
 
-        local currentFloor = highway.getFloor(currentZ)
+        local currentFloor = highwayNav.getFloor(currentZ)
         local currentFloorSwapZ = getFloorSwapZ(currentFloor)
 
         if currentFloorSwapZ > currentZ then
@@ -213,7 +213,7 @@ local function moveToSwapZ(targetFloor)
     end
 end
 
-function highway.moveToXY(targetX, targetY)
+function highwayNav.moveToXY(targetX, targetY)
     local location = move.getLocation()
     local dx = targetX - location.x
     local dy = targetY - location.y
@@ -250,11 +250,11 @@ local function isLegalMove(targetX, targetY, targetFloor)
     return true
 end
 
-function highway.goHome(ignoreRoadCheck)
-    highway.moveTo(0,0,0,ignoreRoadCheck)
+function highwayNav.goHome(ignoreRoadCheck)
+    highwayNav.moveTo(0,0,0,ignoreRoadCheck)
 end
 
-function highway.isHome(targetX, targetY, targetFloor)
+function highwayNav.isHome(targetX, targetY, targetFloor)
     if(targetX == 0 and targetY == 0 and targetFloor == 0) then return true end
 
     return false
@@ -274,27 +274,27 @@ local function joinStack()
         end
     end
 
-    highway.moveTo(0, 0, 0)
+    highwayNav.moveTo(0, 0, 0)
 end
     
 local function recalibrate(targetFloor)
     local location = move.getLocation()
     if(location.x ~= 1 or location.y ~= 1) then
         moveToIncomingZ()
-        highway.moveToXY(1,1)
+        highwayNav.moveToXY(1,1)
     end
     
     moveToSwapZ(targetFloor)
-    highway.moveToXY(0,1)
+    highwayNav.moveToXY(0,1)
 end
 
 local function goToTarget(targetX, targetY, targetFloor)
     moveToOutgoingZ(targetX, targetY, targetFloor)
 
-    if(highway.isHome(targetX, targetY, targetFloor)) then
+    if(highwayNav.isHome(targetX, targetY, targetFloor)) then
         joinStack()
     else
-        highway.moveToXY(targetX, targetY)
+        highwayNav.moveToXY(targetX, targetY)
     end
 end
 
@@ -317,7 +317,7 @@ local function recalibrateAndGoToTarget(targetX, targetY, targetFloor)
     goToTarget(targetX, targetY, targetFloor)
 end
 
-function highway.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
+function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     local location = move.getLocation()
 
     if (not isLegalMove(targetX, targetY, targetFloor)) then 
@@ -325,11 +325,11 @@ function highway.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     end
 
     if(not ignoreRoadCheck) then
-        if (not highway.isOnRoad(location.x, location.y, 4)) then 
+        if (not highwayNav.isOnRoad(location.x, location.y, 4)) then 
             log.error("Turtle must be on the road: (x=)" .. location.x .. ", y=" .. location.y .. ")") 
         end
     
-        if (not highway.isOnRoad(targetX, targetY, 4)) then 
+        if (not highwayNav.isOnRoad(targetX, targetY, 4)) then 
             log.error("Target must be on the road: (x=)" .. targetX .. ", y=" .. targetY .. ")") 
         end
     end
@@ -339,14 +339,14 @@ function highway.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
         if(location.z == 0) then log.error("Hub turtle trying to move") end
 
         if (location.z > 0) then 
-            if(highway.isHome(targetX, targetY, targetFloor)) then
+            if(highwayNav.isHome(targetX, targetY, targetFloor)) then
                 while (move.getLocation().z > 1) do
                     safe.execute(move.down)
                 end
                 return
                 --os.shutdown()
             else
-                highway.moveToXY(0,1) -- recalibrating without this is dangerous as we might be in the idle stack, and can't go up to incomingZ
+                highwayNav.moveToXY(0,1) -- recalibrating without this is dangerous as we might be in the idle stack, and can't go up to incomingZ
             end
         end
     end
@@ -354,4 +354,4 @@ function highway.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     recalibrateAndGoToTarget(targetX, targetY, targetFloor)
 end
 
-return highway
+return highwayNav

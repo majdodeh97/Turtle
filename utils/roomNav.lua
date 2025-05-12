@@ -2,7 +2,7 @@ local inventory = require("/utils/inventory")
 local move = require("/utils/move")
 local log = require("/utils/log")
 
-local navigation = {}
+local roomNav = {}
 
 local function logMovement(dir, delta)
     if delta <= 0 then
@@ -32,7 +32,7 @@ local function logMovement(dir, delta)
     settings.save()
 end
 
-function navigation.forward()
+function roomNav.forward()
     local success, reason = move.forward()
     if success then
         local dir = move.getDirection()
@@ -41,7 +41,7 @@ function navigation.forward()
     return success, reason
 end
 
-function navigation.back()
+function roomNav.back()
     local success, reason = move.back()
     if success then
         local dir = move.getOppositeDir(move.getDirection())
@@ -50,19 +50,19 @@ function navigation.back()
     return success, reason
 end
 
-function navigation.up()
+function roomNav.up()
     local success, reason = move.up()
     if success then logMovement("up", 1) end
     return success, reason
 end
 
-function navigation.down()
+function roomNav.down()
     local success, reason = move.down()
     if success then logMovement("down", 1) end
     return success, reason
 end
 
-function navigation.getRoomCoords(row, col)
+function roomNav.getRoomCoords(row, col)
 
     local rowToMove = math.abs(row) - 1
     local x = rowToMove * (config.roomSize + config.streetWidth)
@@ -85,47 +85,7 @@ function navigation.getRoomCoords(row, col)
     }
 end
 
-function navigation.getGpsLocation()
-    local x,y,z
-
-    local hasModem = peripheral.find("modem") ~= nil
-
-    if(hasModem) then
-        x,y,z = gps.locate()
-    else
-        local modemMatcher = function(itemDetail)
-            return itemDetail.name:find("computercraft:.*modem")
-        end
-        
-        inventory.runOnItemMatch(function()
-            turtle.equipLeft()
-            x,y,z = gps.locate()
-            turtle.equipLeft()
-        end, modemMatcher)
-    end
-
-    return {
-        x = x,
-        y = y,
-        z = z
-    }
-end
-
-function navigation.getLocation()
-    local gpsLocation = navigation.getGpsLocation()
-    local location = move.getLocation()
-
-    if(location.x ~= gpsLocation.x or location.y ~= gpsLocation.y or location.z ~= gpsLocation.z) then
-        local gpsLocationString = textutils.serialise(gpsLocation)
-        local locationString = textutils.serialise(location)
-
-        log.error("Location mismatch.\nGPS location: " .. gpsLocationString .. ".\nLocal location: " .. locationString)
-    end
-
-    return location
-end
-
-function navigation.getBacktrackLocation()
+function roomNav.getBacktrackLocation()
     local x, y, z = 0, 0, 0
     local stack = settings.get("moveStack") or {}
 
@@ -150,7 +110,7 @@ function navigation.getBacktrackLocation()
     return { x = x, y = y, z = z }
 end
 
-function navigation.backtrackUntil(conditionFn)
+function roomNav.backtrackUntil(conditionFn)
     
     local stack = settings.get("moveStack") or {}
 
@@ -179,14 +139,14 @@ function navigation.backtrackUntil(conditionFn)
         local oppositeDir = move.getOppositeDir(dir)
 
         if dir == "up" or dir == "down" then
-            local moveFn = (dir == "up") and navigation.down or navigation.up
+            local moveFn = (dir == "up") and roomNav.down or roomNav.up
             for _ = 1, amount do 
                 if not conditionalMove(moveFn, conditionFn) then break end
             end
         else
             if not conditionalTurn(oppositeDir, conditionFn) then break end 
             for _ = 1, amount do
-                if not conditionalMove(navigation.forward, conditionFn) then break end
+                if not conditionalMove(roomNav.forward, conditionFn) then break end
             end
         end
     end
@@ -196,10 +156,10 @@ function navigation.backtrackUntil(conditionFn)
     end)
 end
 
-function navigation.backtrack()
-    navigation.backtrackUntil(function(name)
+function roomNav.backtrack()
+    roomNav.backtrackUntil(function(name)
         return false
     end)
 end
 
-return navigation
+return roomNav

@@ -24,14 +24,14 @@ programs/straight.lua
 
 room/tree.lua
 
-tests/highway.lua
+tests/highwayNav.lua
 
 utils/fuel.lua
-utils/highway.lua
+utils/highwayNav.lua
 utils/inventory.lua
 utils/log.lua
+utils/roomNav.lua
 utils/move.lua
-utils/navigation.lua
 utils/place.lua
 utils/safe.lua
 utils/test.lua

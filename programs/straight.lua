@@ -1,5 +1,4 @@
 local move = require("/utils/move")
-local navigation = require("/utils/navigation")
 
 local distance = 0
 while(move.forward()) do
