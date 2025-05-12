@@ -31,6 +31,7 @@ utils/highwayNav.lua
 utils/inventory.lua
 utils/log.lua
 utils/move.lua
+utils/navigation.lua
 utils/place.lua
 utils/roomNav.lua
 utils/safe.lua

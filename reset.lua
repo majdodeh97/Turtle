@@ -24,16 +24,10 @@ if fileResponse then
         settings.set("location", gpsLocation)
         settings.save()
     else
-        hasError = true
         print("Failed to get GPS location")
+        return
     end
 else
-    hasError = true
     print("Failed to download: ", fileName)
-end
-
-if not hasError then
-    os.reboot()
-else
-    print("Cancelling reboot")
+    return
 end
