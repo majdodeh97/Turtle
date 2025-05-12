@@ -2,15 +2,6 @@ local log = require("/utils/log")
 local fuel = require("/utils/fuel")
 local move = {}
 
-function move.getOppositeDir(dir)
-    local opposites = {
-        forward = "back", back = "forward",
-        left = "right", right = "left",
-        up = "down", down = "up"
-    }
-    return opposites[dir]
-end
-
 function move.getDirection()
     local dir = settings.get("direction")
     if not dir then
@@ -20,6 +11,17 @@ function move.getDirection()
         log.error("Invalid direction in settings: " .. dir)
     end
     return dir
+end
+
+function move.getOppositeDir(dir)
+    dir = dir or move.getDirection()
+
+    local opposites = {
+        forward = "back", back = "forward",
+        left = "right", right = "left",
+        up = "down", down = "up"
+    }
+    return opposites[dir]
 end
 
 function move.getLocation()

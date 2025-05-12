@@ -26,5 +26,7 @@ local function moveToFloor(floor)
 end
 
 moveToFloor(floor)
-sleep(10)
-moveToFloor(0)
+if(move.getLocation().z ~= 0) then
+    sleep(10)
+    moveToFloor(0)
+end

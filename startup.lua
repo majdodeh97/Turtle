@@ -9,6 +9,15 @@ if(settings.get("error")) then
     return;
 end
 
+if(settings.get("warning")) then
+    print("Turtle encountered a warning. Please check warning logs")
+    print("Press any key to continue...")
+    os.pullEvent("key")
+    settings.unset("warning")
+    settings.save()
+    return;
+end
+
 local role = settings.get("role")
 
 if not role then

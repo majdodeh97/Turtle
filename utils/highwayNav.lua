@@ -325,11 +325,12 @@ function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     end
 
     if(not ignoreRoadCheck) then
-        if (not highwayNav.isOnRoad(location.x, location.y, 4)) then 
+        local roadSize = settings.get("base").roadSize
+        if (not highwayNav.isOnRoad(location.x, location.y, roadSize)) then 
             log.error("Turtle must be on the road: (x=)" .. location.x .. ", y=" .. location.y .. ")") 
         end
     
-        if (not highwayNav.isOnRoad(targetX, targetY, 4)) then 
+        if (not highwayNav.isOnRoad(targetX, targetY, roadSize)) then 
             log.error("Target must be on the road: (x=)" .. targetX .. ", y=" .. targetY .. ")") 
         end
     end

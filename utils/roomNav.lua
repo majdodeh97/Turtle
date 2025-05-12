@@ -1,4 +1,3 @@
-local inventory = require("/utils/inventory")
 local move = require("/utils/move")
 local log = require("/utils/log")
 
@@ -60,29 +59,6 @@ function roomNav.down()
     local success, reason = move.down()
     if success then logMovement("down", 1) end
     return success, reason
-end
-
-function roomNav.getRoomCoords(row, col)
-
-    local rowToMove = math.abs(row) - 1
-    local x = rowToMove * (config.roomSize + config.streetWidth)
-    local colToMove = math.abs(col) - 1
-    local y = colToMove * (config.roomSize + config.streetWidth)
- 
-    x = x + math.floor(config.streetWidth / 2) + math.ceil(config.roomSize / 2)
-    y = y + math.floor(config.streetWidth / 2)
- 
-    if row == 0 then x = 0 end
-    if col == 0 then y = 0 end
- 
-    if row < 0 then x = -1 * x end
-    if col < 0 then y = -1 * y end
- 
-    return {
-        x = x,
-        y = y,
-        z = 0
-    }
 end
 
 function roomNav.getBacktrackLocation()
