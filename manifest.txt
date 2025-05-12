@@ -30,9 +30,9 @@ utils/fuel.lua
 utils/highwayNav.lua
 utils/inventory.lua
 utils/log.lua
-utils/roomNav.lua
 utils/move.lua
 utils/place.lua
+utils/roomNav.lua
 utils/safe.lua
 utils/test.lua
 
