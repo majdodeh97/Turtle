@@ -1,69 +1,44 @@
--- 🎯 USER CONFIGURATION — Fill in these:
+-- Pastebin Credentials (fill in before use)
 local apiDevKey = "XxH-NcsWyBFtz1u3oCH1RapRBp5uUkqs"
-local username = "your_pastebin_username"
-local password = "your_pastebin_password"
+local userSessionKey = "38cbf959941a686e95bea5cb703102f2"
 local pasteId = "YL94Rasd"
 
--- 🎯 The room info to add or update:
+-- Room Info to update
 local floor = 0
 local row = "east"
 local col = "north"
 local jobScript = "/jobs/farmer.lua"
 local jobStartPos = { x = -10, y = 65, z = 20 }
 
--- 🔐 Step 1: Get a user session key from Pastebin
-local loginUrl = "https://pastebin.com/api/api_login.php"
-local loginBody = "api_dev_key=" .. apiDevKey ..
-                  "&api_user_name=" .. textutils.urlEncode(username) ..
-                  "&api_user_password=" .. textutils.urlEncode(password)
+-- Function to fetch current floor plan JSON from Pastebin
+local function downloadFloorPlan(pasteId)
+    local url = "https://pastebin.com/raw/" .. pasteId
+    local res = http.get(url)
+    if not res then return nil, "Failed to fetch paste" end
 
-local loginRes = http.post(loginUrl, loginBody)
-if not loginRes then
-    print("Failed to contact Pastebin login API.")
-    return
-end
+    local content = res.readAll()
+    res.close()
 
-local userSessionKey = loginRes.readAll()
-loginRes.close()
+    local data = textutils.unserializeJSON(content)
+    if not data then return nil, "Failed to parse JSON" end
 
-if userSessionKey:find("Bad API request") then
-    print("Login failed: " .. userSessionKey)
-    return
-end
-
--- ✅ Step 2: Download current JSON
-local rawUrl = "https://pastebin.com/raw/" .. pasteId
-local res = http.get(rawUrl)
-if not res then
-    print("Failed to download existing floor plan.")
-    return
-end
-
-local content = res.readAll()
-res.close()
-
-local data = textutils.unserializeJSON(content)
-if not data then
-    print("Failed to parse downloaded JSON.")
-    return
-end
-
--- 🛠️ Step 3: Update or add the room info
-if not data.rooms then
-    data.rooms = {}
-end
-
-local found = false
-for _, room in ipairs(data.rooms) do
-    if room.floor == floor and room.row == row and room.col == col then
-        room.jobScript = jobScript
-        room.jobStartPos = jobStartPos
-        found = true
-        break
+    if not data.rooms then
+        data.rooms = {}
     end
+
+    return data
 end
 
-if not found then
+-- Function to update or insert a room in the JSON
+local function updateRoom(data, floor, row, col, jobScript, jobStartPos)
+    for _, room in ipairs(data.rooms) do
+        if room.floor == floor and room.row == row and room.col == col then
+            room.jobScript = jobScript
+            room.jobStartPos = jobStartPos
+            return true
+        end
+    end
+
     table.insert(data.rooms, {
         floor = floor,
         row = row,
@@ -71,33 +46,53 @@ if not found then
         jobScript = jobScript,
         jobStartPos = jobStartPos
     })
+
+    return false
 end
 
--- 🧼 Step 4: Serialize updated JSON
-local newJson = textutils.serializeJSON(data)
-
--- 🔁 Step 5: Upload back to Pastebin
-local editUrl = "https://pastebin.com/api/api_post.php"
-local postBody = "api_dev_key=" .. apiDevKey ..
+-- Function to upload updated JSON back to Pastebin
+local function uploadToPastebin(apiDevKey, userSessionKey, pasteId, updatedJson)
+    local url = "https://pastebin.com/api/api_post.php"
+    local body = "api_dev_key=" .. apiDevKey ..
                  "&api_user_key=" .. userSessionKey ..
                  "&api_option=edit" ..
                  "&api_paste_code=" .. pasteId ..
-                 "&api_paste_data=" .. textutils.urlEncode(newJson)
+                 "&api_paste_data=" .. textutils.urlEncode(updatedJson)
 
-local editRes = http.post(editUrl, postBody, {
-    ["Content-Type"] = "application/x-www-form-urlencoded"
-})
+    local res = http.post(url, body, {
+        ["Content-Type"] = "application/x-www-form-urlencoded"
+    })
 
-if not editRes then
-    print("Failed to update the paste.")
+    if not res then return false, "Failed to reach Pastebin" end
+
+    local result = res.readAll()
+    res.close()
+
+    if result:find("Bad API request") then
+        return false, result
+    else
+        return true, result
+    end
+end
+
+-- Main execution logic
+local data, err = downloadFloorPlan(pasteId)
+if not data then
+    print("Error downloading floor plan: " .. err)
     return
 end
 
-local editResult = editRes.readAll()
-editRes.close()
+local wasUpdated = updateRoom(data, floor, row, col, jobScript, jobStartPos)
 
-if editResult:find("Bad API request") then
-    print("Pastebin error: " .. editResult)
+local updatedJson = textutils.serializeJSON(data)
+local success, result = uploadToPastebin(apiDevKey, userSessionKey, pasteId, updatedJson)
+
+if success then
+    if wasUpdated then
+        print("Room updated successfully.")
+    else
+        print("Room added successfully.")
+    end
 else
-    print("Paste updated successfully!")
+    print("Error uploading to Pastebin: " .. result)
 end
