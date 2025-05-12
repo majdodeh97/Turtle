@@ -26,48 +26,6 @@ local inventory = require("/utils/inventory")
 -- todo: add unit tests for utils
 
 
-os.pullEvent("key")
-
-print(textutils.serialise(location.getGpsLocation()))
-
-os.pullEvent("key")
-
-print(place.slotUp(1))
-
-os.pullEvent("key")
-
-print(inventory.dropAllUp(7,8))
-
-os.pullEvent("key")
-
-print(inventory.dropAll(10))
-
-os.pullEvent("key")
-
-turtle.select(2)
-print(inventory.dropAll())
-
-os.pullEvent("key")
-
-turtle.select(3)
-print(inventory.drop())
-
-os.pullEvent("key")
-
-turtle.select(4)
-print(inventory.drop(1))
-
-os.pullEvent("key")
-
-turtle.select(5)
-print(inventory.drop(1, 6))
-
-os.pullEvent("key")
-os.pullEvent("key")
-os.pullEvent("key")
-os.pullEvent("key")
-os.pullEvent("key")
-
 local function isCobblestoneInFront()
     local success, data = turtle.inspect()
     return success and data.name == "minecraft:cobblestone"

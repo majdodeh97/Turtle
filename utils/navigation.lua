@@ -1,6 +1,13 @@
 ---@class navigation
 local navigation = {}
 
+-- handles:
+-- moving to room entrance via highway
+-- move into the room, utilizing location.getRoom(x, y) to move correctly
+-- moving to room start position using moveTracker
+-- shopuld I have wrappers for basic move functions? Maybe just faceDirection? Idk think more about this structure. 
+-- Need to decide what library room scripts will use, or if it will use a mix of this and moveTracker
+
 local function getRoomDoorCoords()
 
 end
