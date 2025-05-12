@@ -1,12 +1,12 @@
-local roomNav = require("/utils/roomNav")
+local moveTracker = require("/utils/moveTracker")
 local move = require("/utils/move")
 local place = require("/utils/place")
 local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
 
 -- To test:
--- roomNav: backtrackUntil
--- roomNav: backtrack
+-- moveTracker: backtrackUntil
+-- moveTracker: backtrack
 -- inventory: foreach
 -- inventory: first
 -- inventory: all
@@ -93,26 +93,26 @@ if(test1 == 0) then
     move.back()
     move.back()
 elseif(test1 == 1) then
-    roomNav.forward()
-    roomNav.forward()
-    roomNav.forward()
-    roomNav.forward()
-    roomNav.turnRight()
-    roomNav.forward()
-    roomNav.up()
-    roomNav.turnLeft()
-    roomNav.forward()
-    roomNav.forward()
-    roomNav.forward()
-    roomNav.faceDirection("left")
-    roomNav.back()
-    roomNav.back()
-    roomNav.back()
-    roomNav.back()
+    moveTracker.forward()
+    moveTracker.forward()
+    moveTracker.forward()
+    moveTracker.forward()
+    moveTracker.turnRight()
+    moveTracker.forward()
+    moveTracker.up()
+    moveTracker.turnLeft()
+    moveTracker.forward()
+    moveTracker.forward()
+    moveTracker.forward()
+    moveTracker.faceDirection("left")
+    moveTracker.back()
+    moveTracker.back()
+    moveTracker.back()
+    moveTracker.back()
 elseif(test1 == 2) then
-    roomNav.backtrack()
+    moveTracker.backtrack()
 elseif(test1 == 3) then -- bug detected
-    roomNav.backtrackUntil(function()
+    moveTracker.backtrackUntil(function()
         return isCobblestoneInFront()
     end)
 elseif(test1 == 4) then

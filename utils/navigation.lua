@@ -2,7 +2,11 @@
 
 local navigation = {}
 
-function roomNav.getRoomCoords(row, col)
+local function getRoomDoorCoords()
+
+end
+
+function moveTracker.getRoomCoords(row, col)
 
     local rowToMove = math.abs(row) - 1
     local x = rowToMove * (config.roomSize + config.streetWidth)
