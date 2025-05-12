@@ -1,3 +1,4 @@
+---@class log
 local log = {}
 
 function log.error(errorMessage)

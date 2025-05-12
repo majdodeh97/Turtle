@@ -1,6 +1,7 @@
 local inventory = require("/utils/inventory")
 local log = require("/utils/log")
 
+---@class fuel
 local fuel = {}
 
 function fuel.ensure()

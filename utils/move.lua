@@ -1,6 +1,8 @@
 local log = require("/utils/log")
 local fuel = require("/utils/fuel")
 local location = require("/utils/location")
+
+---@class move
 local move = {}
 
 local function updateLocation(dir, delta)

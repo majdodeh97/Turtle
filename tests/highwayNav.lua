@@ -117,64 +117,6 @@ test.addTest("getFloorBaseZ floor -6 -> z = -80", function()
     test.assertEquals(highwayNav.getFloorBaseZ(-6), -80)
 end)
 
-local roadSizeOdd = 5 -- range: [-2, 2]
-local roadSizeEven = 4 -- range: [-1, 2]
-
--- ODD roadSize = 5
-test.addTest("roadSize 5: x = 0, y = 2 -> true", function()
-    test.assertEquals(highwayNav.isOnRoad(0, 2, roadSizeOdd), true)
-end)
-
-test.addTest("roadSize 5: x = -2, y = 0 -> true", function()
-    test.assertEquals(highwayNav.isOnRoad(-2, 0, roadSizeOdd), true)
-end)
-
-test.addTest("roadSize 5: x = 3, y = 0 -> false", function()
-    test.assertEquals(highwayNav.isOnRoad(3, 0, roadSizeOdd), true)
-end)
-
-test.addTest("roadSize 5: x = 0, y = -3 -> false", function()
-    test.assertEquals(highwayNav.isOnRoad(0, -3, roadSizeOdd), true)
-end)
-
-test.addTest("roadSize 5: x = 1, y = 1 -> true", function()
-    test.assertEquals(highwayNav.isOnRoad(1, 1, roadSizeOdd), true)
-end)
-
-test.addTest("roadSize 5: x = -3, y = -3 -> false", function()
-    test.assertEquals(highwayNav.isOnRoad(-3, -3, roadSizeOdd), false)
-end)
-
--- EVEN roadSize = 4
-test.addTest("roadSize 4: x = 0, y = 2 -> true", function()
-    test.assertEquals(highwayNav.isOnRoad(0, 2, roadSizeEven), true)
-end)
-
-test.addTest("roadSize 4: x = -1, y = 0 -> true", function()
-    test.assertEquals(highwayNav.isOnRoad(-1, 0, roadSizeEven), true)
-end)
-
-test.addTest("roadSize 4: x = 3, y = 0 -> true", function()
-    test.assertEquals(highwayNav.isOnRoad(3, 0, roadSizeEven), true)
-end)
-
-test.addTest("roadSize 4: x = 0, y = -2 -> false", function()
-    test.assertEquals(highwayNav.isOnRoad(0, -2, roadSizeEven), true)
-end)
-
-test.addTest("roadSize 4: x = 2, y = 2 -> true", function()
-    test.assertEquals(highwayNav.isOnRoad(2, 2, roadSizeEven), true)
-end)
-
-test.addTest("roadSize 4: x = -2, y = -2 -> false", function()
-    test.assertEquals(highwayNav.isOnRoad(-2, -2, roadSizeEven), false)
-end)
-
-test.addTest("roadSize 4: x = 5, y = 4 -> false", function()
-    test.assertEquals(highwayNav.isOnRoad(5, 4, roadSizeEven), false)
-end)
-
-
 local INCOMING_Z = 3
 local OUTGOING_Z = 2
 local SWAP_Z = 0

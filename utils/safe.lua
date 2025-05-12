@@ -1,5 +1,6 @@
 local log = require("/utils/log")
 
+---@class safe
 local safe = {}
 
 function safe.execute(fn, errorMessage)

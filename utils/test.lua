@@ -1,3 +1,4 @@
+---@class test
 local test = {}
 
 test.tests = {}

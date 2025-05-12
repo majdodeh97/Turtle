@@ -1,3 +1,4 @@
+---@class navigation
 local navigation = {}
 
 local function getRoomDoorCoords()

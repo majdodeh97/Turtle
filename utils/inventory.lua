@@ -1,5 +1,6 @@
 local log = require("/utils/log")
 
+---@class inventory
 local inventory = {}
 
 function inventory.runOnSlot(action, slot)

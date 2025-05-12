@@ -68,7 +68,7 @@ os.pullEvent("key")
 os.pullEvent("key")
 os.pullEvent("key")
 
-function isCobblestoneInFront()
+local function isCobblestoneInFront()
     local success, data = turtle.inspect()
     return success and data.name == "minecraft:cobblestone"
 end
@@ -98,14 +98,14 @@ elseif(test1 == 1) then
     moveTracker.forward()
     moveTracker.forward()
     moveTracker.forward()
-    moveTracker.turnRight()
+    move.turnRight()
     moveTracker.forward()
     moveTracker.up()
-    moveTracker.turnLeft()
+    move.turnLeft()
     moveTracker.forward()
     moveTracker.forward()
     moveTracker.forward()
-    moveTracker.faceDirection("left")
+    move.faceDirection("left")
     moveTracker.back()
     moveTracker.back()
     moveTracker.back()
@@ -185,7 +185,7 @@ elseif(test1 == 15) then
 elseif(test1 == 16) then
     local isFull = inventory.isFull()
 
-    print("isFull: " .. success)
+    print("isFull: " .. isFull)
 elseif(test1 == 17) then
     move.turnRight()
     move.forward()

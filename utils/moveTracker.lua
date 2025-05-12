@@ -2,6 +2,7 @@ local move = require("/utils/move")
 local log = require("/utils/log")
 local location = require("/utils/location")
 
+---@class moveTracker
 local moveTracker = {}
 
 local function logMovement(dir, delta)

@@ -1,6 +1,18 @@
 local log = require("/utils/log")
 
+---@class location
 local location = {}
+
+local ABOVE_FLOOR_GROUPS = {
+    { count = 4, height = 10 },
+    { count = 4, height = 20 },
+    { count = 4, height = 30 }
+}
+
+local BELOW_FLOOR_GROUPS = {
+    { count = 4, height = 10 },
+    { count = 4, height = 20 }
+}
 
 function location.getDirection()
     local dir = settings.get("direction")
@@ -48,5 +60,96 @@ function location.getGpsLocation()
         }
     end
 end
+
+function location.isOnRoad(x, y)
+    x = x or location.getLocation().x
+    y = y or location.getLocation().y
+
+    local roadSize = settings.get("base").roadSize
+
+    local half = math.floor(roadSize / 2)
+    local min = roadSize % 2 == 0 and (-half + 1) or -half
+    local max = half
+
+    return (x >= min and x <= max) or
+           (y >= min and y <= max)
+end
+
+function location.getMinFloor()
+    local total = 0
+    for _, group in ipairs(BELOW_FLOOR_GROUPS) do
+        total = total + group.count
+    end
+    return -total
+end
+
+function location.getFloor(z)
+    if z >= 0 then
+        local currentZ = 0
+        local floor = 0
+
+        for _, group in ipairs(ABOVE_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                local nextZ = currentZ + group.height
+                if z < nextZ then
+                    return floor
+                end
+                currentZ = nextZ
+                floor = floor + 1
+            end
+        end
+
+        log.error("Z too high, no floor defined at z=" .. z)
+    else
+        local currentZ = 0
+        local floor = -1
+
+        for _, group in ipairs(BELOW_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                local nextZ = currentZ - group.height
+                if z >= nextZ then
+                    return floor
+                end
+                currentZ = nextZ
+                floor = floor - 1
+            end
+        end
+
+        log.error("Z too low, no floor defined at z=" .. z)
+    end
+end
+
+function location.getFloorBaseZ(floor)
+    if floor >= 0 then
+        local currentZ = 0
+        local currentFloor = 0
+
+        for _, group in ipairs(ABOVE_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                if currentFloor == floor then
+                    return currentZ
+                end
+                currentZ = currentZ + group.height
+                currentFloor = currentFloor + 1
+            end
+        end
+    else
+        local currentZ = 0
+        local currentFloor = -1
+
+        for _, group in ipairs(BELOW_FLOOR_GROUPS) do
+            for i = 1, group.count do
+                if currentFloor == floor then
+                    return currentZ - group.height
+                end
+                currentZ = currentZ - group.height
+                currentFloor = currentFloor - 1
+            end
+        end
+    end
+
+    log.error("Floor number out of bounds: " .. floor)
+end
+
 
 return location

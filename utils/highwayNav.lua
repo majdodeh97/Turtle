@@ -3,6 +3,7 @@ local safe = require("/utils/safe")
 local log = require("/utils/log")
 local location = require("/utils/location")
 
+---@class highwayNav
 local highwayNav = {}
 
 local SWAP_Z = 0
@@ -16,110 +17,14 @@ local RESERVED_COLUMNS = {
     ["1,1"] = true,
 }
 
-local ABOVE_FLOOR_GROUPS = {
-    { count = 4, height = 10 },
-    { count = 4, height = 20 },
-    { count = 4, height = 30 }
-}
-
-local BELOW_FLOOR_GROUPS = {
-    { count = 4, height = 10 },
-    { count = 4, height = 20 }
-}
-
-function highwayNav.getMinFloor()
-    local total = 0
-    for _, group in ipairs(BELOW_FLOOR_GROUPS) do
-        total = total + group.count
-    end
-    return -total
-end
-
-function highwayNav.getFloor(z)
-    if z >= 0 then
-        local currentZ = 0
-        local floor = 0
-
-        for _, group in ipairs(ABOVE_FLOOR_GROUPS) do
-            for i = 1, group.count do
-                local nextZ = currentZ + group.height
-                if z < nextZ then
-                    return floor
-                end
-                currentZ = nextZ
-                floor = floor + 1
-            end
-        end
-
-        log.error("Z too high, no floor defined at z=" .. z)
-    else
-        local currentZ = 0
-        local floor = -1
-
-        for _, group in ipairs(BELOW_FLOOR_GROUPS) do
-            for i = 1, group.count do
-                local nextZ = currentZ - group.height
-                if z >= nextZ then
-                    return floor
-                end
-                currentZ = nextZ
-                floor = floor - 1
-            end
-        end
-
-        log.error("Z too low, no floor defined at z=" .. z)
-    end
-end
-
-function highwayNav.getFloorBaseZ(floor)
-    if floor >= 0 then
-        local currentZ = 0
-        local currentFloor = 0
-
-        for _, group in ipairs(ABOVE_FLOOR_GROUPS) do
-            for i = 1, group.count do
-                if currentFloor == floor then
-                    return currentZ
-                end
-                currentZ = currentZ + group.height
-                currentFloor = currentFloor + 1
-            end
-        end
-    else
-        local currentZ = 0
-        local currentFloor = -1
-
-        for _, group in ipairs(BELOW_FLOOR_GROUPS) do
-            for i = 1, group.count do
-                if currentFloor == floor then
-                    return currentZ - group.height
-                end
-                currentZ = currentZ - group.height
-                currentFloor = currentFloor - 1
-            end
-        end
-    end
-
-    log.error("Floor number out of bounds: " .. floor)
-end
-
-function highwayNav.isOnRoad(x, y, roadSize)
-    local half = math.floor(roadSize / 2)
-    local min = roadSize % 2 == 0 and (-half + 1) or -half
-    local max = half
-
-    return (x >= min and x <= max) or
-           (y >= min and y <= max)
-end
-
 local function getFloorIncomingZ(floor)
-    local floorBaseZ = highwayNav.getFloorBaseZ(floor)
+    local floorBaseZ = location.getFloorBaseZ(floor)
 
     return floorBaseZ + INCOMING_Z;
 end
 
 local function getFloorOutgoingZ(floor)
-    local floorBaseZ = highwayNav.getFloorBaseZ(floor)
+    local floorBaseZ = location.getFloorBaseZ(floor)
 
     return floorBaseZ + OUTGOING_Z;
 end
@@ -127,9 +32,9 @@ end
 local function getFloorSwapZ(floor)
 
     -- when recalibrating at the lowest floor in the base
-    if(floor < highwayNav.getMinFloor()) then return highwayNav.getFloorBaseZ(highwayNav.getMinFloor()) end 
+    if(floor < location.getMinFloor()) then return location.getFloorBaseZ(location.getMinFloor()) end 
 
-    local floorBaseZ = highwayNav.getFloorBaseZ(floor)
+    local floorBaseZ = location.getFloorBaseZ(floor)
 
     return floorBaseZ + SWAP_Z;
 end
@@ -142,7 +47,7 @@ local function moveToIncomingZ()
         log.error("moveToIncomingZ cannot be called from (1,1)")
     end
 
-    local currentFloor = highwayNav.getFloor(loc.z)
+    local currentFloor = location.getFloor(loc.z)
     local currentIncomingZ = getFloorIncomingZ(currentFloor)
 
     local stepsToMove = currentIncomingZ - loc.z
@@ -152,7 +57,7 @@ local function moveToIncomingZ()
     end
 end
 
-local function moveToOutgoingZ(fallbackTargetX, fallbackTargetY, targetFloor)
+local function moveToOutgoingZ(targetFloor)
     local loc = location.getLocation()
 
     if loc.x ~= 0 or loc.y ~= 1 then
@@ -192,7 +97,7 @@ local function moveToSwapZ(targetFloor)
 
         if currentZ > targetSwapZ then return targetSwapZ end
 
-        local currentFloor = highwayNav.getFloor(currentZ)
+        local currentFloor = location.getFloor(currentZ)
         local currentFloorSwapZ = getFloorSwapZ(currentFloor)
 
         if currentFloorSwapZ > currentZ then
@@ -290,7 +195,7 @@ local function recalibrate(targetFloor)
 end
 
 local function goToTarget(targetX, targetY, targetFloor)
-    moveToOutgoingZ(targetX, targetY, targetFloor)
+    moveToOutgoingZ(targetFloor)
 
     if(highwayNav.isHome(targetX, targetY, targetFloor)) then
         joinStack()
@@ -299,7 +204,7 @@ local function goToTarget(targetX, targetY, targetFloor)
     end
 end
 
-local function canGoToTarget(targetX, targetY, targetFloor)
+local function canGoToTarget(targetFloor)
     local loc = location.getLocation()
     local targetOutgoingZ = getFloorOutgoingZ(targetFloor)
 
@@ -309,11 +214,11 @@ local function canGoToTarget(targetX, targetY, targetFloor)
 end
 
 local function recalibrateAndGoToTarget(targetX, targetY, targetFloor)
-    if(not canGoToTarget(targetX, targetY, targetFloor)) then
+    if(not canGoToTarget(targetFloor)) then
         recalibrate(targetFloor)
     end
 
-    if(not canGoToTarget(targetX, targetY, targetFloor)) then log.error("Recalibration failed") end
+    if(not canGoToTarget(targetFloor)) then log.error("Recalibration failed") end
 
     goToTarget(targetX, targetY, targetFloor)
 end
@@ -331,12 +236,11 @@ function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
     end
 
     if(not ignoreRoadCheck) then
-        local roadSize = settings.get("base").roadSize
-        if (not highwayNav.isOnRoad(loc.x, loc.y, roadSize)) then 
+        if (not location.isOnRoad(loc.x, loc.y)) then 
             log.error("Turtle must be on the road: (x=)" .. loc.x .. ", y=" .. loc.y .. ")") 
         end
     
-        if (not highwayNav.isOnRoad(targetX, targetY, roadSize)) then 
+        if (not location.isOnRoad(targetX, targetY)) then 
             log.error("Target must be on the road: (x=)" .. targetX .. ", y=" .. targetY .. ")") 
         end
     end

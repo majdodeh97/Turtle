@@ -1,6 +1,6 @@
 local inventory = require("/utils/inventory")
-local log = require("/utils/log")
 
+---@class place
 local place = {}
 
 local function placeSlotInternal(placeFn, slot)
