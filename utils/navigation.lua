@@ -10,7 +10,7 @@ local highwayNav = require("/utils/highwayNav")
 ---@class navigation
 local navigation = {}
 
-local incomingZ = settings.get("base").incomingZ
+local outgoingZ = settings.get("base").outgoingZ
 local path = "/roomInfos.json"
 
 function navigation.getRoomInfoByLocation(lat, long, floor)
@@ -118,7 +118,7 @@ function navigation.goToRoomTurtle(lat, long, floor)
     local turtleX, turtleY = getRoomTurtleLocation(lat, long)
     local loc = location.getLocation()
 
-    if(loc.x == turtleX and loc.y == turtleY and loc.z == location.getFloorBaseZ(floor) + incomingZ) then
+    if(loc.x == turtleX and loc.y == turtleY and loc.z == location.getFloorBaseZ(floor) + outgoingZ) then
         print("Already at turtle")
         return
     end
@@ -130,7 +130,7 @@ function navigation.goToRoomOutputChest(lat, long, floor)
     local outputChestX, outputChestY = getRoomOutputChestLocation(lat, long)
     local loc = location.getLocation()
 
-    if(loc.x == outputChestX and loc.y == outputChestY and loc.z == location.getFloorBaseZ(floor) + incomingZ) then
+    if(loc.x == outputChestX and loc.y == outputChestY and loc.z == location.getFloorBaseZ(floor) + outgoingZ) then
         print("Already at output chest")
         return
     end
@@ -142,7 +142,7 @@ function navigation.goToRoomInputChest(lat, long, floor)
     local inputChestX, inputChestY = getRoomInputChestLocation(lat, long)
     local loc = location.getLocation()
 
-    if(loc.x == inputChestX and loc.y == inputChestY and loc.z == location.getFloorBaseZ(floor) + incomingZ) then
+    if(loc.x == inputChestX and loc.y == inputChestY and loc.z == location.getFloorBaseZ(floor) + outgoingZ) then
         print("Already at input chest")
         return
     end
