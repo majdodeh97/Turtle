@@ -1,12 +1,12 @@
 {
     "rooms": [
       {
-        "floor": 1,
+        "floor": 0,
         "lat": "north",
         "long": "west",
         "jobName": "tree",
         "jobScript": "/jobs/tree.lua",
-        "jobStartLocation": { "x": 18, "y": 8, "z": 2 }
+        "jobStartLocation": { "x": -18, "y": 8, "z": 2 }
       }
     ]
 }
