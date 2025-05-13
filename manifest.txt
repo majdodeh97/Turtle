@@ -3,6 +3,7 @@
 elevator.lua
 manifest.txt
 reset.lua
+roomInfos.json
 setRole.lua
 startup.lua
 test.lua
@@ -29,11 +30,11 @@ tests/highwayNav.lua
 utils/fuel.lua
 utils/highwayNav.lua
 utils/inventory.lua
+utils/location.lua
 utils/log.lua
 utils/move.lua
 utils/moveTracker.lua
 utils/navigation.lua
-utils/location.lua
 utils/place.lua
 utils/safe.lua
 utils/test.lua

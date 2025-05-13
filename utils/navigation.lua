@@ -1,5 +1,32 @@
+local log = require("/utils/log")
+
 ---@class navigation
 local navigation = {}
+
+local path = "/roomInfos.json"
+
+function navigation.getRoomInfo(col, row, floor)
+    if not fs.exists(path) then
+        log.error("File not found: " .. path)
+    end
+
+    local file = fs.open(path, "r")
+    local content = file.readAll()
+    file.close()
+
+    local data = textutils.unserializeJSON(content)
+    if not data or type(data.rooms) ~= "table" then
+        log.error("Invalid or missing 'rooms' data.")
+    end
+
+    for _, room in ipairs(data.rooms) do
+        if room.col == col and room.row == row and room.floor == floor then
+            return room
+        end
+    end
+
+    return nil
+end
 
 -- handles:
 -- moving to room entrance via highway
