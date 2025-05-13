@@ -78,7 +78,7 @@ end
 function moveTracker.canBacktrack()
     local stack = settings.get("moveStack") or {}
 
-    return type(stack) == "table" and next(stack) == nil
+    return type(stack) == "table" and next(stack) ~= nil
 end
 
 function moveTracker.getBacktrackLocation()
