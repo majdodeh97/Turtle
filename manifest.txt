@@ -3,7 +3,7 @@
 elevator.lua
 manifest.txt
 reset.lua
-roomInfos.json
+roomJobInfos.json
 setRole.lua
 startup.lua
 test.lua

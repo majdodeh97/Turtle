@@ -10,9 +10,9 @@ local highwayNav = require("/utils/highwayNav")
 ---@class navigation
 local navigation = {}
 
-local path = "/roomInfos.json"
+local path = "/roomJobInfos.json"
 
-function navigation.getRoomJobInfo(col, row, floor)
+function navigation.getRoomJobInfo(long, lat, floor)
     if not fs.exists(path) then
         log.error("File not found: " .. path)
     end
@@ -27,7 +27,7 @@ function navigation.getRoomJobInfo(col, row, floor)
     end
 
     for _, room in ipairs(data.rooms) do
-        if room.col == col and room.row == row and room.floor == floor then
+        if room.long == long and room.lat == lat and room.floor == floor then
             return room
         end
     end
@@ -35,9 +35,8 @@ function navigation.getRoomJobInfo(col, row, floor)
     return nil
 end
 
-local function getRoomTurtleLocation(col, row)
-    -- return x,y,floor
-    -- todo: make row and col into lat and long here and in the json
+local function getRoomTurtleLocation(long, lat)
+    -- return x,y
 end
 
 local function moveToWithBacktrack(x, y, floor)
@@ -66,18 +65,15 @@ end
 
 function navigation.goToRoomJobStart()
     navigation.goToRoomTurtle()
-    -- move into the room and to job start
+    -- move into the room and to job start (care for long and lat)
 end
 
-moveTracker.canBacktrack()
-
-
 -- handles:
--- moving to room entrance via highway
--- move into the room, utilizing location.roomCoordsToGeoLocation(x, y) to move correctly
+-- moving to room entrance via highwayNav
+-- move into the room, utilizing location.getRoom(x, y) to move correctly
 -- moving to room start position using moveTracker
 -- shopuld I have wrappers for basic move functions? Maybe just faceDirection? Idk think more about this structure. 
--- Need to decide what library room scripts will use, or if it will use a mix of this and moveTracker
+-- Need to decide if room scripts will use this alone, or if it will use a mix of this and moveTracker
 
 local function getRoomDoorCoords()
 
