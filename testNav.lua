@@ -1,4 +1,5 @@
 local navigation = require("/utils/navigation")
+local roomNav = require("/utils/roomNav")
 
 -- Args: testCaseNumber, lat, long, floor
 local args = { ... }
@@ -19,7 +20,7 @@ if not (lat and long and floor) then
 end
 
 if testCase == 1 then
-    local room = navigation.getRoomInfoByLocation(lat, long, floor)
+    local room = roomNav.getRoomInfoByLocation(lat, long, floor)
     if room then
         print("Room info found:")
         print(textutils.serialize(room))
@@ -33,7 +34,7 @@ elseif testCase == 3 then
 elseif testCase == 4 then
     navigation.goToRoomInputChest(lat, long, floor)
 elseif testCase == 5 then
-    local roomInfo = navigation.getRoomInfoByLocation(lat, long, floor)
+    local roomInfo = roomNav.getRoomInfoByLocation(lat, long, floor)
     if not roomInfo then return end
     navigation.goToRoomJobStart(lat, long, floor, roomInfo.jobStartLocation)
 elseif testCase == 6 then
