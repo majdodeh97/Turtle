@@ -167,23 +167,23 @@ function navigation.moveToXYZ(targetX, targetY, targetZ)
 
             -- Y movement
             if loc.y < targetY then
-                moveTracker.faceDirection("forward")
+                move.faceDirection("forward")
                 if moveTracker.forward() then break end
             elseif loc.y > targetY then
-                moveTracker.faceDirection("back")
+                move.faceDirection("back")
                 if moveTracker.forward() then break end
             end
 
             -- X movement
             if loc.x < targetX then
-                moveTracker.faceDirection("right")
+                move.faceDirection("right")
                 if moveTracker.forward() then break
                 else -- Y and Z either completed or failed to move
                     print("Navigation unsuccessful. Please make way")
                     sleep(5)
                 end
             elseif loc.x > targetX then
-                moveTracker.faceDirection("left")
+                move.faceDirection("left")
                 if moveTracker.forward() then break
                 else -- Y and Z either completed or failed to move
                     print("Navigation unsuccessful. Please make way")
@@ -194,29 +194,41 @@ function navigation.moveToXYZ(targetX, targetY, targetZ)
     end
 end
 
+function navigation.faceDirection(targetDir)
+    if(targetDir == "left" or targetDir == "right") then
+        return move.faceDirection(targetDir)
+    end
+
+    local lat = location.roomCoordsToGeoLocation()
+
+    local dir = lat == "north" and targetDir or location.getOppositeDir(targetDir)
+
+    return move.faceDirection(dir)
+end
+
 function navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
     navigation.goToRoomTurtle(lat, long, floor)
 
-    local dir = lat == "north" and "forward" or "back"
-
-    moveTracker.faceDirection(dir)
+    navigation.faceDirection("forward")
 
     moveTracker.forward()
     moveTracker.forward()
 
     navigation.moveToXYZ(jobStartLocation.x, jobStartLocation.y, jobStartLocation.z)
+
+    navigation.faceDirection("forward")
 end
 
 function navigation.turnToOutputChest(long)
     local dir = long == "east" and "left" or "right"
 
-    moveTracker.faceDirection(dir)
+    move.faceDirection(dir)
 end
 
 function navigation.turnToInputChest(long)
     local dir = long == "east" and "right" or "left"
 
-    moveTracker.faceDirection(dir)
+    move.faceDirection(dir)
 end
 
 return navigation

@@ -71,10 +71,6 @@ function moveTracker.turnLeft()
     return move.turnLeft()
 end
 
-function moveTracker.faceDirection(targetDir)
-    return move.faceDirection(targetDir)
-end
-
 function moveTracker.canBacktrack()
     local stack = settings.get("moveStack") or {}
 
@@ -122,7 +118,7 @@ function moveTracker.backtrackUntil(conditionFn)
     local function conditionalTurn(dir, condFn)
         while true do
             if condFn() then return false end
-            if moveTracker.faceDirection(dir) then return true end
+            if move.faceDirection(dir) then return true end
             print("Turning obstructed.")
             sleep(5)
         end

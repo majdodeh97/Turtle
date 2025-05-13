@@ -69,7 +69,7 @@ elseif(test1 == 101) then
     moveTracker.forward()
     moveTracker.forward()
     moveTracker.forward()
-    moveTracker.faceDirection("left")
+    move.faceDirection("left")
     moveTracker.back()
     moveTracker.back()
     moveTracker.back()
