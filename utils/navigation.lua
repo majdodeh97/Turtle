@@ -10,9 +10,10 @@ local highwayNav = require("/utils/highwayNav")
 ---@class navigation
 local navigation = {}
 
-local path = "/roomJobInfos.json"
+local incomingZ = settings.get("base").incomingZ
+local path = "/roomInfos.json"
 
-function navigation.getRoomJobInfo(lat, long, floor)
+function navigation.getRoomInfoByLocation(lat, long, floor)
     if not fs.exists(path) then
         log.error("File not found: " .. path)
     end
@@ -35,8 +36,27 @@ function navigation.getRoomJobInfo(lat, long, floor)
     return nil
 end
 
-local function getRoomTurtleLocation(lat, long)
-    -- return x,y
+function navigation.getRoomInfoByJob(jobName)
+    if not fs.exists(path) then
+        log.error("File not found: " .. path)
+    end
+
+    local file = fs.open(path, "r")
+    local content = file.readAll()
+    file.close()
+
+    local data = textutils.unserializeJSON(content)
+    if not data or type(data.rooms) ~= "table" then
+        log.error("Invalid or missing 'rooms' data.")
+    end
+
+    for _, room in ipairs(data.rooms) do
+        if room.jobName == jobName then
+            return room
+        end
+    end
+
+    return nil
 end
 
 local function moveToWithBacktrack(x, y, floor)
@@ -51,55 +71,106 @@ local function moveToWithBacktrack(x, y, floor)
     return highwayNav.moveTo(x, y, floor)
 end
 
-function navigation.goToRoomOutputChest()
+local function addToMagnitude(number, delta)
+    local sign = number >= 0 and 1 or -1
+    local magnitude = math.abs(number)
+    local newMagnitude = magnitude + delta
 
+    if newMagnitude == 0 then
+        return 0
+    elseif newMagnitude > 0 then
+        return sign * newMagnitude
+    else
+        return -sign * math.abs(newMagnitude)
+    end
 end
 
-function navigation.goToRoomInputChest()
+local function getRoomDoorLocation(lat, long)
+    if(not lat or not long) then log.error("both lat and long need to be defined") end
 
+    local baseX,baseY = location.geoLocationToRoomCoords(lat, long)
+    local roomSize = settings.get("base").roomSize
+
+    local deltaX = math.ceil(roomSize/2)
+
+    return addToMagnitude(baseX, deltaX), baseY
 end
 
-function navigation.goToRoomTurtle()
+local function getRoomTurtleLocation(lat, long)
+    local doorX,doorY = getRoomDoorLocation(lat, long)
 
+    return addToMagnitude(doorX, -3), addToMagnitude(doorY, -1)
 end
 
-function navigation.goToRoomJobStart()
-    navigation.goToRoomTurtle()
-    -- move into the room and to job start (care for lat and long)
+local function getRoomOutputChestLocation(lat, long)
+    local doorX,doorY = getRoomDoorLocation(lat, long)
+
+    return addToMagnitude(doorX, -4), addToMagnitude(doorY, -1)
 end
 
--- handles:
--- moving to room entrance via highwayNav
--- move into the room, utilizing location.getRoom(x, y) to move correctly
--- moving to room start position using moveTracker
--- shopuld I have wrappers for basic move functions? Maybe just faceDirection? Idk think more about this structure. 
--- Need to decide if room scripts will use this alone, or if it will use a mix of this and moveTracker
+local function getRoomInputChestLocation(lat, long)
+    local doorX,doorY = getRoomDoorLocation(lat, long)
 
-local function getRoomDoorCoords()
-
+    return addToMagnitude(doorX, -2), addToMagnitude(doorY, -1)
 end
 
-local function getRoomCoords(row, col)
+function navigation.goToRoomTurtle(lat, long, floor)
+    local turtleX, turtleY = getRoomTurtleLocation(lat, long)
+    local loc = location.getLocation()
 
-    -- local rowToMove = math.abs(row) - 1
-    -- local x = rowToMove * (config.roomSize + config.streetWidth)
-    -- local colToMove = math.abs(col) - 1
-    -- local y = colToMove * (config.roomSize + config.streetWidth)
- 
-    -- x = x + math.floor(config.streetWidth / 2) + math.ceil(config.roomSize / 2)
-    -- y = y + math.floor(config.streetWidth / 2)
- 
-    -- if row == 0 then x = 0 end
-    -- if col == 0 then y = 0 end
- 
-    -- if row < 0 then x = -1 * x end
-    -- if col < 0 then y = -1 * y end
- 
-    -- return {
-    --     x = x,
-    --     y = y,
-    --     z = 0
-    -- }
+    if(loc.x == turtleX and loc.y == turtleY and loc.z == location.getFloorBaseZ(floor) + incomingZ) then
+        print("Already at turtle")
+        return
+    end
+
+    return moveToWithBacktrack(turtleX, turtleY, floor)
+end
+
+function navigation.goToRoomOutputChest(lat, long, floor)
+    local outputChestX, outputChestY = getRoomOutputChestLocation(lat, long)
+    local loc = location.getLocation()
+
+    if(loc.x == outputChestX and loc.y == outputChestY and loc.z == location.getFloorBaseZ(floor) + incomingZ) then
+        print("Already at output chest")
+        return
+    end
+
+    return moveToWithBacktrack(outputChestX, outputChestY, floor)
+end
+
+function navigation.goToRoomInputChest(lat, long, floor)
+    local inputChestX, inputChestY = getRoomInputChestLocation(lat, long)
+    local loc = location.getLocation()
+
+    if(loc.x == inputChestX and loc.y == inputChestY and loc.z == location.getFloorBaseZ(floor) + incomingZ) then
+        print("Already at input chest")
+        return
+    end
+
+    return moveToWithBacktrack(inputChestX, inputChestY, floor)
+end
+
+function navigation.goToRoomJobStart(lat, long, floor)
+    navigation.goToRoomTurtle(lat, long, floor)
+
+    local dir = lat == "north" and "forward" or "back"
+
+    moveTracker.faceDirection(dir)
+
+    moveTracker.forward()
+    moveTracker.forward()
+end
+
+function navigation.turnToOutputChest(long)
+    local dir = long == "east" and "left" or "right"
+
+    moveTracker.faceDirection(dir)
+end
+
+function navigation.turnToInputChest(long)
+    local dir = long == "east" and "right" or "left"
+
+    moveTracker.faceDirection(dir)
 end
 
 return navigation

@@ -85,10 +85,10 @@ function location.roomCoordsToGeoLocation(x, y)
     x = x or location.getLocation().x
     y = y or location.getLocation().y
 
-    if(location.isOnRoad(x, y)) then return end
+    if(location.isOnRoad(x, y)) then log.error("Coords are not room coords: (" .. x .. "," .. y .. ")") end
      
-    local lat = x > 0 and "east" or "west"
-    local long = y > 0 and "north" or "south"
+    local lat = y > 0 and "north" or "south"
+    local long = x > 0 and "east" or "west"
 
     return lat, long
 end
@@ -98,8 +98,8 @@ function location.geoLocationToRoomCoords(lat, long)
     local roadSize = settings.get("base").roadSize
     local half = math.floor(roadSize / 2)
 
-    local x = lat == "east" and half + 1 or ((roadSize % 2 == 0) and -(half) or -(half + 1))
-    local y = long == "north" and half + 1 or ((roadSize % 2 == 0) and -(half) or -(half + 1))
+    local x = long == "east" and half + 1 or ((roadSize % 2 == 0) and -(half) or -(half + 1))
+    local y = lat == "north" and half + 1 or ((roadSize % 2 == 0) and -(half) or -(half + 1))
 
     return x,y
 end
@@ -113,6 +113,8 @@ function location.getMinFloor()
 end
 
 function location.getFloor(z)
+    if(not z) then log.error("No z defined for getFloor") end
+
     if z >= 0 then
         local currentZ = 0
         local floor = 0
@@ -149,6 +151,8 @@ function location.getFloor(z)
 end
 
 function location.getFloorBaseZ(floor)
+    if(not floor) then log.error("No floor defined for getFloorBaseZ") end
+
     if floor >= 0 then
         local currentZ = 0
         local currentFloor = 0

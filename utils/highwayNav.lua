@@ -6,9 +6,11 @@ local location = require("/utils/location")
 ---@class highwayNav
 local highwayNav = {}
 
-local SWAP_Z = 0
-local OUTGOING_Z = 2
-local INCOMING_Z = 3
+local baseSettings = settings.get("base")
+
+local SWAP_Z = baseSettings.swapZ
+local OUTGOING_Z = baseSettings.outgoingZ
+local INCOMING_Z = baseSettings.incomingZ
 
 local RESERVED_COLUMNS = {
     ["0,0"] = true,

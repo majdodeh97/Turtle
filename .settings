@@ -9,7 +9,10 @@
         z = 0
     },
     base = {
-        roomSize = 22,
-        roadSize = 4
+        roomSize = 20,
+        roadSize = 4,
+        swapZ = 0,
+        outgoingZ = 2,
+        incomingZ = 3
     },
 }
