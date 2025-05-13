@@ -9,15 +9,15 @@
       },
       {
         "floor": 0,
-        "long": "south",
         "lat": "west",
+        "long": "south",
         "jobScript": "/jobs/farmer.lua",
         "jobStartLocation": { "x": -12, "y": 65, "z": 22 }
       },
       {
         "floor": 1,
-        "long": "north",
         "lat": "west",
+        "long": "north",
         "jobScript": "/jobs/furnace.lua",
         "jobStartLocation": { "x": -8, "y": 75, "z": 18 }
       }

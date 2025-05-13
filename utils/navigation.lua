@@ -12,7 +12,7 @@ local navigation = {}
 
 local path = "/roomJobInfos.json"
 
-function navigation.getRoomJobInfo(long, lat, floor)
+function navigation.getRoomJobInfo(lat, long, floor)
     if not fs.exists(path) then
         log.error("File not found: " .. path)
     end
@@ -27,7 +27,7 @@ function navigation.getRoomJobInfo(long, lat, floor)
     end
 
     for _, room in ipairs(data.rooms) do
-        if room.long == long and room.lat == lat and room.floor == floor then
+        if room.lat == lat and room.long == long and room.floor == floor then
             return room
         end
     end
@@ -35,7 +35,7 @@ function navigation.getRoomJobInfo(long, lat, floor)
     return nil
 end
 
-local function getRoomTurtleLocation(long, lat)
+local function getRoomTurtleLocation(lat, long)
     -- return x,y
 end
 
@@ -65,7 +65,7 @@ end
 
 function navigation.goToRoomJobStart()
     navigation.goToRoomTurtle()
-    -- move into the room and to job start (care for long and lat)
+    -- move into the room and to job start (care for lat and long)
 end
 
 -- handles:

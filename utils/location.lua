@@ -87,15 +87,21 @@ function location.roomCoordsToGeoLocation(x, y)
 
     if(location.isOnRoad(x, y)) then return end
      
-    local long = x > 0 and "north" or "south"
     local lat = x > 0 and "east" or "west"
+    local long = y > 0 and "north" or "south"
 
-    return long, lat
+    return lat, long
 end
 
 -- Returns the closest coord to (0,0)
-function location.geoLocationToRoomCoords(long, lat)
-    -- todo: implement
+function location.geoLocationToRoomCoords(lat, long)
+    local roadSize = settings.get("base").roadSize
+    local half = math.floor(roadSize / 2)
+
+    local x = lat == "east" and half + 1 or ((roadSize % 2 == 0) and -(half) or -(half + 1))
+    local y = long == "north" and half + 1 or ((roadSize % 2 == 0) and -(half) or -(half + 1))
+
+    return x,y
 end
 
 function location.getMinFloor()
