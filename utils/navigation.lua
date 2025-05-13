@@ -150,7 +150,51 @@ function navigation.goToRoomInputChest(lat, long, floor)
     return moveToWithBacktrack(inputChestX, inputChestY, floor)
 end
 
-function navigation.goToRoomJobStart(lat, long, floor)
+function navigation.moveToXYZ(targetX, targetY, targetZ)
+    while true do
+        local loc = location.getLocation()
+        if loc.x == targetX and loc.y == targetY and loc.z == targetZ then
+            break
+        end
+
+        repeat -- To simulate "continue"
+            -- Z movement
+            if loc.z < targetZ then
+                if moveTracker.up() then break end
+            elseif loc.z > targetZ then
+                if moveTracker.down() then break end
+            end
+
+            -- Y movement
+            if loc.y < targetY then
+                moveTracker.faceDirection("forward")
+                if moveTracker.forward() then break end
+            elseif loc.y > targetY then
+                moveTracker.faceDirection("back")
+                if moveTracker.forward() then break end
+            end
+
+            -- X movement
+            if loc.x < targetX then
+                moveTracker.faceDirection("right")
+                if moveTracker.forward() then break
+                else -- Y and Z either completed or failed to move
+                    print("Navigation unsuccessful. Please make way")
+                    sleep(5)
+                end
+            elseif loc.x > targetX then
+                moveTracker.faceDirection("left")
+                if moveTracker.forward() then break
+                else -- Y and Z either completed or failed to move
+                    print("Navigation unsuccessful. Please make way")
+                    sleep(5)
+                end
+            end
+        until true
+    end
+end
+
+function navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
     navigation.goToRoomTurtle(lat, long, floor)
 
     local dir = lat == "north" and "forward" or "back"
@@ -159,6 +203,8 @@ function navigation.goToRoomJobStart(lat, long, floor)
 
     moveTracker.forward()
     moveTracker.forward()
+
+    navigation.moveToXYZ(jobStartLocation.x, jobStartLocation.y, jobStartLocation.z)
 end
 
 function navigation.turnToOutputChest(long)

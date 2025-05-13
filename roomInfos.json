@@ -1,28 +1,12 @@
 {
     "rooms": [
       {
-        "floor": 0,
-        "lat": "north",
-        "long": "east",
-        "jobName": "miner",
-        "jobScript": "/jobs/miner.lua",
-        "jobStartLocation": { "x": -10, "y": 65, "z": 20 }
-      },
-      {
-        "floor": 0,
-        "lat": "south",
-        "long": "west",
-        "jobName": "farmer",
-        "jobScript": "/jobs/farmer.lua",
-        "jobStartLocation": { "x": -12, "y": 65, "z": 22 }
-      },
-      {
         "floor": 1,
         "lat": "north",
         "long": "west",
-        "jobName": "furnace",
-        "jobScript": "/jobs/furnace.lua",
-        "jobStartLocation": { "x": -8, "y": 75, "z": 18 }
+        "jobName": "tree",
+        "jobScript": "/jobs/tree.lua",
+        "jobStartLocation": { "x": 18, "y": 8, "z": 2 }
       }
     ]
 }
