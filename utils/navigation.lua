@@ -1,11 +1,18 @@
 local log = require("/utils/log")
+local moveTracker = require("/utils/moveTracker")
+local move = require("/utils/move")
+local location = require("/utils/location")
+local place = require("/utils/place")
+local safe = require("/utils/safe")
+local inventory = require("/utils/inventory")
+local highwayNav = require("/utils/highwayNav")
 
 ---@class navigation
 local navigation = {}
 
 local path = "/roomInfos.json"
 
-function navigation.getRoomInfo(col, row, floor)
+function navigation.getRoomJobInfo(col, row, floor)
     if not fs.exists(path) then
         log.error("File not found: " .. path)
     end
@@ -28,9 +35,46 @@ function navigation.getRoomInfo(col, row, floor)
     return nil
 end
 
+local function getRoomTurtleLocation(col, row)
+    -- return x,y,floor
+    -- todo: make row and col into lat and long here and in the json
+end
+
+local function moveToWithBacktrack(x, y, floor)
+    local loc = location.getLocation()
+
+    if(location.isOnRoad(loc.x, loc.y)) then
+        if(moveTracker.canBacktrack()) then log.error("Turtle on the road has a moveStack") end
+    else
+        if(moveTracker.canBacktrack()) then moveTracker.backtrack() end
+    end
+
+    return highwayNav.moveTo(x, y, floor)
+end
+
+function navigation.goToRoomOutputChest()
+
+end
+
+function navigation.goToRoomInputChest()
+
+end
+
+function navigation.goToRoomTurtle()
+
+end
+
+function navigation.goToRoomJobStart()
+    navigation.goToRoomTurtle()
+    -- move into the room and to job start
+end
+
+moveTracker.canBacktrack()
+
+
 -- handles:
 -- moving to room entrance via highway
--- move into the room, utilizing location.getRoom(x, y) to move correctly
+-- move into the room, utilizing location.roomCoordsToGeoLocation(x, y) to move correctly
 -- moving to room start position using moveTracker
 -- shopuld I have wrappers for basic move functions? Maybe just faceDirection? Idk think more about this structure. 
 -- Need to decide what library room scripts will use, or if it will use a mix of this and moveTracker

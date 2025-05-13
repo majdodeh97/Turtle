@@ -160,12 +160,6 @@ function highwayNav.goHome(ignoreRoadCheck)
     highwayNav.moveTo(0,0,0,ignoreRoadCheck)
 end
 
-function highwayNav.isHome(targetX, targetY, targetFloor)
-    if(targetX == 0 and targetY == 0 and targetFloor == 0) then return true end
-
-    return false
-end
-
 local function joinStack()
     safe.execute(function() return move.faceDirection("back") end)
 
@@ -197,7 +191,7 @@ end
 local function goToTarget(targetX, targetY, targetFloor)
     moveToOutgoingZ(targetFloor)
 
-    if(highwayNav.isHome(targetX, targetY, targetFloor)) then
+    if(location.isHome(targetX, targetY, targetFloor)) then
         joinStack()
     else
         highwayNav.moveToXY(targetX, targetY)
@@ -224,7 +218,7 @@ local function recalibrateAndGoToTarget(targetX, targetY, targetFloor)
 end
 
 -- Warning: Cannot reliably be used to move to a location directly behind the idle stack
--- Current implementation moves along the shortest axis first (in this case, the x axis)
+-- Current implementation moves along the shortest axis first (in this example, the x axis)
 -- Then it will turn and move from (0,1) to the negative y direction
 -- If the idle stack is tall enough, this will cause deadlock
 
@@ -250,7 +244,7 @@ function highwayNav.moveTo(targetX, targetY, targetFloor, ignoreRoadCheck)
         if(loc.z == 0) then log.error("Hub turtle trying to move") end
 
         if (loc.z > 0) then 
-            if(highwayNav.isHome(targetX, targetY, targetFloor)) then
+            if(location.isHome(targetX, targetY, targetFloor)) then
                 while (location.getLocation().z > 1) do
                     safe.execute(move.down)
                 end

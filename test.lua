@@ -38,7 +38,7 @@ local test1 = tonumber(tArgs[1])
 if(test1 == 0) then
     
 elseif(test1 == 1) then
-    local roomInfos = navigation.getRoomInfo("north", "east", 0)
+    local roomInfos = navigation.getRoomJobInfo("north", "east", 0)
     print(textutils.serialize(roomInfos))
 elseif(test1 == 100) then
     move.forward()

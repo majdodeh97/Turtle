@@ -75,6 +75,12 @@ function moveTracker.faceDirection(targetDir)
     return move.faceDirection(targetDir)
 end
 
+function moveTracker.canBacktrack()
+    local stack = settings.get("moveStack") or {}
+
+    return type(stack) == "table" and next(stack) == nil
+end
+
 function moveTracker.getBacktrackLocation()
     local x, y, z = 0, 0, 0
     local stack = settings.get("moveStack") or {}

@@ -75,16 +75,27 @@ function location.isOnRoad(x, y)
            (y >= min and y <= max)
 end
 
-function location.getRoom(x, y)
+function location.isHome(targetX, targetY, targetFloor)
+    if(targetX == 0 and targetY == 0 and targetFloor == 0) then return true end
+
+    return false
+end
+
+function location.roomCoordsToGeoLocation(x, y)
     x = x or location.getLocation().x
     y = y or location.getLocation().y
 
     if(location.isOnRoad(x, y)) then return end
      
-    local col = x > 0 and "north" or "south"
-    local row = x > 0 and "east" or "west"
+    local long = x > 0 and "north" or "south"
+    local lat = x > 0 and "east" or "west"
 
-    return col, row
+    return long, lat
+end
+
+-- Returns the closest coord to (0,0)
+function location.geoLocationToRoomCoords(long, lat)
+    -- todo: implement
 end
 
 function location.getMinFloor()
