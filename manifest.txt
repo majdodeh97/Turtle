@@ -9,8 +9,6 @@ startup.lua
 test.lua
 testNav.lua
 
-hub/main.lua
-
 programs/cobbleBot.lua
 programs/craft.lua
 programs/floorMakerTest.lua
@@ -23,6 +21,10 @@ programs/placeSquare.lua
 programs/placeSquare2.lua
 programs/roomMaker.lua
 programs/straight.lua
+
+roles/control/main.lua
+roles/hub/main.lua
+roles/worker/main.lua
 
 room/tree.lua
 
@@ -40,5 +42,3 @@ utils/place.lua
 utils/roomNav.lua
 utils/safe.lua
 utils/test.lua
-
-worker/main.lua

@@ -5,7 +5,7 @@
         "lat": "north",
         "long": "west",
         "jobName": "tree",
-        "jobScript": "/jobs/tree.lua",
+        "jobScript": "/room/tree.lua",
         "jobStartLocation": { "x": -18, "y": 8, "z": 2 }
       }
     ]

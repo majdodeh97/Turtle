@@ -1,6 +1,5 @@
 local log = require("/utils/log")
 local moveTracker = require("/utils/moveTracker")
-local move = require("/utils/move")
 local location = require("/utils/location")
 local highwayNav = require("/utils/highwayNav")
 local safe = require("/utils/safe")
@@ -113,18 +112,6 @@ function navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
     safe.execute(roomNav.moveToXYZ(jobStartLocation.x, jobStartLocation.y, jobStartLocation.z))
 
     safe.execute(roomNav.faceDirection("forward"))
-end
-
-function navigation.turnToOutputChest(long)
-    local dir = long == "east" and "left" or "right"
-
-    safe.execute(move.faceDirection(dir))
-end
-
-function navigation.turnToInputChest(long)
-    local dir = long == "east" and "right" or "left"
-
-    safe.execute(move.faceDirection(dir))
 end
 
 return navigation

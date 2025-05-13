@@ -25,7 +25,7 @@ if not role then
     return
 end
 
-local scriptPath = fs.combine(role, "main.lua")
+local scriptPath = fs.combine("roles", role, "main.lua")
 
 if fs.exists(scriptPath) then
     print("Running:", scriptPath)
