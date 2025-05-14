@@ -85,7 +85,7 @@ function location.roomCoordsToGeoLocation(x, y)
     x = x or location.getLocation().x
     y = y or location.getLocation().y
 
-    if(location.isOnRoad(x, y)) then log.error("Coords are not room coords: (" .. x .. "," .. y .. ")") end
+    --if(location.isOnRoad(x, y)) then log.error("Coords are not room coords: (" .. x .. "," .. y .. ")") end
      
     local lat = y > 0 and "north" or "south"
     local long = x > 0 and "east" or "west"

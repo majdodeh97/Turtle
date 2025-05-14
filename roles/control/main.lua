@@ -9,7 +9,9 @@ local function turnToOutputChest()
 
     local dir = long == "east" and "left" or "right"
 
-    safe.execute(move.faceDirection(dir))
+    safe.execute(function() 
+        return move.faceDirection(dir)
+    end)
 end
 
 local function turnToInputChest()
@@ -17,7 +19,9 @@ local function turnToInputChest()
 
     local dir = long == "east" and "right" or "left"
 
-    safe.execute(move.faceDirection(dir))
+    safe.execute(function() 
+        return move.faceDirection(dir)
+    end)
 end
 
 local function turnToRoomInputChest()
@@ -25,7 +29,9 @@ local function turnToRoomInputChest()
 
     local dir = lat == "north" and "forward" or "back"
 
-    safe.execute(move.faceDirection(dir))
+    safe.execute(function() 
+        return move.faceDirection(dir)
+    end)
 end
 
 -- todo: Controls the output and input, requests stuff from hub, gives the worker turtle what it needs
