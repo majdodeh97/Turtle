@@ -36,7 +36,7 @@ elseif testCase == 4 then
 elseif testCase == 5 then
     local roomInfo = roomNav.getRoomInfoByLocation(lat, long, floor)
     if not roomInfo then return end
-    navigation.goToRoomJobStart(lat, long, floor, roomInfo.jobStartLocation)
+    navigation.goToRoomJobStart(lat, long, floor, roomInfo.jobInfo.jobStartLocation)
 else
     print("Unknown test case number.")
 end

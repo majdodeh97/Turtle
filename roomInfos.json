@@ -4,9 +4,30 @@
         "floor": 0,
         "lat": "north",
         "long": "west",
-        "jobName": "tree",
-        "jobScript": "/room/tree.lua",
-        "jobStartLocation": { "x": -18, "y": 8, "z": 2 }
+        "jobInfo": {
+          "jobName": "tree",
+          "items": {
+            "tools": [
+              {
+                "itemName": "Diamond pick"
+              }
+            ],
+            "items": [
+              {
+                "itemName": "Birtch sapling",
+                "itemMinCount": 16,
+                "itemMaxCount": 64
+              },
+              {
+                "itemName": "Charcoal",
+                "itemMinCount": 16,
+                "itemMaxCount": 64
+              }
+            ]
+          },
+          "jobScript": "/room/tree.lua",
+          "jobStartLocation": { "x": -18, "y": 8, "z": 2 }
+        }
       }
     ]
 }

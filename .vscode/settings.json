@@ -9,6 +9,7 @@
         "peripheral",
         "textutils",
         "gps",
-        "term"
+        "term",
+        "rednet"
     ]
 }

@@ -46,7 +46,7 @@ function roomNav.getRoomInfoByJob(jobName)
     end
 
     for _, room in ipairs(data.rooms) do
-        if room.jobName == jobName then
+        if room.jobInfo.jobName == jobName then
             return room
         end
     end

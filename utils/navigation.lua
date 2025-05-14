@@ -10,16 +10,17 @@ local navigation = {}
 
 local outgoingZ = settings.get("base").outgoingZ
 
-local function moveToWithBacktrack(x, y, floor)
+local function tryToBacktrack()
     local loc = location.getLocation()
 
-    if(location.isOnRoad(loc.x, loc.y)) then
-        if(moveTracker.canBacktrack()) then log.error("Turtle on the road has a moveStack") end
+    if(not location.isOnRoad(loc.x, loc.y)) then
+        if(moveTracker.canBacktrack()) then moveTracker.backtrack() 
+        else log.error("Turtle in the room cannot backtrack") end
     else
-        if(moveTracker.canBacktrack()) then moveTracker.backtrack() end
+        if(moveTracker.canBacktrack()) then log.error("Turtle on the road can backtrack") end
     end
 
-    return highwayNav.moveTo(x, y, floor)
+    return true
 end
 
 local function addToMagnitude(number, delta)
@@ -66,6 +67,9 @@ local function getRoomInputChestLocation(lat, long)
 end
 
 function navigation.goToRoomTurtle(lat, long, floor)
+
+    tryToBacktrack()
+
     local turtleX, turtleY = getRoomTurtleLocation(lat, long)
     local loc = location.getLocation()
 
@@ -74,10 +78,13 @@ function navigation.goToRoomTurtle(lat, long, floor)
         return
     end
 
-    return moveToWithBacktrack(turtleX, turtleY, floor)
+    return highwayNav.moveTo(turtleX, turtleY, floor)
 end
 
 function navigation.goToRoomOutputChest(lat, long, floor)
+    
+    tryToBacktrack()
+
     local outputChestX, outputChestY = getRoomOutputChestLocation(lat, long)
     local loc = location.getLocation()
 
@@ -86,10 +93,13 @@ function navigation.goToRoomOutputChest(lat, long, floor)
         return
     end
 
-    return moveToWithBacktrack(outputChestX, outputChestY, floor)
+    return highwayNav.moveTo(outputChestX, outputChestY, floor)
 end
 
 function navigation.goToRoomInputChest(lat, long, floor)
+
+    tryToBacktrack()
+
     local inputChestX, inputChestY = getRoomInputChestLocation(lat, long)
     local loc = location.getLocation()
 
@@ -98,7 +108,7 @@ function navigation.goToRoomInputChest(lat, long, floor)
         return
     end
 
-    return moveToWithBacktrack(inputChestX, inputChestY, floor)
+    return highwayNav.moveTo(inputChestX, inputChestY, floor)
 end
 
 function navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
