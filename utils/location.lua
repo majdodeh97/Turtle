@@ -113,7 +113,7 @@ function location.getMinFloor()
 end
 
 function location.getFloor(z)
-    if(not z) then log.error("No z defined for getFloor") end
+    z = z or location.getLocation().z
 
     if z >= 0 then
         local currentZ = 0
@@ -151,7 +151,7 @@ function location.getFloor(z)
 end
 
 function location.getFloorBaseZ(floor)
-    if(not floor) then log.error("No floor defined for getFloorBaseZ") end
+    floor = floor or location.getFloor()
 
     if floor >= 0 then
         local currentZ = 0

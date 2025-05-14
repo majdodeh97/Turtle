@@ -9,18 +9,18 @@
           "items": {
             "tools": [
               {
-                "itemName": "Diamond pick"
+                "itemName": "minecraft:diamond_pickaxe"
               }
             ],
             "items": [
               {
-                "itemName": "Birtch sapling",
-                "itemMinCount": 16,
+                "itemName": "minecraft:birch_sapling",
+                "itemMinCount": 2,
                 "itemMaxCount": 64
               },
               {
-                "itemName": "Charcoal",
-                "itemMinCount": 16,
+                "itemName": "minecraft:charcoal",
+                "itemMinCount": 2,
                 "itemMaxCount": 64
               }
             ]

@@ -133,4 +133,18 @@ function inventory.isFull()
     end)
 end
 
+function inventory.hasSpace(startSlot, endSlot)
+    if startSlot and not endSlot then
+        log.error("Only startSlot was defined in inventory.all")
+    end
+    startSlot = startSlot or 1
+    endSlot = endSlot or 16
+
+    local emptySlot = inventory.first(function (i, itemDetail)
+        return itemDetail == nil
+    end, startSlot, endSlot)
+
+    return emptySlot ~= nil
+end
+
 return inventory

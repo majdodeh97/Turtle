@@ -27,6 +27,7 @@ local roomInfo = require("/utils/roomInfo")
 -- todo: work on tree.lua
 -- todo: decide on how files are copied/updated. Old way via disk drive or new way with red net
 -- todo: add unit tests for utils
+-- todo: work on main.lua for workers and controls
 
 
 local function isCobblestoneInFront()

@@ -1,4 +1,5 @@
 local log = require("/utils/log")
+local location = require("/utils/location")
 
 ---@class roomInfo
 local roomInfo = {}
@@ -49,6 +50,13 @@ function roomInfo.getRoomInfoByJob(jobName)
     end
 
     return nil
+end
+
+function roomInfo.getRoomInfo()
+    local lat,long = location.roomCoordsToGeoLocation()
+    local floor = location.getFloor()
+
+    roomInfo.getRoomInfoByLocation(lat, long, floor)
 end
 
 return roomInfo
