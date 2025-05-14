@@ -197,17 +197,17 @@ end
 local function getRequiredObjects()
     return {
         tools = {
-            { itemName = "Diamond pick" }
+            { itemName = "minecraft:diamond_pickaxe" }
         },
         items = {
             {
-                itemName = "Birch sapling",
-                itemMinCount = 16,
+                itemName = "minecraft:birch_sapling",
+                itemMinCount = 2,
                 itemMaxCount = 64
             },
             {
-                itemName = "Charcoal",
-                itemMinCount = 16,
+                itemName = "minecraft:charcoal",
+                itemMinCount = 2,
                 itemMaxCount = 64
             }
         }
@@ -287,8 +287,8 @@ while true do
     collectRoomInput(items)
     dumpExcessAndUnneededItems(items)
 
-    local counts = countRequiredItems()
-    if hasEnoughToStart(counts) then
+    local counts = countRequiredItems(items)
+    if hasEnoughToStart(counts, items) then
         prepareWorkerRound()
     else
         local missing = {}
@@ -305,9 +305,9 @@ while true do
         while(true) do
             pullFromInputChest()
             dumpExcessAndUnneededItems(items)
-            counts = countRequiredItems()
-            if hasEnoughToStart(counts) then
-                prepareWorkerRound()
+            counts = countRequiredItems(items)
+            if hasEnoughToStart(counts, items) then
+                prepareWorkerRound(items)
             else
                 print("Still missing items. Retrying in 10 seconds")
                 sleep(10)
