@@ -289,7 +289,7 @@ while true do
 
     local counts = countRequiredItems(items)
     if hasEnoughToStart(counts, items) then
-        prepareWorkerRound()
+        prepareWorkerRound(items)
     else
         local missing = {}
         for _, item in ipairs(items) do

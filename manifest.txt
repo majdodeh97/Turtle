@@ -39,6 +39,7 @@ utils/move.lua
 utils/moveTracker.lua
 utils/navigation.lua
 utils/place.lua
+utils/roomInfo.lua
 utils/roomNav.lua
 utils/safe.lua
 utils/test.lua

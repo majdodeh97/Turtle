@@ -6,6 +6,7 @@ local safe = require("/utils/safe")
 local inventory = require("/utils/inventory")
 local navigation = require("/utils/navigation")
 local roomNav = require("/utils/roomNav")
+local roomInfo = require("/utils/roomInfo")
 
 -- To test:
 -- moveTracker: backtrackUntil
@@ -39,7 +40,7 @@ local test1 = tonumber(tArgs[1])
 if(test1 == 0) then
     
 elseif(test1 == 1) then
-    local roomInfos = roomNav.getRoomInfoByLocation("north", "east", 0)
+    local roomInfos = roomInfo.getRoomInfoByLocation("north", "east", 0)
     print(textutils.serialize(roomInfos))
 elseif(test1 == 100) then
     move.forward()

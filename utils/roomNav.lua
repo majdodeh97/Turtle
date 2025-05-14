@@ -6,54 +6,6 @@ local move = require("/utils/move")
 ---@class roomNav
 local roomNav = {}
 
-local path = "/roomInfos.json"
-
-function roomNav.getRoomInfoByLocation(lat, long, floor)
-    if not fs.exists(path) then
-        log.error("File not found: " .. path)
-    end
-
-    local file = fs.open(path, "r")
-    local content = file.readAll()
-    file.close()
-
-    local data = textutils.unserializeJSON(content)
-    if not data or type(data.rooms) ~= "table" then
-        log.error("Invalid or missing 'rooms' data.")
-    end
-
-    for _, room in ipairs(data.rooms) do
-        if room.lat == lat and room.long == long and room.floor == floor then
-            return room
-        end
-    end
-
-    return nil
-end
-
-function roomNav.getRoomInfoByJob(jobName)
-    if not fs.exists(path) then
-        log.error("File not found: " .. path)
-    end
-
-    local file = fs.open(path, "r")
-    local content = file.readAll()
-    file.close()
-
-    local data = textutils.unserializeJSON(content)
-    if not data or type(data.rooms) ~= "table" then
-        log.error("Invalid or missing 'rooms' data.")
-    end
-
-    for _, room in ipairs(data.rooms) do
-        if room.jobInfo.jobName == jobName then
-            return room
-        end
-    end
-
-    return nil
-end
-
 function roomNav.moveToXYZ(targetX, targetY, targetZ)
     while true do
         local loc = location.getLocation()
