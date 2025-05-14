@@ -34,6 +34,11 @@ local function turnToRoomInputChest()
     end)
 end
 
+local function isWorkerTurtlePresent()
+    local success, data = turtle.inspectUp()
+    return success and data.name:find("turtle")
+end
+
 -- todo: Controls the output and input, requests stuff from hub, gives the worker turtle what it needs
 
 -- waits for a turtle to appear above it
@@ -151,10 +156,7 @@ local function suckUntilFull()
     return pulledAnything
 end
 
-local function isWorkerTurtlePresent()
-    local success, data = turtle.inspectUp()
-    return success and data.name:find("turtle")
-end
+
 
 local function waitForWorkerTurtle()
     print("Waiting for worker turtle...")
