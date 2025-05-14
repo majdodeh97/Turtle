@@ -114,14 +114,20 @@ end
 function navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
     navigation.goToRoomTurtle(lat, long, floor)
 
-    safe.execute(roomNav.faceDirection("forward"))
+    safe.execute(function() 
+        return roomNav.faceDirection("forward")
+    end)
 
-    safe.execute(moveTracker.forward())
-    safe.execute(moveTracker.forward())
+    safe.execute(moveTracker.forward)
+    safe.execute(moveTracker.forward)
 
-    safe.execute(roomNav.moveToXYZ(jobStartLocation.x, jobStartLocation.y, jobStartLocation.z))
+    safe.execute(function()
+        return roomNav.moveToXYZ(jobStartLocation.x, jobStartLocation.y, jobStartLocation.z)
+    end)
 
-    safe.execute(roomNav.faceDirection("forward"))
+    safe.execute(function()
+        roomNav.faceDirection("forward")
+    end)
 end
 
 return navigation
