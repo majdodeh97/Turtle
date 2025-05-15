@@ -127,6 +127,46 @@ function inventory.dropDown(amount, slot)
     return dropInternal(turtle.dropDown, amount, slot)
 end
 
+local function safeDropInternal(dropFn, amount, slot)
+    dropFn = dropFn or inventory.drop
+    slot = slot or turtle.getSelectedSlot()
+    amount = amount or turtle.getItemCount(slot)
+
+    return inventory.runOnSlot(function()
+        local dropped = 0
+
+        while dropped < amount do
+            local count = turtle.getItemCount(slot)
+            if count == 0 then
+                log.error("No items left in slot " .. slot)
+            end
+
+            local toDrop = math.min(amount - dropped, count) -- Cant be 0
+            dropFn(toDrop)
+
+            local countAfter = turtle.getItemCount(slot)
+
+            local actuallyDropped = count - countAfter
+
+            dropped = dropped + actuallyDropped
+        end
+
+        return true
+    end, slot)
+end
+
+function inventory.safeDrop(amount, slot)
+    return safeDropInternal(inventory.drop, amount, slot)
+end
+
+function inventory.safeDropUp(amount, slot)
+    return safeDropInternal(inventory.dropUp, amount, slot)
+end
+
+function inventory.safeDropDown(amount, slot)
+    return safeDropInternal(inventory.dropDown, amount, slot)
+end
+
 function inventory.isFull()
     return inventory.all(function(i, itemDetail)
         return itemDetail ~= nil

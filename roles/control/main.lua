@@ -11,7 +11,7 @@ print("Hi, I'm a control turtle!")
 local function turnToOutputChest()
     local lat,long = location.roomCoordsToGeoLocation()
 
-    local dir = long == "east" and "left" or "right"
+    local dir = long == "east" and "right" or "left"
 
     safe.execute(function() 
         return move.faceDirection(dir)
@@ -21,7 +21,7 @@ end
 local function turnToInputChest()
     local lat,long = location.roomCoordsToGeoLocation()
 
-    local dir = long == "east" and "right" or "left"
+    local dir = long == "east" and "left" or "right"
 
     safe.execute(function() 
         return move.faceDirection(dir)
@@ -59,6 +59,12 @@ local function isTurtleOn()
     else
         log.error("No turtle detected above or turtle is not a valid peripheral.")
     end
+end
+
+local function waitForWorkerTurtle()
+    print("Waiting for worker turtle...")
+    while not isWorkerTurtlePresent() do sleep(5) end
+    print("Worker turtle detected.")
 end
 
 -- todo: Controls the output and input, requests stuff from hub, gives the worker turtle what it needs
@@ -100,198 +106,260 @@ end
 -- it will then dump everything into the worker turtle above it and turn it on, initiating a new round
 
 
-local function cleanInventory(requiredItems)
-    turnToOutputChest()
+-- local function cleanInventory(requiredItems)
+--     turnToOutputChest()
 
-    local maxAllowed = {}
-    for _, entry in ipairs(requiredItems) do
-        maxAllowed[entry.itemName] = entry.itemMaxCount
-    end
+--     local maxAllowed = {}
+--     for _, entry in ipairs(requiredItems) do
+--         maxAllowed[entry.itemName] = entry.itemMaxCount
+--     end
 
-    local keptCounts = {}
+--     local keptCounts = {}
 
-    for slot = 1, 16 do
-        turtle.select(slot)
-        local detail = turtle.getItemDetail()
-        if detail then
-            local name = detail.name
-            local matched = false
-            for _, entry in ipairs(requiredItems) do
-                if name:find(entry.itemName) then
-                    local currentCount = keptCounts[entry.itemName] or 0
-                    local allowedCount = maxAllowed[entry.itemName]
-                    if currentCount < allowedCount then
-                        local toKeep = math.min(allowedCount - currentCount, detail.count)
-                        keptCounts[entry.itemName] = currentCount + toKeep
-                        if toKeep < detail.count then
-                            -- Drop the extra
-                            local toDrop = detail.count - toKeep
-                            turtle.transferTo(slot, toKeep)
-                            while turtle.drop(toDrop) == false do
-                                sleep(1)
-                            end
-                        end
-                    else
-                        -- Already have enough, dump the whole stack
-                        while turtle.drop() == false do
-                            sleep(1)
-                        end
-                    end
-                    matched = true
-                    break
-                end
-            end
-            if not matched then
-                while turtle.drop() == false do
-                    sleep(1)
-                end
-            end
-        end
-    end
-    turtle.select(1)
-end
-
-
-local function suckUntilFull()
-    local pulledAnything = false
-
-    while true do
-        local spaceAvailable = false
-        for i = 1, 16 do
-            if turtle.getItemCount(i) == 0 then
-                spaceAvailable = true
-                break
-            end
-        end
-
-        if not spaceAvailable then
-            break
-        end
-
-        if turtle.suck() then
-            pulledAnything = true
-        else
-            break
-        end
-    end
-
-    return pulledAnything
-end
+--     for slot = 1, 16 do
+--         turtle.select(slot)
+--         local detail = turtle.getItemDetail()
+--         if detail then
+--             local name = detail.name
+--             local matched = false
+--             for _, entry in ipairs(requiredItems) do
+--                 if name:find(entry.itemName) then
+--                     local currentCount = keptCounts[entry.itemName] or 0
+--                     local allowedCount = maxAllowed[entry.itemName]
+--                     if currentCount < allowedCount then
+--                         local toKeep = math.min(allowedCount - currentCount, detail.count)
+--                         keptCounts[entry.itemName] = currentCount + toKeep
+--                         if toKeep < detail.count then
+--                             -- Drop the extra
+--                             local toDrop = detail.count - toKeep
+--                             turtle.transferTo(slot, toKeep)
+--                             while turtle.drop(toDrop) == false do
+--                                 sleep(1)
+--                             end
+--                         end
+--                     else
+--                         -- Already have enough, dump the whole stack
+--                         while turtle.drop() == false do
+--                             sleep(1)
+--                         end
+--                     end
+--                     matched = true
+--                     break
+--                 end
+--             end
+--             if not matched then
+--                 while turtle.drop() == false do
+--                     sleep(1)
+--                 end
+--             end
+--         end
+--     end
+--     turtle.select(1)
+-- end
 
 
+-- local function suckUntilFull()
+--     local pulledAnything = false
 
-local function waitForWorkerTurtle()
-    print("Waiting for worker turtle...")
-    while not isWorkerTurtlePresent() do sleep(5) end
-    print("Worker turtle detected.")
-end
+--     while true do
+--         local spaceAvailable = false
+--         for i = 1, 16 do
+--             if turtle.getItemCount(i) == 0 then
+--                 spaceAvailable = true
+--                 break
+--             end
+--         end
 
-local function dumpExcessAndUnneededItems(requiredItems)
-    turnToOutputChest()
-    cleanInventory(requiredItems)
-end
+--         if not spaceAvailable then
+--             break
+--         end
 
-local function collectRoomInput(requiredItems)
-    while true do
-        turnToRoomInputChest()
-        local success = suckUntilFull()
-        if not success then return end
-        dumpExcessAndUnneededItems(requiredItems)
-    end
-end
+--         if turtle.suck() then
+--             pulledAnything = true
+--         else
+--             break
+--         end
+--     end
 
-local function countRequiredItems(requiredItems)
-    local counts = {}
-    for _, item in ipairs(requiredItems) do
-        counts[item.itemName] = 0
-    end
-    for slot = 1, 16 do
-        local item = turtle.getItemDetail(slot)
-        if item then
-            for _, required in ipairs(requiredItems) do
-                if item.name:find(required.itemName) then
-                    counts[required.itemName] = counts[required.itemName] + item.count
-                end
-            end
-        end
-    end
-    return counts
-end
+--     return pulledAnything
+-- end
 
-local function getRequiredObjects()
-    return {
-        tools = {
-            { itemName = "minecraft:diamond_pickaxe" }
-        },
-        items = {
-            {
-                itemName = "minecraft:birch_sapling",
-                itemMinCount = 2,
-                itemMaxCount = 64
-            },
-            {
-                itemName = "minecraft:charcoal",
-                itemMinCount = 2,
-                itemMaxCount = 64
-            }
-        }
-    }
-end
+-- local function dumpExcessAndUnneededItems(requiredItems)
+--     turnToOutputChest()
+--     cleanInventory(requiredItems)
+-- end
 
-local items = getRequiredObjects().items
+-- local function collectRoomInput(requiredItems)
+--     while true do
+--         turnToRoomInputChest()
+--         local success = suckUntilFull()
+--         if not success then return end
+--         dumpExcessAndUnneededItems(requiredItems)
+--     end
+-- end
+
+-- local function countRequiredItems(requiredItems)
+--     local counts = {}
+--     for _, item in ipairs(requiredItems) do
+--         counts[item.itemName] = 0
+--     end
+--     for slot = 1, 16 do
+--         local item = turtle.getItemDetail(slot)
+--         if item then
+--             for _, required in ipairs(requiredItems) do
+--                 if item.name:find(required.itemName) then
+--                     counts[required.itemName] = counts[required.itemName] + item.count
+--                 end
+--             end
+--         end
+--     end
+--     return counts
+-- end
+
+-- local function getRequiredObjects()
+--     return {
+--         tools = {
+--             { itemName = "minecraft:diamond_pickaxe" }
+--         },
+--         items = {
+--             {
+--                 itemName = "minecraft:birch_sapling",
+--                 itemMinCount = 2,
+--                 itemMaxCount = 64
+--             },
+--             {
+--                 itemName = "minecraft:charcoal",
+--                 itemMinCount = 2,
+--                 itemMaxCount = 64
+--             }
+--         }
+--     }
+-- end
+
+-- local items = getRequiredObjects().items
 
 local function requestFromHub(missingCounts)
     print("Requesting items from hub...")
+    print(textutils.serialize(missingCounts))
     -- rednet.open("left")
     -- rednet.send("hub", { type = "requestItems", data = missingCounts }, "logistics")
 end
 
-local function pullFromInputChest()
+-- local function pullFromInputChest()
+--     turnToInputChest()
+--     while true do
+--         local success = suckUntilFull()
+--         if success then return end
+--         sleep(5)
+--     end
+-- end
+
+-- local function hasEnoughToStart(counts, requiredItems)
+--     for _, item in ipairs(requiredItems) do
+--         if counts[item.itemName] < item.itemMinCount then
+--             return false
+--         end
+--     end
+--     return true
+-- end
+
+-- local function prepareWorkerRound(requiredItems)
+--     -- Dump valid items to the worker turtle
+--     for slot = 1, 16 do
+--         local item = turtle.getItemDetail(slot)
+--         if item then
+--             for _, required in ipairs(requiredItems) do
+--                 if item.name:find(required.itemName) then
+--                     turtle.select(slot)
+--                     turtle.dropUp()
+--                     break
+--                 end
+--             end
+--         end
+--     end
+--     -- Power on worker turtle
+--     turnOnTurtle()
+-- end
+
+local function cleanInventory()
+    turnToOutputChest()
+    roomInfo.dropNonRequiredItems()
     turnToInputChest()
-    while true do
-        local success = suckUntilFull()
-        if success then return end
-        sleep(5)
-    end
-end
+    roomInfo.dropRequiredItems()
 
-local function hasEnoughToStart(counts, requiredItems)
-    for _, item in ipairs(requiredItems) do
-        if counts[item.itemName] < item.itemMinCount then
-            return false
-        end
-    end
-    return true
-end
-
-
-
-local function prepareWorkerRound(requiredItems)
-    -- Dump valid items to the worker turtle
-    for slot = 1, 16 do
-        local item = turtle.getItemDetail(slot)
-        if item then
-            for _, required in ipairs(requiredItems) do
-                if item.name:find(required.itemName) then
-                    turtle.select(slot)
-                    turtle.dropUp()
-                    break
-                end
-            end
-        end
-    end
-    -- Power on worker turtle
-    turnOnTurtle()
+    if(not inventory.isEmpty()) then log.error("Cleaning inventory failed") end
 end
 
 -- === Main Loop ===
 while true do
-    waitForWorkerTurtle()
-    dumpExcessAndUnneededItems(items)
-    print("Waiting for worker turtle to shut down...")
-    while isTurtleOn() do sleep(1) end
-    print("Worker turtle finished round.")
 
+    -- Take all items from input chest
+    turnToInputChest()
+    if(not suck.all()) then log.error("Couldn't empty input chest") end
+
+    -- Wait or a worker turtle
+    waitForWorkerTurtle()
+    print("Waiting for worker turtle to shut down...")
+
+    -- Dump unnecessary items gievn from worker turtle
+    turnToOutputChest()
+    while isTurtleOn() do
+        roomInfo.dropNonRequiredItems()
+    end
+    roomInfo.dropNonRequiredItems()
+
+    print("Worker turtle shutdown. Preparing round")
+
+    -- Count input items and cache them in input chest
+    local currentRequiredItems = roomInfo.countCurrentRequiredItems()
+    turnToRoomInputChest()
+    roomInfo.dropRequiredItems()
+
+    if(not inventory.isEmpty()) then log.error("Extra items found in inventory") end
+
+    turnToRoomInputChest()
+    if(not suck.all()) then log.error("Couldn't empty input chest") end
+
+    while true do
+        
+        local suckSuccess = suck.all()
+
+        turnToOutputChest()
+        roomInfo.dropNonRequiredItems()
+
+
+    end
+
+    cleanInventory()
+
+    turnToInputChest()
+    suck.all()
+
+    if(roomInfo.hasEnoughToStart()) then
+        roomInfo.dropRequiredItems(inventory.dropUp)
+    else
+        local missing = roomInfo.countMissingItems()
+        requestFromHub(missing)
+
+        while(true) do
+            turnToInputChest()
+            suck.all()
+
+            dumpExcessAndUnneededItems(items)
+            counts = countRequiredItems(items)
+            if hasEnoughToStart(counts, items) then
+                prepareWorkerRound(items)
+            else
+                print("Still missing items. Retrying in 10 seconds")
+                sleep(10)
+            end
+        end
+    end
+
+
+
+
+    
     collectRoomInput(items)
     dumpExcessAndUnneededItems(items)
 

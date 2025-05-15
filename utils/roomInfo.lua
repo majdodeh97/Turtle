@@ -90,29 +90,31 @@ function roomInfo.getRequiredItems()
     return combined
 end
 
-function roomInfo.countRequiredItems()
+function roomInfo.countCurrentRequiredItems(currentRequiredItems)
     local requiredItems = roomInfo.getRequiredItems()
 
-    local counts = {}
-    for _, item in ipairs(requiredItems) do
-        counts[item.itemName] = 0
+    if (not currentRequiredItems) then
+        currentRequiredItems = {}
+        for _, item in ipairs(requiredItems) do
+            currentRequiredItems[item.itemName] = 0
+        end
     end
+    
     for slot = 1, 16 do
         local item = turtle.getItemDetail(slot)
         if item then
             for _, required in ipairs(requiredItems) do
                 if item.name:find(required.itemName) then
-                    counts[required.itemName] = counts[required.itemName] + item.count
+                    currentRequiredItems[required.itemName] = currentRequiredItems[required.itemName] + item.count
                 end
             end
         end
     end
-    return counts
+    return currentRequiredItems
 end
 
-function roomInfo.countMissingItems()
+function roomInfo.countMissingItems(currentRequiredItems)
     local requiredItems = roomInfo.getRequiredItems()
-    local currentRequiredItems = roomInfo.countRequiredItems()
 
     local hasMissingItems = false
     local missing = {}
@@ -128,12 +130,13 @@ function roomInfo.countMissingItems()
     if(hasMissingItems) then return missing end
 end
 
-function roomInfo.hasEnoughToStart()
-    return roomInfo.countMissingItems() == nil
+function roomInfo.hasEnoughToStart(currentRequiredItems)
+    return roomInfo.countMissingItems(currentRequiredItems) == nil
 end
 
+-- use currentRequiredItems which is the count inside the input chest to keep the needed amounts
 function roomInfo.dropRequiredItems(dropFn)
-    dropFn = inventory.drop
+    dropFn = inventory.safeDrop
 
     local requiredItems = roomInfo.getRequiredItems()
 
@@ -160,5 +163,46 @@ function roomInfo.dropRequiredItems(dropFn)
         end
     end
 end
+
+-- use currentRequiredItems which is the count inside the input chest to throw away the un-needed amounts
+function roomInfo.dropNonRequiredItems(dropFn, currentRequiredItems)
+    currentRequiredItems = currentRequiredItems or {}
+
+    dropFn = dropFn or inventory.safeDrop
+
+    local requiredItems = roomInfo.getRequiredItems()
+
+    local maxAllowedLeft = {}
+    for _, entry in ipairs(requiredItems) do
+        maxAllowedLeft[entry.itemName] = entry.itemMaxCount
+    end
+
+    inventory.foreach(function(slot, itemDetail)
+        if itemDetail then
+            local name = itemDetail.name
+            local count = itemDetail.count
+            local allowedLeft = maxAllowedLeft[name]
+
+            inventory.runOnSlot(function ()
+                if allowedLeft then
+                    if allowedLeft <= 0 then -- Already have enough
+                        dropFn(count)
+                    else
+                        if count <= allowedLeft then
+                            maxAllowedLeft[name] = allowedLeft - count
+                        else
+                            dropFn(count - allowedLeft)
+                            maxAllowedLeft[name] = 0
+                        end
+                    end
+                else
+                    dropFn(count) -- Not a required item
+                end
+            end, slot)
+        end
+    end)
+end
+
+
 
 return roomInfo

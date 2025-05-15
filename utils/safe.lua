@@ -3,6 +3,7 @@ local log = require("/utils/log")
 ---@class safe
 local safe = {}
 
+-- Cannot be used with "drop" behavior. Use inventory.safeDrop instead
 function safe.execute(fn, errorMessage)
     local sleepInterval = settings.get("safeSleepInterval")
 
