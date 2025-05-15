@@ -133,6 +133,12 @@ function inventory.isFull()
     end)
 end
 
+function inventory.isEmpty()
+    return inventory.all(function(i, itemDetail)
+        return itemDetail == nil
+    end)
+end
+
 function inventory.hasSpace(startSlot, endSlot)
     if startSlot and not endSlot then
         log.error("Only startSlot was defined in inventory.all")

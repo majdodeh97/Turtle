@@ -1,6 +1,10 @@
 local move = require("/utils/move")
 local safe = require("/utils/safe")
 local location = require("/utils/location")
+local log = require("/utils/log")
+local suck = require("/utils/suck")
+local inventory = require("/utils/inventory")
+local roomInfo = require("/utils/roomInfo")
 
 print("Hi, I'm a control turtle!")
 
@@ -37,6 +41,24 @@ end
 local function isWorkerTurtlePresent()
     local success, data = turtle.inspectUp()
     return success and data.name:find("turtle")
+end
+
+local function turnOnTurtle()
+    local turtlePeripheral = peripheral.wrap("top")
+    if turtlePeripheral and turtlePeripheral.turnOn then
+        turtlePeripheral.turnOn()
+    else
+        error("No turtle detected above or turtle is not a valid peripheral.")
+    end
+end
+
+local function isTurtleOn()
+    local turtlePeripheral = peripheral.wrap("top")
+    if turtlePeripheral and turtlePeripheral.isOn then
+        return turtlePeripheral.isOn()
+    else
+        log.error("No turtle detected above or turtle is not a valid peripheral.")
+    end
 end
 
 -- todo: Controls the output and input, requests stuff from hub, gives the worker turtle what it needs
@@ -242,23 +264,7 @@ local function hasEnoughToStart(counts, requiredItems)
     return true
 end
 
-local function turnOnTurtle()
-    local turtlePeripheral = peripheral.wrap("top")
-    if turtlePeripheral and turtlePeripheral.turnOn then
-        turtlePeripheral.turnOn()
-    else
-        error("No turtle detected above or turtle is not a valid peripheral.")
-    end
-end
 
-local function isTurtleOff()
-    local turtlePeripheral = peripheral.wrap("top")
-    if turtlePeripheral and turtlePeripheral.isOn then
-        return not turtlePeripheral.isOn()
-    else
-        error("No turtle detected above or turtle is not a valid peripheral.")
-    end
-end
 
 local function prepareWorkerRound(requiredItems)
     -- Dump valid items to the worker turtle
@@ -283,7 +289,7 @@ while true do
     waitForWorkerTurtle()
     dumpExcessAndUnneededItems(items)
     print("Waiting for worker turtle to shut down...")
-    while not isTurtleOff() do sleep(1) end
+    while isTurtleOn() do sleep(1) end
     print("Worker turtle finished round.")
 
     collectRoomInput(items)

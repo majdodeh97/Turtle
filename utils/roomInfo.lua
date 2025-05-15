@@ -1,5 +1,6 @@
 local log = require("/utils/log")
 local location = require("/utils/location")
+local inventory = require("/utils/inventory")
 
 ---@class roomInfo
 local roomInfo = {}
@@ -127,8 +128,37 @@ function roomInfo.countMissingItems()
     if(hasMissingItems) then return missing end
 end
 
-function roomInfo.hasEnoughToStart(counts, requiredItems)
+function roomInfo.hasEnoughToStart()
     return roomInfo.countMissingItems() == nil
+end
+
+function roomInfo.dropRequiredItems(dropFn)
+    dropFn = inventory.drop
+
+    local requiredItems = roomInfo.getRequiredItems()
+
+    local maxAllowedList = {}
+    for _, entry in ipairs(requiredItems) do
+        maxAllowedList[entry.itemName] = entry.itemMaxCount
+    end
+
+    for itemName, maxAllowed in pairs(maxAllowedList) do
+        local dropped = 0
+
+        while dropped < maxAllowed do
+            local success = inventory.runOnItem(function(slot, itemDetail)
+                local toDrop = math.min(itemDetail.count, maxAllowed - dropped)
+                if not dropFn(toDrop) then return false end
+
+                dropped = dropped + toDrop
+                return true
+            end, itemName)
+
+            if not success then
+                break -- either no match or drop failed, move on to next itemName
+            end
+        end
+    end
 end
 
 return roomInfo
