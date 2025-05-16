@@ -151,7 +151,6 @@ end
 while true do
 
     print("Retrieving inputs")
-    os.pullEvent("key")
 
     -- Take all items from input chest
     turnToInputChest()
@@ -160,7 +159,6 @@ while true do
     -- Wait or a worker turtle
     waitForWorkerTurtle()
     print("Waiting for worker turtle to shut down. Emptying outputs")
-    os.pullEvent("key")
 
     -- Dump unnecessary items gievn from worker turtle
     turnToOutputChest()
@@ -171,7 +169,6 @@ while true do
 
     print("Worker turtle shutdown. Preparing round")
     print("Caching required items")
-    os.pullEvent("key")
 
     -- Count input items and cache them in input chest
     local currentRequiredItems = roomInfo.countCurrentRequiredItems()
@@ -179,55 +176,44 @@ while true do
     dropRequiredItems()
 
     print("Checking if inventory is empty")
-    os.pullEvent("key")
 
     if(not inventory.isEmpty()) then log.error("Extra items found in inventory") end
 
     print("Emptying room inputs")
-    os.pullEvent("key")
 
     turnToRoomInputChest()
     if(not suck.all()) then log.error("Couldn't empty room input chest") end
 
     print("Throwing unneeded items")
-    os.pullEvent("key")
 
     turnToOutputChest()
     dropNonRequiredItems(inventory.safeDrop, currentRequiredItems)
     
     print("cacheing new required items")
-    os.pullEvent("key")
 
     turnToInputChest()
     dropRequiredItems(inventory.safeDrop, currentRequiredItems)
 
     print("Checking if inventory is empty")
-    os.pullEvent("key")
 
     if(not inventory.isEmpty()) then log.error("Extra items found in inventory") end
 
     print("Retrieving inputs")
-    os.pullEvent("key")
 
     if(not suck.all()) then log.error("Couldn't empty input chest") end
 
     print("Can I start?")
-    os.pullEvent("key")
 
     if(roomInfo.hasEnoughToStart()) then
         print("Starting...")
-        os.pullEvent("key")
         dropRequiredItems(inventory.dropUp)
         turnOnTurtle()
     else
         print("requesting from hub...")
-        os.pullEvent("key")
         local missing = roomInfo.countMissingItems()
         requestFromHub(missing)
 
-        print("waiting 10 seconds")
-
-        sleep(10)
+        
         -- while(true) do
         --     turnToInputChest()
         --     suck.all()
@@ -242,4 +228,8 @@ while true do
         --     end
         -- end
     end
+
+    print("waiting 10 seconds")
+
+    sleep(10)
 end
