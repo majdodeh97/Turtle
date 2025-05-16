@@ -167,6 +167,33 @@ function inventory.safeDropDown(amount, slot)
     return safeDropInternal(inventory.dropDown, amount, slot)
 end
 
+local function safeDropAllInternal(dropFn, startSlot, endSlot)
+    dropFn = dropFn or inventory.safeDrop
+    if startSlot and not endSlot then
+        endSlot = startSlot -- Treat single slot as a range of one
+    end
+    startSlot = startSlot or 1
+    endSlot = endSlot or 16
+
+    inventory.foreach(function(i, itemDetail)
+        inventory.runOnSlot(dropFn, i)
+    end, startSlot, endSlot)
+
+    return true
+end
+
+function inventory.safeDropAll(startSlot, endSlot)
+    return safeDropAllInternal(inventory.safeDrop, startSlot, endSlot)
+end
+
+function inventory.safeDropAllUp(startSlot, endSlot)
+    return safeDropAllInternal(inventory.safeDropUp, startSlot, endSlot)
+end
+
+function inventory.safeDropAllDown(startSlot, endSlot)
+    return safeDropAllInternal(inventory.safeDropDown, startSlot, endSlot)
+end
+
 function inventory.isFull()
     return inventory.all(function(i, itemDetail)
         return itemDetail ~= nil

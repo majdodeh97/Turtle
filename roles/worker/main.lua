@@ -3,6 +3,7 @@ local roomNav = require("/utils/roomNav")
 local navigation = require("/utils/navigation")
 local location = require("/utils/location")
 local roomInfo = require("/utils/roomInfo")
+local inventory = require("/utils/inventory")
 
 print("Hi, I'm a worker turtle!")
 
@@ -15,7 +16,17 @@ navigation.goToRoomTurtle(lat, long, floor)
 
 if(roomInfo.hasEnoughToStart()) then
     navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
+    -- shell.run(script)
+    navigation.goToRoomTurtle(lat, long, floor)
 end
+
+
+inventory.safeDropAllDown()
+turtle.equipLeft()
+inventory.safeDropDown()
+turtle.equipRight()
+inventory.safeDropDown()
+os.shutdown()
 
 -- if hasStuff (or stuff isnt complete) then unloadEverything() and shutdown
 -- else, organize stuff and equip what you need
