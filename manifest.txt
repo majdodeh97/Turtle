@@ -42,4 +42,5 @@ utils/place.lua
 utils/roomInfo.lua
 utils/roomNav.lua
 utils/safe.lua
+utils/suck.lua
 utils/test.lua
