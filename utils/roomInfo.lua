@@ -90,14 +90,12 @@ function roomInfo.getRequiredItems()
     return combined
 end
 
-function roomInfo.countCurrentRequiredItems(currentRequiredItems)
+function roomInfo.countCurrentRequiredItems()
     local requiredItems = roomInfo.getRequiredItems()
 
-    if (not currentRequiredItems) then
-        currentRequiredItems = {}
-        for _, item in ipairs(requiredItems) do
-            currentRequiredItems[item.itemName] = 0
-        end
+    local currentRequiredItems = {}
+    for _, item in ipairs(requiredItems) do
+        currentRequiredItems[item.itemName] = 0
     end
     
     for slot = 1, 16 do
@@ -114,13 +112,14 @@ function roomInfo.countCurrentRequiredItems(currentRequiredItems)
 end
 
 function roomInfo.countMissingItems(currentRequiredItems)
-    currentRequiredItems = currentRequiredItems or {}
+    currentRequiredItems = currentRequiredItems or roomInfo.countCurrentRequiredItems()
     local requiredItems = roomInfo.getRequiredItems()
 
     local hasMissingItems = false
     local missing = {}
     for _, item in ipairs(requiredItems) do
         local current = currentRequiredItems[item.itemName]
+        current = current or 0
         local minMissingAmount = math.max(item.itemMinCount - current, 0)
         local maxMissingAmount = math.max(item.itemMaxCount - current, 0)
         if(minMissingAmount > 0 or maxMissingAmount > 0) then
@@ -135,9 +134,8 @@ function roomInfo.countMissingItems(currentRequiredItems)
     if(hasMissingItems) then return missing end
 end
 
-function roomInfo.hasEnoughToStart(currentRequiredItems)
-    currentRequiredItems = currentRequiredItems or {}
-    local missingItems = roomInfo.countMissingItems(currentRequiredItems)
+function roomInfo.hasEnoughToStart()
+    local missingItems = roomInfo.countMissingItems()
 
     if not missingItems then return true end
 
@@ -148,9 +146,9 @@ function roomInfo.hasEnoughToStart(currentRequiredItems)
     return true
 end
 
-function roomInfo.dropRequiredItems(dropFn, currentRequiredItems)
-    currentRequiredItems = currentRequiredItems or {}
-    local missingitems = roomInfo.countMissingItems(currentRequiredItems)
+function roomInfo.dropRequiredItems(dropFn, cachedRequiredItems)
+    cachedRequiredItems = cachedRequiredItems or {}
+    local missingitems = roomInfo.countMissingItems(cachedRequiredItems)
 
     dropFn = dropFn or inventory.safeDrop
 
@@ -166,7 +164,8 @@ function roomInfo.dropRequiredItems(dropFn, currentRequiredItems)
         local dropped = 0
 
         while dropped < maxAllowed do
-            local success = inventory.runOnItem(function(slot, itemDetail)
+            local success = inventory.runOnItem(function()
+                local itemDetail = turtle.getItemDetail()
                 local toDrop = math.min(itemDetail.count, maxAllowed - dropped)
                 dropFn(toDrop)
 
@@ -183,9 +182,9 @@ function roomInfo.dropRequiredItems(dropFn, currentRequiredItems)
     end
 end
 
-function roomInfo.dropNonRequiredItems(dropFn, currentRequiredItems)
-    currentRequiredItems = currentRequiredItems or {}
-    local missingitems = roomInfo.countMissingItems(currentRequiredItems)
+function roomInfo.dropNonRequiredItems(dropFn, cachedRequiredItems)
+    cachedRequiredItems = cachedRequiredItems or {}
+    local missingitems = roomInfo.countMissingItems(cachedRequiredItems)
 
     dropFn = dropFn or inventory.safeDrop
 
