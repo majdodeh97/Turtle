@@ -16,12 +16,12 @@
               {
                 "itemName": "minecraft:birch_sapling",
                 "itemMinCount": 2,
-                "itemMaxCount": 64
+                "itemMaxCount": 10
               },
               {
                 "itemName": "minecraft:charcoal",
                 "itemMinCount": 2,
-                "itemMaxCount": 64
+                "itemMaxCount": 10
               }
             ]
           },

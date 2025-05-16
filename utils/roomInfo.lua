@@ -114,15 +114,20 @@ function roomInfo.countCurrentRequiredItems(currentRequiredItems)
 end
 
 function roomInfo.countMissingItems(currentRequiredItems)
+    currentRequiredItems = currentRequiredItems or {}
     local requiredItems = roomInfo.getRequiredItems()
 
     local hasMissingItems = false
     local missing = {}
     for _, item in ipairs(requiredItems) do
         local current = currentRequiredItems[item.itemName]
-        local missingAmount = item.itemMinCount - current
-        if(missingAmount > 0) then
-            missing[item.itemName] = item.itemMaxCount - current
+        local minMissingAmount = math.max(item.itemMinCount - current, 0)
+        local maxMissingAmount = math.max(item.itemMaxCount - current, 0)
+        if(minMissingAmount > 0 or maxMissingAmount > 0) then
+            missing[item.itemName] = { 
+                itemMaxMissing = maxMissingAmount, 
+                itemMinMissing = minMissingAmount 
+            }
             hasMissingItems = true
         end
     end
@@ -131,18 +136,30 @@ function roomInfo.countMissingItems(currentRequiredItems)
 end
 
 function roomInfo.hasEnoughToStart(currentRequiredItems)
-    return roomInfo.countMissingItems(currentRequiredItems) == nil
+    currentRequiredItems = currentRequiredItems or {}
+    local missingItems = roomInfo.countMissingItems(currentRequiredItems)
+
+    if not missingItems then return true end
+
+    for itemName, missingAmounts in pairs(missingItems) do
+        if(missingAmounts.itemMinMissing > 0) then return false end
+    end
+
+    return true
 end
 
--- use currentRequiredItems which is the count inside the input chest to keep the needed amounts
-function roomInfo.dropRequiredItems(dropFn)
-    dropFn = inventory.safeDrop
+function roomInfo.dropRequiredItems(dropFn, currentRequiredItems)
+    currentRequiredItems = currentRequiredItems or {}
+    local missingitems = roomInfo.countMissingItems(currentRequiredItems)
 
-    local requiredItems = roomInfo.getRequiredItems()
+    dropFn = dropFn or inventory.safeDrop
 
     local maxAllowedList = {}
-    for _, entry in ipairs(requiredItems) do
-        maxAllowedList[entry.itemName] = entry.itemMaxCount
+
+    if missingitems then
+        for itemName, entry in pairs(missingitems) do
+            maxAllowedList[itemName] = entry.itemMaxMissing
+        end
     end
 
     for itemName, maxAllowed in pairs(maxAllowedList) do
@@ -151,30 +168,33 @@ function roomInfo.dropRequiredItems(dropFn)
         while dropped < maxAllowed do
             local success = inventory.runOnItem(function(slot, itemDetail)
                 local toDrop = math.min(itemDetail.count, maxAllowed - dropped)
-                if not dropFn(toDrop) then return false end
+                dropFn(toDrop)
 
                 dropped = dropped + toDrop
                 return true
             end, itemName)
 
             if not success then
-                break -- either no match or drop failed, move on to next itemName
+                break -- no match, move on to next itemName
             end
         end
+
+        print("Dropped " .. dropped .. " out of " .. maxAllowed .. " of " .. itemName)
     end
 end
 
--- use currentRequiredItems which is the count inside the input chest to throw away the un-needed amounts
 function roomInfo.dropNonRequiredItems(dropFn, currentRequiredItems)
     currentRequiredItems = currentRequiredItems or {}
+    local missingitems = roomInfo.countMissingItems(currentRequiredItems)
 
     dropFn = dropFn or inventory.safeDrop
 
-    local requiredItems = roomInfo.getRequiredItems()
-
     local maxAllowedLeft = {}
-    for _, entry in ipairs(requiredItems) do
-        maxAllowedLeft[entry.itemName] = entry.itemMaxCount
+
+    if missingitems then
+        for itemName, entry in pairs(missingitems) do
+            maxAllowedLeft[itemName] = entry.itemMaxMissing
+        end
     end
 
     inventory.foreach(function(slot, itemDetail)
@@ -183,26 +203,20 @@ function roomInfo.dropNonRequiredItems(dropFn, currentRequiredItems)
             local count = itemDetail.count
             local allowedLeft = maxAllowedLeft[name]
 
-            inventory.runOnSlot(function ()
-                if allowedLeft then
-                    if allowedLeft <= 0 then -- Already have enough
-                        dropFn(count)
-                    else
-                        if count <= allowedLeft then
-                            maxAllowedLeft[name] = allowedLeft - count
-                        else
-                            dropFn(count - allowedLeft)
-                            maxAllowedLeft[name] = 0
-                        end
-                    end
-                else
+            inventory.runOnSlot(function()
+                if not allowedLeft then
                     dropFn(count) -- Not a required item
+                elseif allowedLeft <= 0 then
+                    dropFn(count) -- Already have enough
+                elseif count <= allowedLeft then
+                    maxAllowedLeft[name] = allowedLeft - count
+                else
+                    dropFn(count - allowedLeft)
+                    maxAllowedLeft[name] = 0
                 end
             end, slot)
         end
     end)
 end
-
-
 
 return roomInfo

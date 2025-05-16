@@ -293,13 +293,17 @@ end
 -- === Main Loop ===
 while true do
 
+    print("Retrieving inputs")
+    os.pullEvent("key")
+
     -- Take all items from input chest
     turnToInputChest()
     if(not suck.all()) then log.error("Couldn't empty input chest") end
 
     -- Wait or a worker turtle
     waitForWorkerTurtle()
-    print("Waiting for worker turtle to shut down...")
+    print("Waiting for worker turtle to shut down. Emptying outputs")
+    os.pullEvent("key")
 
     -- Dump unnecessary items gievn from worker turtle
     turnToOutputChest()
@@ -309,85 +313,75 @@ while true do
     roomInfo.dropNonRequiredItems()
 
     print("Worker turtle shutdown. Preparing round")
+    print("Caching required items")
+    os.pullEvent("key")
 
     -- Count input items and cache them in input chest
     local currentRequiredItems = roomInfo.countCurrentRequiredItems()
     turnToRoomInputChest()
     roomInfo.dropRequiredItems()
 
+    print("Checking if inventory is empty")
+    os.pullEvent("key")
+
     if(not inventory.isEmpty()) then log.error("Extra items found in inventory") end
 
+    print("Emptying room inputs")
+    os.pullEvent("key")
+
     turnToRoomInputChest()
+    if(not suck.all()) then log.error("Couldn't empty room input chest") end
+
+    print("Throwing unneeded items")
+    os.pullEvent("key")
+
+    turnToOutputChest()
+    roomInfo.dropNonRequiredItems(inventory.safeDrop, currentRequiredItems)
+    
+    print("cacheing new required items")
+    os.pullEvent("key")
+
+    turnToRoomInputChest()
+    roomInfo.dropRequiredItems(inventory.safeDrop, currentRequiredItems)
+
+    print("Checking if inventory is empty")
+    os.pullEvent("key")
+
+    if(not inventory.isEmpty()) then log.error("Extra items found in inventory") end
+
+    print("Retrieving inputs")
+    os.pullEvent("key")
+
     if(not suck.all()) then log.error("Couldn't empty input chest") end
 
-    while true do
-        
-        local suckSuccess = suck.all()
-
-        turnToOutputChest()
-        roomInfo.dropNonRequiredItems()
-
-
-    end
-
-    cleanInventory()
-
-    turnToInputChest()
-    suck.all()
+    print("Can I start?")
+    os.pullEvent("key")
 
     if(roomInfo.hasEnoughToStart()) then
+        print("Starting...")
+        os.pullEvent("key")
         roomInfo.dropRequiredItems(inventory.dropUp)
     else
+        print("requesting from hub...")
+        os.pullEvent("key")
         local missing = roomInfo.countMissingItems()
         requestFromHub(missing)
 
-        while(true) do
-            turnToInputChest()
-            suck.all()
+        print("waiting 10 seconds")
 
-            dumpExcessAndUnneededItems(items)
-            counts = countRequiredItems(items)
-            if hasEnoughToStart(counts, items) then
-                prepareWorkerRound(items)
-            else
-                print("Still missing items. Retrying in 10 seconds")
-                sleep(10)
-            end
-        end
-    end
+        sleep(10)
+        -- while(true) do
+        --     turnToInputChest()
+        --     suck.all()
 
-
-
-
-    
-    collectRoomInput(items)
-    dumpExcessAndUnneededItems(items)
-
-    local counts = countRequiredItems(items)
-    if hasEnoughToStart(counts, items) then
-        prepareWorkerRound(items)
-    else
-        local missing = {}
-        for _, item in ipairs(items) do
-            local current = counts[item.itemName]
-            table.insert(missing, {
-                itemName = item.itemName,
-                neededMin = math.max(item.itemMinCount - current, 0),
-                neededMax = math.max(item.itemMaxCount - current, 0)
-            })
-        end
-        requestFromHub(missing)
-
-        while(true) do
-            pullFromInputChest()
-            dumpExcessAndUnneededItems(items)
-            counts = countRequiredItems(items)
-            if hasEnoughToStart(counts, items) then
-                prepareWorkerRound(items)
-            else
-                print("Still missing items. Retrying in 10 seconds")
-                sleep(10)
-            end
-        end
+        --     dumpExcessAndUnneededItems(items)
+        --     counts = countRequiredItems(items)
+        --     if hasEnoughToStart(counts, items) then
+        --         prepareWorkerRound(items)
+        --     else
+        --         print("Still missing items. Retrying in 10 seconds")
+        --         sleep(10)
+        --     end
+        -- end
     end
 end
