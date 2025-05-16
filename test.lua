@@ -28,6 +28,10 @@ local roomInfo = require("/utils/roomInfo")
 -- todo: decide on how files are copied/updated. Old way via disk drive or new way with red net
 -- todo: add unit tests for utils
 -- todo: work on main.lua for workers and controls
+-- > finalize requesting from hub maybe? 
+-- > cleanup the actual main.lua for control
+-- > work on worker turtle
+-- > issue: how does worker turtle know how much fuel to allocate? (fix idea found in roomInfo.getRequiredItems() comment)
 
 
 local function isCobblestoneInFront()

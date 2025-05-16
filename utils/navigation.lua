@@ -126,7 +126,7 @@ function navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
     end)
 
     safe.execute(function()
-        roomNav.faceDirection("forward")
+        return roomNav.faceDirection("forward")
     end)
 end
 

@@ -60,6 +60,9 @@ function roomInfo.getRoomInfo()
     return roomInfo.getRoomInfoByLocation(lat, long, floor)
 end
 
+
+-- todo: keep this returning the same kind of array, BUT make the actual json object aware of each slot
+-- this keeps this behavior as is, but allows worker turtle to allocate fuel correctly
 function roomInfo.getRequiredItems()
     local info = roomInfo.getRoomInfo()
 
