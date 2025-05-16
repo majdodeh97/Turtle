@@ -11,12 +11,14 @@ local lat,long = location.roomCoordsToGeoLocation()
 local floor = location.getFloor()
 
 local jobStartLocation = roomInfo.getRoomInfo().jobInfo.jobStartLocation
+local jobScript = roomInfo.getRoomInfo().jobInfo.jobScript
+local jobParams = roomInfo.getRoomInfo().jobInfo.jobParams
 
 navigation.goToRoomTurtle(lat, long, floor)
 
 if(roomInfo.hasEnoughToStart()) then
     navigation.goToRoomJobStart(lat, long, floor, jobStartLocation)
-    -- shell.run(script)
+    shell.run(jobScript .. " " .. jobParams)
     navigation.goToRoomTurtle(lat, long, floor)
 end
 

@@ -26,6 +26,7 @@
             ]
           },
           "jobScript": "/room/tree.lua",
+          "jobParams": "1",
           "jobStartLocation": { "x": -18, "y": 8, "z": 2 }
         }
       }
