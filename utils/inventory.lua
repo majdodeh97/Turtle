@@ -73,7 +73,15 @@ function inventory.all(fn, startSlot, endSlot)
     return true
 end
 
-
+function inventory.countItem(itemName)
+    local count = 0
+    inventory.foreach(function (i, itemDetail)
+        if(itemDetail and itemDetail.name == itemName) then
+            count = count + itemDetail.count
+        end
+    end)
+    return count
+end
 
 local function dropAllInternal(dropFn, startSlot, endSlot)
     dropFn = dropFn or turtle.drop

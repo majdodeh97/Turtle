@@ -86,7 +86,11 @@ function roomInfo.getRequiredItems()
 
     if allItems.items then
         for _, item in ipairs(allItems.items) do
-            table.insert(combined, item)
+            table.insert(combined, {
+                itemName = item.itemName,
+                itemMinCount = item.itemMinCount,
+                itemMaxCount = item.itemMaxCount
+            })
         end
     end
 
