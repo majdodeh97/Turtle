@@ -30,7 +30,8 @@ end
 
 print("Hi, I'm a worker turtle!")
 
-organizeInventory()
+local jobInfoItems = roomInfo.getRoomInfo().jobInfo.items
+organizeInventory(jobInfoItems)
 
 os.pullEvent("key")
 
